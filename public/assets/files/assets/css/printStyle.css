@@ -1,0 +1,90 @@
+.box-label{
+    width: 350px;
+    height: auto;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    float: left;
+}
+.bd-t{
+    border-top: 2px solid;
+}
+.bd-l{
+    border-left: 2px solid;
+}
+.bd-r{
+    border-right: 2px solid;
+}
+.bd-b{
+    border-bottom: 2px solid;
+}
+.ft-8{
+    font-size: 8px;
+}
+.ft-9{
+    font-size: 9px;
+}
+.ft-10{
+    font-size: 10px;
+}
+.ft-11{
+    font-size: 11px;
+}
+.ft-12{
+    font-size: 12px;
+}
+.ft-18{
+    font-size: 18px;
+}
+.ft-bold{
+    font-weight: bold;
+}
+.part-label-header{
+    padding-top:5px;
+    padding-bottom: 5px;
+}
+.left-box{
+    width: 30%;
+    height: 20px;
+    float: left;
+    padding-left: 3px;
+}
+.right-box{
+    width: 70%;
+    height: 20px;
+    float: left;
+    padding-left: 3px;
+}
+.outer-box-qr-left{
+    width:30%;
+    float: left;
+    height: auto;
+    padding-bottom: 5px;
+}
+.outer-box-qr-right{
+    width:70%;
+    float: left;
+    height: auto;
+    padding-bottom: 5px;
+}
+.left-box-qr1{
+    width: 100%;
+    height: 20px;
+    float: left;
+    padding: 3px;
+}
+.left-box-qr2{
+    width: 100%;
+    height: 95px;
+    float: left;
+    padding: 5px;
+}
+.right-box-qr{
+    width: 100%;
+    height: 115px;
+    float: right;
+    padding:5px;
+}
+
+.clear-both{
+    clear: both;
+}
