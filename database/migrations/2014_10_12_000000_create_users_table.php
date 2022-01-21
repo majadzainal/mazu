@@ -19,8 +19,12 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->timestamp('email_verified_at')->nullable();
             $table->smallInteger('role');
+            $table->uuid('store_id')->nullable();
+            $table->tinyInteger('is_superuser');
             $table->tinyInteger('is_active');
             $table->timestamps();
+
+            $table->foreign('store_id')->references('store_id')->on('tm_store');
         });
     }
 

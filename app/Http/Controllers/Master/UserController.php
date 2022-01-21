@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UserController extends Controller
 {
-    public $MenuID = '980';
+    public $MenuID = '998';
 
     public function listUser(){
 
@@ -32,14 +32,15 @@ class UserController extends Controller
             ]);
         }
 
-        $divisiList = Divisi::where('is_active', 1)->select('divisi_id', 'divisi_name')->get();
-        $locationList = Location::where('is_active', 1)->select('location_id', 'location_name')->get();
-        $roleList = Role::where('is_active', 1)->select('role_id', 'role_name')->get();
+        // $divisiList = Divisi::where('is_active', 1)->select('divisi_id', 'divisi_name')->get();
+        // $locationList = Location::where('is_active', 1)->select('location_id', 'location_name')->get();
+        $roleList = Role::where('is_active', 1)
+                        ->where('is_superuser', 0)->select('role_id', 'role_name')->get();
 
         return view('users.userTable', [
             'MenuID' => $this->MenuID,
-            'divisiList' => $divisiList,
-            'locList' => $locationList,
+            // 'divisiList' => $divisiList,
+            // 'locList' => $locationList,
             'roleList' => $roleList
         ]);
 
@@ -50,7 +51,7 @@ class UserController extends Controller
             return['data'=> ''];
         }
 
-        $userList = User::where('is_active', 1)->with('employee', 'employee.divisi', 'employee.location')->orderBy('created_at', 'DESC')->get();
+        $userList = User::where('is_active', 1)->with('employee')->orderBy('created_at', 'DESC')->get();
         return['data'=> $userList];
     }
 
@@ -59,9 +60,9 @@ class UserController extends Controller
         if(!isAccess('create', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        if(isOpname()){
-            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        }
+        // if(isOpname()){
+        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        // }
 
         DB::beginTransaction();
         try {
@@ -71,6 +72,8 @@ class UserController extends Controller
                 'username'          => $request->username,
                 'password'          => Hash::make($request->password),
                 'role'              => $request->role,
+                'store_id'          => getStoreId(),
+                'is_superuser'      => 0,
                 'is_active'         => 1,
             ]);
 
@@ -80,10 +83,9 @@ class UserController extends Controller
                     'employee_id'          => $idEmp,
                     'user_id'              => $userId,
                     'employee_name'        => $request->name,
-                    'divisi_id'            => $request->divisi,
-                    'location_id'          => $request->location,
                     'phone'                => $request->phone,
                     'email'                => $request->email,
+                    'store_id'             => getStoreId(),
                     'is_active'            => 1,
                     'created_user'         => Auth::User()->employee->employee_name,
                 ]);
@@ -109,9 +111,9 @@ class UserController extends Controller
         if(!isAccess('update', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        if(isOpname()){
-            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        }
+        // if(isOpname()){
+        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        // }
 
         $validator = Validator::make($request->all(), [
             'username' => 'required|unique:tm_user,username,'.$request->id.',user_id',
@@ -136,8 +138,6 @@ class UserController extends Controller
                 $employee = Employee::where('user_id', $request->user_id);
                 $employee->update([
                     'employee_name'        => $request->name,
-                    'divisi_id'            => $request->divisi,
-                    'location_id'          => $request->location,
                     'phone'                => $request->phone,
                     'email'                => $request->email,
                     'updated_user'         => Auth::User()->employee->employee_name,
@@ -233,9 +233,9 @@ class UserController extends Controller
         if(!isAccess('delete', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        if(isOpname()){
-            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        }
+        // if(isOpname()){
+        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        // }
 
         try {
 

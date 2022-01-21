@@ -70,7 +70,7 @@
     <div id="pcoded" class="pcoded">
         <div class="pcoded-overlay-box"></div>
         <div class="pcoded-container navbar-wrapper">
-            <nav class="navbar header-navbar pcoded-header" header-theme="theme6">
+            <nav class="navbar header-navbar pcoded-header iscollapsed" header-theme="theme6" pcoded-header-position="fixed">
                 <div class="navbar-wrapper">
                     <div class="navbar-logo">
                         <a class="mobile-menu waves-effect waves-light" id="mobile-collapse" href="#!">
@@ -192,10 +192,14 @@
                                         @php
                                             $parentActive = '';
                                             $displayBlok = 'none';
-                                            if(substr($ls->menu->menu_parents->menu_id, 0, 2) === substr($MenuID, 0, 2)){
+                                            if(substr($ls->menu->menu_parents->menu_id, 0, 3) === substr($MenuID, 0, 3)){
                                                 $parentActive = 'active';
                                                 $displayBlok = 'block';
                                             }
+                                            // if($ls->menu->menu_parents->menu_id === $MenuID){
+                                            //     $parentActive = 'active';
+                                            //     $displayBlok = 'block';
+                                            // }
                                         @endphp
                                         @if( $menu_before != $ls->menu->menu_parents->menu_id)
                                         <li class="pcoded-hasmenu {{$parentActive}}">
@@ -224,39 +228,6 @@
                                     @endif
 
                                 @endforeach
-
-                                <!--<li class="">
-                                    <a href="/users/table" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-user"></i><b>US</b></span>
-                                        <span class="pcoded-mtext">Users</span>
-                                        <span class="pcoded-mcaret"></span>
-                                    </a>
-                                </li>
-                                <li class="pcoded-hasmenu">
-                                    <a href="javascript:void(0)" class="waves-effect waves-dark">
-                                        <span class="pcoded-micon"><i class="ti-write"></i><b>MA</b></span>
-                                        <span class="pcoded-mtext">Master</span>
-                                        <span class="pcoded-mcaret"></span>
-                                    </a>
-                                    <ul class="pcoded-submenu">
-                                        <li class="">
-                                            <a href="/master/location-position/table" class="waves-effect waves-dark">
-                                                <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
-                                                <span class="pcoded-mtext">Location & Position</span>
-                                                <span class="pcoded-mcaret"></span>
-                                            </a>
-                                        </li>
-                                        <li class="">
-                                            <a href="/master/role/table" class="waves-effect waves-dark">
-                                                <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
-                                                <span class="pcoded-mtext">Role</span>
-                                                <span class="pcoded-mcaret"></span>
-                                            </a>
-                                        </li>
-
-                                    </ul>
-                                </li>-->
-
                             </ul>
                         </div>
                     </nav>
@@ -284,18 +255,18 @@
                                             <input type="text" name="name" id="name" value="{{ auth()->user()->employee->employee_name }}" class="form-control">
                                         </div>
                                     </div>
-                                    <div class="form-group row">
+                                    {{-- <div class="form-group row">
                                         <label class="col-sm-2 col-form-label">Divisi</label>
                                         <div class="col-sm-10">
                                             <input type="text" name="divisi" id="divisi" value="{{ auth()->user()->employee->divisi->divisi_name }}" readonly class="form-control">
                                         </div>
-                                    </div>
-                                    <div class="form-group row">
+                                    </div> --}}
+                                    {{-- <div class="form-group row">
                                         <label class="col-sm-2 col-form-label">Location</label>
                                         <div class="col-sm-10">
                                             <input type="text" name="location" id="location" value="{{ auth()->user()->employee->location->location_name }}" readonly class="form-control">
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="form-group row">
                                         <label class="col-sm-2 col-form-label">Email</label>
                                         <div class="col-sm-4">

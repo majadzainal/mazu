@@ -17,16 +17,16 @@ class CreateTmEmployeeTable extends Migration
             $table->uuid('employee_id')->primary();
             $table->uuid('user_id');
             $table->string('employee_name')->nullable();
-            $table->smallInteger('divisi_id')->nullable();
-            $table->smallInteger('location_id')->nullable();
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->tinyInteger('is_active');
             $table->string('created_user')->nullable();
             $table->string('updated_user')->nullable();
+            $table->uuid('store_id')->nullable();
+            $table->timestamps();
+
             $table->foreign('user_id')->references('user_id')->on('tm_user')
             ->onDelete('cascade');
-            $table->timestamps();
         });
     }
 

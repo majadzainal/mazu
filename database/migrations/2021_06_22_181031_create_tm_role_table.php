@@ -17,7 +17,10 @@ class CreateTmRoleTable extends Migration
             $table->increments('role_id');
             $table->string('role_name');
             $table->tinyInteger('is_active');
+            $table->uuid('store_id')->nullable();
             $table->timestamps();
+
+            $table->foreign('store_id')->references('store_id')->on('tm_store');
         });
     }
 

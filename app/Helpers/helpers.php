@@ -5,15 +5,24 @@ use App\Models\Setting\Menu_Role;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Process\OpnameSchedule;
+use App\Models\User;
 
 function getMenu(){
 
     $getmenu = Menu_Role::where('role_id', Auth::user()->role)
                 ->where('access', 1)
                 ->with('menu', 'menu.menu_parents')
+                // ->orderBy('menu_id')
                 ->get();
 
     return $getmenu;
+}
+
+function getStoreId(){
+    $store_id = User::where('user_id', Auth::user()->user_id)
+    ->pluck('store_id')->first();
+
+    return $store_id;
 }
 
 function isAccess($crud, $menuId){

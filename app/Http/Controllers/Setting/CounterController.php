@@ -27,9 +27,9 @@ class CounterController extends Controller
         if(!isAccess('create', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        if(isOpname()){
-            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        }
+        // if(isOpname()){
+        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        // }
 
         $validator = Validator::make($request->all(), [
             // 'username' => 'required|unique:tm_user,username,'.$request->id.',user_id',
@@ -48,6 +48,7 @@ class CounterController extends Controller
                 'counter_name'    => $request->counter_name,
                 'counter'         => $request->counter,
                 'length'          => $request->length,
+                'store_id'        => getStoreId(),
                 'created_user'    => Auth::User()->employee->employee_name,
                 'is_active'       => 1,
             ]);
@@ -65,9 +66,9 @@ class CounterController extends Controller
         if(!isAccess('update', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        if(isOpname()){
-            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        }
+        // if(isOpname()){
+        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        // }
 
         $validator = Validator::make($request->all(), [
             'counter_name'  => 'required|unique:ts_counter,counter_name,'.$request->counter_id.',counter_id',
@@ -105,9 +106,9 @@ class CounterController extends Controller
         if(!isAccess('delete', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        if(isOpname()){
-            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        }
+        // if(isOpname()){
+        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        // }
 
         try {
 

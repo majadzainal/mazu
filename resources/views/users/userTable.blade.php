@@ -48,7 +48,9 @@
                                 </div>
                                 <div class="card-block">
                                     @if(isAccess('create', $MenuID))
-                                        <button class="btn btn-primary btm-sm btn-round waves-effect waves-light" data-toggle="modal" data-target="#large-Modal" btn="add" onClick="return_value(this, '')"><i class="icofont icofont-plus-circle"></i> Tambah</button>
+                                        <button class="btn btn-info btn-md waves-effect waves-light" data-toggle="modal" data-target="#large-Modal" btn="add" onClick="return_value(this, '')">
+                                            <i class="icofont icofont-plus-circle"></i> <br/>Tambah
+                                        </button>
                                     @endif
                                     <div class="dt-responsive table-responsive">
                                         <table id="newTables" class="table table-striped table-bordered nowrap">
@@ -56,8 +58,8 @@
                                                 <tr>
                                                     <th width="5%">No.</th>
                                                     <th>Name</th>
-                                                    <th>Divisi</th>
-                                                    <th>Location</th>
+                                                    {{-- <th>Divisi</th>
+                                                    <th>Location</th> --}}
                                                     <th width="11%">Action</th>
                                                 </tr>
                                             </thead>
@@ -93,7 +95,7 @@
                             <input type="text" name="name" id="name" class="form-control" required>
                         </div>
                     </div>
-                    <div class="form-group row">
+                    {{-- <div class="form-group row">
                         <label class="col-sm-2 col-form-label">Divisi <span class="text-danger"> *</span></label>
                         <div class="col-sm-10">
                             <select name="divisi" id="divisi" class="js-example-basic-single col-sm-12" required>
@@ -112,7 +114,7 @@
                                 @endforeach
                             </select>
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label">Email <span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
@@ -173,8 +175,8 @@
                     }
                 },
                 { "data": "employee.employee_name" },
-                { "data": "employee.divisi.divisi_name" },
-                { "data": "employee.location.location_name" },
+                // { "data": "employee.divisi.divisi_name" },
+                // { "data": "employee.location.location_name" },
                 {
                     "mData": "user_id",
                     "mRender": function (data, type, row) {

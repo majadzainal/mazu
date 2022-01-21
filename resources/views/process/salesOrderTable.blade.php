@@ -7,7 +7,7 @@
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <div class="page-header-title">
-                        <h5 class="m-b-10">SALES ORDER TABLE</h5>
+                        <h5 class="m-b-10">PURCHASE ORDER SUPPLIER TABLE</h5>
                         <p class="m-b-0">&nbsp;</p>
                     </div>
                 </div>
@@ -17,7 +17,7 @@
                             <a href="index-2.html"> <i class="fa fa-home"></i> </a>
                         </li>
                         <li class="breadcrumb-item"><a href="#!">Process</a></li>
-                        <li class="breadcrumb-item"><a href="#!">Sales Order</a></li>
+                        <li class="breadcrumb-item"><a href="#!">Purchase Order Supplier</a></li>
                     </ul>
                 </div>
             </div>
@@ -33,7 +33,7 @@
                         <div class="col-sm-12" id="table">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5>Sales Order</h5>
+                                    <h5>Purchase Order Supplier</h5>
                                     <span></span>
                                     <div class="card-header-right">
                                         <ul class="list-unstyled card-option">
@@ -52,39 +52,27 @@
                                     <div class="form-group row">
                                         <label class="col-sm-12 col-form-label">Select periode for load data.</label>
                                         <label class="col-sm-2 col-form-label">Period <span class="text-danger"> *</span></label>
-                                        <div class="col-sm-3">
-                                            <select name="month_periode_filter" id="month_periode_filter" onchange="periodeChangeFilter()" class="js-example-placeholder col-sm-12" required>
-                                                <option value="">--Select--</option>
-                                                @foreach(getMonth() as $ls)
-                                                    <option value="{{ $ls['month'] }}">{{ $ls['month_name'] }}</option>
-                                                @endforeach
-                                            </select>
+                                        <div class="col-sm-4">
+                                            <input type="date" name="start_date" id="start_date" class="form-control">
                                         </div>
-                                        <label class="col-form-label">Year <span class="text-danger"> *</span></label>
-                                        <div class="col-sm-3">
-                                            <select name="year_periode_filter" id="year_periode_filter" onchange="periodeChangeFilter()" class="js-example-placeholder col-sm-12" required>
-                                                <option value="">--Select--</option>
-                                                @foreach(getYearPeriode() as $ls)
-                                                    <option value="{{ $ls['year'] }}">{{ $ls['year'] }}</option>
-                                                @endforeach
-                                            </select>
+                                        <div class="col-sm-4">
+                                            <input type="date" name="end_date" id="end_date" class="form-control">
                                         </div>
                                     </div>
                                     <div class="dt-responsive table-responsive">
                                         {{-- <table id="salesOrderTable" class="table table-striped table-bordered nowrap"> --}}
-                                        <table id="salesOrderTable" class="table table-striped table-bordered nowrap dt-responsive width-100">
+                                        <table id="poSupplierTable" class="table table-striped table-bordered nowrap dt-responsive width-100">
                                             <thead>
                                                 <tr>
                                                     <th>No.</th>
-                                                    <th>Sales Order No.</th>
-                                                    <th>PO No. Customer</th>
-                                                    {{-- <th width="8%">status</th> --}}
-                                                    <th>Customer</th>
-                                                    <th>Total Price</th>
-                                                    <th>Order Date</th>
-                                                    <th>PO Date Customer</th>
-                                                    <th>Created User</th>
                                                     <th>Action</th>
+                                                    <th>Purchase Order No.</th>
+                                                    <th>Supplier</th>
+                                                    <th>PO. Date</th>
+                                                    <th>Due Date</th>
+                                                    <th>Total Price</th>
+                                                    <th>Total Price After Discount</th>
+                                                    <th>Description</th>
                                                 </tr>
                                             </thead>
 
@@ -97,7 +85,7 @@
                         <div class="col-sm-12" id="input">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5>Sales Order</h5>
+                                    <h5>Purchase Order Supplier</h5>
                                     <span></span>
                                     <div class="card-header-right">
                                         <ul class="list-unstyled card-option">
@@ -110,19 +98,18 @@
                                     </div>
                                 </div>
                                 <div class="card-block">
-                                    <form action="/process/sales-order/add" method="post" enctype="multipart/form-data" id="salesOrderForm">
+                                    <form action="/process/purchase-order-supplier/add" method="post" enctype="multipart/form-data" id="poSupplierForm">
                                         @csrf
-                                        <input type="hidden" name="sales_order_id" id="sales_order_id">
-                                        <input type="hidden" name="itemList" id="itemList">
+                                        <input type="hidden" name="po_supplier_id" id="po_supplier_id">
                                         <div class="form-group row">
-                                            <label class="col-sm-2 col-form-label">Sales Order Number </label>
+                                            <label class="col-sm-2 col-form-label">Purchase Order Supplier Number </label>
                                             <div class="col-sm-5">
-                                                <input type="input" readonly name="so_number" id="so_number" class="form-control">
+                                                <input type="input" readonly name="po_number" id="po_number" class="form-control">
                                             </div>
                                             <label class="col-sm-5 col-form-label">Auto generate after save as process</label>
                                         </div>
                                         <div class="form-group row">
-                                            <label class="col-sm-2 col-form-label">Customer <span class="text-danger">*</span></label>
+                                            <label class="col-sm-2 col-form-label">Supplier <span class="text-danger">*</span></label>
                                             <div class="col-sm-10">
                                                 <select name="customer_id" id="customer_id" onchange="customerChange()" class="js-example-placeholder col-sm-12" required>
                                                     <option value="">--Select--</option>

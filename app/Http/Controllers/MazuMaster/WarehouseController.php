@@ -1,32 +1,17 @@
 <?php
 
-namespace App\Http\Controllers\Master;
+namespace App\Http\Controllers\MazuMaster;
 
 use Throwable;
-use App\Models\Master\Warehouse;
-use App\Models\Master\Plant;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
+use App\Models\MazuMaster\Warehouse;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-
 class WarehouseController extends Controller
 {
-
-    public $MenuID = '0212';
-
-    function listWarehouseImport(){
-        $warehouseList = Warehouse::with('plant')->where('is_active', 1)->get();
-
-        return view('master.import.warehouseList', [
-            'warehouseList' => $warehouseList,
-        ]);
-    }
+    public $MenuID = '00205';
 
     public function listWarehouse(){
 
@@ -35,10 +20,8 @@ class WarehouseController extends Controller
             return redirect()->back();
         }
 
-        $plantList = Plant::where('is_active', 1)->get();
-        return view('master.warehouseTable', [
+        return view('mazumaster.warehouseTable', [
             'MenuID'       => $this->MenuID,
-            'plantList' => $plantList,
         ]);
 
     }
@@ -48,7 +31,7 @@ class WarehouseController extends Controller
             return['data'=> ''];
         }
 
-        $warehouseList = Warehouse::where('is_active', 1)->with('plant')->get();
+        $warehouseList = Warehouse::where('store_id', getStoreId())->where('is_active', 1)->get();
         return['data'=> $warehouseList];
     }
 
@@ -57,16 +40,16 @@ class WarehouseController extends Controller
         if(!isAccess('create', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        if(isOpname()){
-            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        }
+        // if(isOpname()){
+        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        // }
 
         try {
 
             Warehouse::create([
                 'warehouse_name'    => $request->warehouse_name,
                 'description'       => $request->description,
-                'plant_id'          => $request->plant_id,
+                'store_id'          => getStoreId(),
                 'is_active'         => 1,
             ]);
 
@@ -83,9 +66,9 @@ class WarehouseController extends Controller
         if(!isAccess('update', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        if(isOpname()){
-            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        }
+        // if(isOpname()){
+        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        // }
 
         try {
 
@@ -94,7 +77,6 @@ class WarehouseController extends Controller
                 $warehouse->update([
                     'warehouse_name'    => $request->warehouse_name,
                     'description'       => $request->description,
-                    'plant_id'          => $request->plant_id,
                 ]);
 
                 return response()->json(['status' => 'Success', 'message' => 'Edit warehouse success.'], 200);
@@ -112,9 +94,9 @@ class WarehouseController extends Controller
         if(!isAccess('delete', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        if(isOpname()){
-            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        }
+        // if(isOpname()){
+        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        // }
 
         try {
 

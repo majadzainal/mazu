@@ -26,8 +26,6 @@
         </div>
     </div>
     <!-- Page-header end -->
-
-    {{-- @php $MenuID = "0202" @endphp --}}
     <div class="pcoded-inner-content">
         <div class="main-body">
             <div class="page-wrapper">

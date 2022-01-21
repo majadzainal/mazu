@@ -29,6 +29,7 @@ function saveDataModal(form, closeModalId, callback){
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     if (!$(form)[0].checkValidity()) {
         $(form)[0].reportValidity();
+
     } else {
         $.ajax({
             type: "POST",
@@ -41,6 +42,35 @@ function saveDataModal(form, closeModalId, callback){
                     $(form).trigger("reset");
                 }
                 callback();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert(xhr.status);
+                alert(thrownError);
+            }
+        });
+    }
+}
+
+function saveDataUploadForm(form, closeModalId, callback){
+    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+    var formData = new FormData(document.getElementById('uploadForm'));
+    if (!$(form)[0].checkValidity()) {
+        $(form)[0].reportValidity();
+
+    } else {
+        $.ajax({
+            type: "POST",
+            url: $(form).attr("action"),
+            data: formData,
+            enctype: 'multipart/form-data',
+            processData: false,  // tell jQuery not to process the data
+            contentType: false,   // tell jQuery not to set contentType
+            success: function(res) {
+                swal(res.status, res.message, res.status.toLowerCase());
+                if(res.status.toLowerCase() === 'Success'.toLowerCase()){
+                    $(closeModalId).click();
+                    $(form).trigger("reset");
+                }
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 alert(xhr.status);

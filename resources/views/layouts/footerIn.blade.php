@@ -47,4 +47,13 @@
 <script type="text/javascript" src="{{ asset ('/assets/files/assets/js/printThis.js') }}"></script>
 <!--script qe-code generator-->
 <script type="text/javascript" src="{{ asset ('/assets/files/assets/js/jquery.qrcode.min.js') }}"></script>
+
+<!-- j-pro js -->
+<script type="text/javascript" src="{{ asset ('/assets/files/assets/pages/j-pro/js/jquery.ui.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset ('/assets/files/assets/pages/j-pro/js/jquery.maskedinput.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset ('/assets/files/assets/pages/j-pro/js/jquery-cloneya.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset ('/assets/files/assets/pages/j-pro/js/autoNumeric.js') }}"></script>
+<script type="text/javascript" src="{{ asset ('/assets/files/assets/pages/j-pro/js/jquery.stepper.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset ('/assets/files/assets/pages/j-pro/js/custom/currency-form.js') }}"></script>
+
 @include('sweetalert::alert')

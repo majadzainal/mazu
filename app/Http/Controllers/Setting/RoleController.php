@@ -43,7 +43,11 @@ class RoleController extends Controller
             return['data'=> ''];
         }
 
-        $roleList = Role::where('is_active', 1)->with('menu_role')->get();
+        $store_id = getStoreId();
+
+        $roleList = Role::where('store_id', $store_id)
+                ->where('is_superuser', 0)
+                ->where('is_active', 1)->with('menu_role')->get();
         return['data'=> $roleList];
     }
 
@@ -52,12 +56,14 @@ class RoleController extends Controller
         if(!isAccess('create', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        if(isOpname()){
-            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        }
+        // if(isOpname()){
+        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        // }
 
         $validator = Validator::make($request->all(), [
             'role_name' => 'required|unique:tm_role',
+            'store_id' => getStoreId(),
+            'is_superuser' => 0,
         ]);
 
         if ($validator->fails()) {
@@ -107,9 +113,9 @@ class RoleController extends Controller
         if(!isAccess('update', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        if(isOpname()){
-            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        }
+        // if(isOpname()){
+        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        // }
 
 
         $validator = Validator::make($request->all(), [
@@ -168,9 +174,9 @@ class RoleController extends Controller
         if(!isAccess('delete', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        if(isOpname()){
-            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        }
+        // if(isOpname()){
+        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        // }
 
         try {
 
