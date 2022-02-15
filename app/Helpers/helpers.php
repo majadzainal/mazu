@@ -295,3 +295,44 @@ function getStatusRequestRawMat(){
 
     return $status;
 }
+
+function getNumberingFormType(){
+    $formType = [
+                [
+                    "numbering_form_type" => "F_PRODUCTION"
+                ],
+                [
+                    "numbering_form_type" => "F_PURCHASE_ORDER_CUSTOMER"
+                ],
+                [
+                    "numbering_form_type" => "F_PURCHASE_ORDER_SUPPLIER"
+                ],
+                [
+                    "numbering_form_type" => "F_PURCHASE_ORDER_SUPPLIER"
+                ],
+                [
+                    "numbering_form_type" => "F_GENERATE_LABEL_PRODUCT"
+                ],
+                [
+                    "numbering_form_type" => "F_RECEIVING_PRODUCT"
+                ],
+                [
+                    "numbering_form_type" => "F_PURCHASE_ORDER_MATERIAL_BAHAN"
+                ],
+                [
+                    "numbering_form_type" => "F_RECEIVING_PRODUCT_SUPPLIER"
+                ],
+                [
+                    "numbering_form_type" => "F_DELIVERY_ORDER_OUTLET"
+                ],
+                [
+                    "numbering_form_type" => "F_DELIVERY_ORDER_EXCLUSIVE_RESELLER"
+                ],
+                [
+                    "numbering_form_type" => "F_SALES_ORDER"
+                ],
+            ];
+
+
+    return $formType;
+}

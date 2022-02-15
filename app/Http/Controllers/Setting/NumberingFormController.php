@@ -53,6 +53,15 @@ class NumberingFormController extends Controller
         return['data'=> $numberingForm];
     }
 
+    public function getNumberingFormByType($numbering_form_type){
+        if(!isAccess('read', $this->MenuID)){
+            return['data'=> ''];
+        }
+
+        $numberingForm = NumberingForm::where('numbering_form_type', $numbering_form_type)->get()->first();
+        return['data'=> $numberingForm];
+    }
+
     public function updateNumberingForm(Request $request){
 
         if(!isAccess('update', $this->MenuID)){
@@ -63,8 +72,11 @@ class NumberingFormController extends Controller
         // }
 
         try {
-
-            $numForm = NumberingForm::find($request->numbering_form_id);
+            // dd($request->numbering_form_type);
+            $store_id = getStoreId();
+            // $numForm = NumberingForm::find($request->numbering_form_id);
+            $numForm = NumberingForm::where('numbering_form_type', $request->numbering_form_type)
+                                    ->where('store_id', $store_id)->get()->first();
             if($numForm){
                 $numForm->update([
                     'numbering_form_name'       => $request->numbering_form_name,
@@ -81,7 +93,21 @@ class NumberingFormController extends Controller
 
                 return response()->json(['status' => 'Success', 'message' => 'Edit numbering form success.'], 200);
             } else {
-                return response()->json(['status' => 'Info', 'message' => 'Numbering form not found.'], 200);
+                $numForm = NumberingForm::create([
+                    'numbering_form_type'       => $request->numbering_form_type,
+                    'numbering_form_name'       => $request->numbering_form_name,
+                    'string_val'                => $request->string_val,
+                    'string_used'               => $request->string_used,
+                    'year_val'                  => $request->year_val,
+                    'year_used'                 => $request->year_used,
+                    'month_used'                => $request->month_used,
+                    'day_used'                  => $request->day_used,
+                    'counter_id'                => $request->counter_id_form,
+                    'store_id'                  => $store_id,
+                    'updated_user'              => Auth::User()->employee->employee_name,
+
+                ]);
+                return response()->json(['status' => 'Success', 'message' => 'Add numbering form success.'], 200);
             }
         } catch (ModelNotFoundException  $e) {
             return response()->json(['status' => 'Error', 'message' => $e ], 202);

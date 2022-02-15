@@ -410,6 +410,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/setting/numbering-form-counter/table', [NumberingFormController::class, 'listNumberingForm']);
     Route::post('/setting/numbering-form-counter/update', [NumberingFormController::class, 'updateNumberingForm']);
     Route::get('/setting/numbering-form-counter/get/{id}', [NumberingFormController::class, 'getNumberingForm']);
+    Route::get('/setting/numbering-form-counter/get-by-type/{type}', [NumberingFormController::class, 'getNumberingFormByType']);
 
 
     //=============================SETTING COUNTER 99901==========================

@@ -11,7 +11,7 @@ class NumberingForm extends Model
     use HasFactory;
     protected $table = 'ts_numbering_form';
     protected $primaryKey = 'numbering_form_id';
-    protected $guarded = ['numbering_form_id','numbering_form_type'];
+    protected $guarded = [];
 
     public function counter()
     {

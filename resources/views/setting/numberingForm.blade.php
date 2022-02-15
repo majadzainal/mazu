@@ -60,10 +60,10 @@
                                         <div class="form-group row">
                                             <label class="col-sm-4 col-form-label">Numbering Type</label>
                                             <div class="col-sm-8">
-                                                <select onchange="numberingFormChanged(this)" name="numbering_form_id" id="numbering_form_id" class="js-example-placeholder col-sm-12">
+                                                <select onchange="numberingFormChanged(this)" name="numbering_form_type" id="numbering_form_type" class="js-example-placeholder col-sm-12">
                                                     <option value="">--Select--</option>
-                                                    @foreach($numFormList as $ls)
-                                                        <option value="{{ $ls['numbering_form_id'] }}">{{ $ls['numbering_form_type'] }}</option>
+                                                    @foreach(getNumberingFormType() as $ls)
+                                                        <option value="{{ $ls['numbering_form_type'] }}">{{ $ls['numbering_form_type'] }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -313,7 +313,11 @@
 
     async function numberingFormChanged(e){
         if(e.value !== ""){
-            await getData('/setting/numbering-form-counter/get/'+e.value).then(function(result){
+            // await getData('/setting/numbering-form-counter/get/'+e.value).then(function(result){
+            //     fillDataToForm(result);
+            // });
+            console.log(e.value);
+            await getData('/setting/numbering-form-counter/get-by-type/'+e.value).then(function(result){
                 fillDataToForm(result);
             });
         }
@@ -334,6 +338,8 @@
             $("#day_used_chk").prop('checked', data.day_used === 1 ? true : false);
             $("#counter_id_form").val(data.counter_id);
             $("#counter_id_form").trigger('change');
+        }else{
+            resetForm();
         }
     }
 
@@ -408,6 +414,8 @@
         saveData(form, function() {
             loadData();
             resetForm();
+            $("#numbering_form_type").val('');
+            $("#numbering_form_type").trigger('change');
         });
     }
 
