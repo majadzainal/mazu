@@ -51,7 +51,8 @@ class UserController extends Controller
             return['data'=> ''];
         }
 
-        $userList = User::where('is_active', 1)->with('employee')->orderBy('created_at', 'DESC')->get();
+        $store_id = getStoreId();
+        $userList = User::where('is_active', 1)->where('store_id', $store_id)->with('employee')->orderBy('created_at', 'DESC')->get();
         return['data'=> $userList];
     }
 
