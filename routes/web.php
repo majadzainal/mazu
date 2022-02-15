@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Models\MazuMaster\ProductCategory;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Master\UserController;
@@ -67,6 +68,30 @@ Route::get('/', function () {
     }
 });
 
+Route::get('/clear-cache', function() {
+    $exitCode = Artisan::call('cache:clear');
+    return "Clear cache success";
+});
+
+Route::get('/clear-view', function() {
+    $exitCode = Artisan::call('view:clear');
+    return "Clear view success";
+});
+
+Route::get('/clear-route', function() {
+    $exitCode = Artisan::call('route:clear');
+    return "Clear route success";
+});
+
+Route::get('/clear-config', function() {
+    $exitCode = Artisan::call('config:clear');
+    return "Clear config success";
+});
+
+Route::get('/optimize', function() {
+    $exitCode = Artisan::call('optimize');
+    return "Optimize success";
+});
 
 Auth::routes();
 
