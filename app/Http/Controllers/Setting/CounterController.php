@@ -18,7 +18,8 @@ class CounterController extends Controller
             return['data'=> ''];
         }
 
-        $counterList = Counter::where('is_active', 1)->get();
+        $store_id = getStoreId();
+        $counterList = Counter::where('is_active', 1)->where('store_id', $store_id)->get();
         return['data'=> $counterList];
     }
 

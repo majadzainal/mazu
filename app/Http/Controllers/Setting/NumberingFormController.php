@@ -24,9 +24,10 @@ class NumberingFormController extends Controller
                 'MenuID' => $this->MenuID,
             ]);
         }
-        $counterList = Counter::where('is_active', 1)->select('counter_id', 'counter_name', 'counter', 'length')->get();
-        $numFormList = NumberingForm::all();
+        $store_id = getStoreId();
 
+        $counterList = Counter::where('is_active', 1)->where('store_id', $store_id)->select('counter_id', 'counter_name', 'counter', 'length')->get();
+        $numFormList = NumberingForm::all();
         return view('setting.numberingForm', [
             'MenuID' => $this->MenuID,
             'counterList'   => $counterList,
@@ -57,8 +58,9 @@ class NumberingFormController extends Controller
         if(!isAccess('read', $this->MenuID)){
             return['data'=> ''];
         }
-
-        $numberingForm = NumberingForm::where('numbering_form_type', $numbering_form_type)->get()->first();
+        $store_id = getStoreId();
+        $numberingForm = NumberingForm::where('numbering_form_type', $numbering_form_type)
+                        ->where('store_id', $store_id)->get()->first();
         return['data'=> $numberingForm];
     }
 
@@ -117,21 +119,23 @@ class NumberingFormController extends Controller
 
     function GENERATE_FORM_NUMBER($numbering_form_type){
         $generateNumber = "";
-        $numForm = NumberingForm::where('numbering_form_type', $numbering_form_type)->with('counter')->get()->first();
-        $now = new DateTime('today');
+        $numForm = NumberingForm::where('numbering_form_type', $numbering_form_type)
+                ->where('store_id', getStoreId())->with('counter')->get()->first();
+        if($numForm){
+            $now = new DateTime('today');
 
-        $generateNumber .= $numForm->string_used == 1 ? $numForm->string_val : '';
+            $generateNumber .= $numForm->string_used == 1 ? $numForm->string_val : '';
 
-        $generateNumber .= $numForm->year_used == 1 ? $numForm->year_val === 2 ? $now->format('y') : $now->format('Y') : '';
+            $generateNumber .= $numForm->year_used == 1 ? $numForm->year_val === 2 ? $now->format('y') : $now->format('Y') : '';
 
-        $generateNumber .= $numForm->month_used == 1 ? $now->format('m') : '';
+            $generateNumber .= $numForm->month_used == 1 ? $now->format('m') : '';
 
-        $generateNumber .= $numForm->day_used == 1 ? $now->format('d') : '';
+            $generateNumber .= $numForm->day_used == 1 ? $now->format('d') : '';
 
-        $counterStr = $this->getCounter($numForm->counter);
+            $counterStr = $this->getCounter($numForm->counter);
 
-        $generateNumber .= $counterStr;
-
+            $generateNumber .= $counterStr;
+        }
         return $generateNumber;
     }
 

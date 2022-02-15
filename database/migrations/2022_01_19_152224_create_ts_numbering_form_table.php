@@ -15,8 +15,8 @@ class CreateTsNumberingFormTable extends Migration
     {
         Schema::create('ts_numbering_form', function (Blueprint $table) {
             $table->increments('numbering_form_id');
-            $table->string('numbering_form_type')->unique();
-            $table->string('numbering_form_name')->unique();
+            $table->string('numbering_form_type');
+            $table->string('numbering_form_name');
             $table->string('string_val')->nullable();
             $table->tinyInteger('string_used');
             $table->integer('year_val')->nullable();
