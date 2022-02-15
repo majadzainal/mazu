@@ -15,7 +15,8 @@ class CreateTmStockTable extends Migration
     {
         Schema::create('tm_stock', function (Blueprint $table) {
             $table->uuid('stock_id')->primary();
-            $table->uuid('product_id');
+            $table->uuid('product_id')->nullable();
+            $table->uuid('product_supplier_id')->nullable();
             $table->unsignedInteger('warehouse_id');
             $table->integer('stock');
             $table->uuid('store_id');
@@ -24,6 +25,7 @@ class CreateTmStockTable extends Migration
             $table->timestamps();
 
             $table->foreign('product_id')->references('product_id')->on('tm_product');
+            $table->foreign('product_supplier_id')->references('product_supplier_id')->on('tm_product_supplier');
             $table->foreign('warehouse_id')->references('warehouse_id')->on('tm_warehouse');
         });
     }

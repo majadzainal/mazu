@@ -9,7 +9,7 @@ class Role extends Model
 {
     protected $primaryKey = 'role_id';
     protected $table = 'tm_role';
-    protected $fillable = ['role_name','is_active'];
+    protected $fillable = ['role_name', 'store_id', 'is_active'];
 
     public function menu_role()
     {

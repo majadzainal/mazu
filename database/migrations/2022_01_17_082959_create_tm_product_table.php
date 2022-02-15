@@ -18,8 +18,8 @@ class CreateTmProductTable extends Migration
             $table->string('product_code');
             $table->string('product_name');
             $table->string('product_description')->nullable();
-            $table->float('price')->nullable();
-            $table->float('hpp')->nullable();
+            $table->decimal('price')->nullable();
+            $table->decimal('hpp')->nullable();
             $table->integer('stock')->nullable();
             $table->unsignedInteger('unit_id')->nullable();
             $table->unsignedInteger('product_category_id');

@@ -8,11 +8,9 @@ use App\Models\Process\OpnameSchedule;
 use App\Models\User;
 
 function getMenu(){
-
     $getmenu = Menu_Role::where('role_id', Auth::user()->role)
                 ->where('access', 1)
                 ->with('menu', 'menu.menu_parents')
-                // ->orderBy('menu_id')
                 ->get();
 
     return $getmenu;
@@ -190,6 +188,42 @@ function getMonth(){
 
 
     return $month;
+}
+
+function getSOType(){
+    $soType = [
+                [
+                    "type" => 1,
+                    "type_name" => "ENDORSE"
+                ],
+                [
+                    "type" => 2,
+                    "type_name" => "GIFT AWAY MEDSOS"
+                ],
+                [
+                    "type" => 3,
+                    "type_name" => "SPECIAL GIFT"
+                ],
+                [
+                    "type" => 4,
+                    "type_name" => "OUTLET"
+                ],
+                [
+                    "type" => 5,
+                    "type_name" => "EXC RESELLER"
+                ],
+                [
+                    "type" => 6,
+                    "type_name" => "OWNER"
+                ],
+                [
+                    "type" => 7,
+                    "type_name" => "CUSTOMER REGULER"
+                ],
+            ];
+
+
+    return $soType;
 }
 
 function getYearPeriode(){

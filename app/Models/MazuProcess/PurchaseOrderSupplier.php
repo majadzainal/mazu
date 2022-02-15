@@ -4,6 +4,7 @@ namespace App\Models\MazuProcess;
 
 use App\Models\MazuMaster\Supplier;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\MazuProcess\PurchaseOrderCustomer;
 use App\Models\MazuProcess\PurchaseOrderSupplierItem;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -18,13 +19,17 @@ class PurchaseOrderSupplier extends Model
 
     ];
 
-    // public function supplier()
-    // {
-    //     return $this->hasOne(Supplier::class, 'supplier_id', 'supplier_id');
-    // }
+    public function supplier()
+    {
+        return $this->hasOne(Supplier::class, 'supplier_id', 'supplier_id');
+    }
+    public function poCustomer()
+    {
+        return $this->hasOne(PurchaseOrderCustomer::class, 'po_customer_id', 'po_customer_id');
+    }
 
-    // public function items()
-    // {
-    //     return $this->hasMany(PurchaseOrderSupplierItem::class, 'po_supplier_id', 'po_supplier_id')->orderBy('order_item', 'ASC');
-    // }
+    public function items()
+    {
+        return $this->hasMany(PurchaseOrderSupplierItem::class, 'po_supplier_id', 'po_supplier_id')->orderBy('order_item', 'ASC');
+    }
 }

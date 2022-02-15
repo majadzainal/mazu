@@ -16,21 +16,27 @@ class CreateTpPoSupplierTable extends Migration
         Schema::create('tp_po_supplier', function (Blueprint $table) {
             $table->uuid('po_supplier_id')->primary();
             $table->string('po_number')->nullable();
+            $table->uuid('po_customer_id')->nullable();
             $table->date('po_date');
             $table->date('due_date');
             $table->uuid('supplier_id');
             $table->string('description')->nullable();
-            $table->float('total_price')->nullable();
-            $table->float('percent_discount')->nullable();
-            $table->float('total_price_after_disount')->nullable();
+            $table->bigInteger('total_price')->nullable();
+            $table->bigInteger('percent_discount')->nullable();
+            $table->bigInteger('total_price_after_discount')->nullable();
+            $table->bigInteger('ppn')->nullable();
+            $table->bigInteger('grand_total')->nullable();
             $table->tinyInteger('is_process');
+            $table->tinyInteger('is_open');
             $table->tinyInteger('is_draft');
             $table->tinyInteger('is_void');
+            $table->uuid('store_id');
             $table->tinyInteger('is_active');
             $table->string('created_user')->nullable();
             $table->string('updated_user')->nullable();
             $table->timestamps();
 
+            $table->foreign('po_customer_id')->references('po_customer_id')->on('tp_po_customer');
             $table->foreign('supplier_id')->references('supplier_id')->on('tm_supplier');
         });
     }

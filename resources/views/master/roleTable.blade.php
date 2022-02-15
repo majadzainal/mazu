@@ -47,6 +47,9 @@
                                     </div>
                                 </div>
                                 <div class="card-block">
+                                    @if(isAccess('create', $MenuID))
+                                        <button class="btn btn-primary btn-sm btn-round waves-effect waves-light" data-toggle="modal" data-target="#modal_default" onClick="return_value_edit_role(this, '')"><i class="icofont icofont-plus-circle" btn="add"></i> Add</button>
+                                    @endif
                                     <div class="dt-responsive table-responsive">
                                         <table id="searchTable" class="table table-striped table-bordered nowrap">
                                             <thead>
@@ -77,13 +80,13 @@
                                     </div>
                                 </div>
                                 <div class="card-block">
-                                    <form action="/master/role/add" method="post" enctype="multipart/form-data" id="roleForm">
+                                    <form action="/master/role/update" method="post" enctype="multipart/form-data" id="roleForm">
                                         @csrf
-                                            <input type="hidden" name="role_id" id="role_id">
+                                            <input type="hidden" name="role_id_update_role" id="role_id_update_role">
                                             <div class="form-group row">
                                                 <label class="col-sm-3 col-form-label">Role Name</label>
                                                 <div class="col-sm-9">
-                                                    <input type="text" name="role_name" id="role_name" class="form-control">
+                                                    <input type="text" name="role_name_update_role" id="role_name_update_role" class="form-control">
                                                 </div>
                                             </div>
                                             <div class="form-group row">
@@ -148,6 +151,44 @@
     </div>
 </div>
 <div id="styleSelector"></div>
+<div class="modal fade" id="modal_default"  role="dialog">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:lightblue">
+                <h4 class="modal-title" id="modal_default" >Add Role</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/master/role/add" method="post" enctype="multipart/form-data" id="addRoleForm">
+                @csrf
+                <input type="hidden" name="role_id_add" id="role_id_add">
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Role Name <span class="text-danger"> *</span> </label>
+                        <div class="col-sm-8">
+                            <input type="text" name="role_name" id="role_name" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Store <span class="text-danger"> *</span></label>
+                        <div class="col-sm-8">
+                            <select name="store_id_add" id="store_id_add" class="js-example-placeholder col-sm-12" required>
+                                <option value="">--Select--</option>
+                                @foreach($storeList as $ls)
+                                    <option value="{{ $ls->store_id }}">{{ $ls->store_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                <div class="modal-footer">
+                    <button type="button" id="closeModal" class="btn btn-default waves-effect" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary waves-effect waves-light" onClick="saveInit('#addRoleForm')">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @include('layouts.footerIn')
 <script>
     $(document).ready(function() {
@@ -179,7 +220,8 @@
                     "mRender": function (data, type, row) {
                         var button = "";
                         @if(isAccess('update', $MenuID))
-                            button += "<button class='btn waves-effect waves-light btn-info btn-icon' onClick='return_value(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-edit'></i></button>";
+                            button += "<button class='btn waves-effect waves-light btn-info btn-icon' data-toggle='modal' data-target='#modal_default' onClick='return_value_edit_role(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-edit'></i></button>";
+                            button += "<button class='btn waves-effect waves-light btn-info btn-icon' onClick='return_value(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-table'></i></button>";
                         @endif
                         @if(isAccess('delete', $MenuID))
                             button += "<button class='btn waves-effect waves-light btn-warning btn-icon' data-confirm='Are you sure|want to delete role "+ row.role_name +" ??' data-url='/master/role/delete/" + data + "' onClick='deleteInit(this)'>&nbsp;<i class='icofont icofont-trash'></i></button>";
@@ -206,35 +248,53 @@
             ($("#delete_"+id).is(":checked") == true)?$("#delete_"+id).click():"";
         }
     }
-
-    function return_value(e, data){
+    function return_value_edit_role(e, data){
+        console.log(data);
         var btn = $(e).attr("btn");
         if (btn == "edit"){
-            $("#roleForm").trigger("reset");
-            $("#roleForm").attr("action", "/master/role/update");
-            $("#role_id").val(data.role_id);
+            $("#addRoleForm").trigger("reset");
+            $("#addRoleForm").attr("action", "/master/add-role/update");
+            $("#role_id_add").val(data.role_id);
             $("#role_name").val(data.role_name);
-            data.menu_role.forEach(function(menu) {
-                if(menu.access == 1) $("#access_"+menu.menu_id).prop("checked", true);
-                if(menu.read == 1) $("#read_"+menu.menu_id).prop("checked", true);
-                if(menu.create == 1) $("#create_"+menu.menu_id).prop("checked", true);
-                if(menu.update == 1) $("#update_"+menu.menu_id).prop("checked", true);
-                if(menu.delete == 1) $("#delete_"+menu.menu_id).prop("checked", true);
-            })
-            $(".switchery-small").remove();
-            loadSwitcher();
-
+            $("#store_id_add").val(data.store_id);
+            $('#store_id_add').trigger('change');
         } else {
-            $("#roleForm").trigger("reset");
-            $("#roleForm").attr("action", "/master/role/add");
+            $("#addRoleForm").trigger("reset");
+            $("#addRoleForm").attr("action", "/master/add-role/add");
         }
+    }
+    function return_value(e, data){
+        console.log(data);
+        $("#roleForm").trigger("reset");
+        $("#roleForm").attr("action", "/master/role/update");
+        $("#role_id_update_role").val(data.role_id);
+        $("#role_name_update_role").val(data.role_name);
+        data.menu_role.forEach(function(menu) {
+            if(menu.access == 1) $("#access_"+menu.menu_id).prop("checked", true);
+            if(menu.read == 1) $("#read_"+menu.menu_id).prop("checked", true);
+            if(menu.create == 1) $("#create_"+menu.menu_id).prop("checked", true);
+            if(menu.update == 1) $("#update_"+menu.menu_id).prop("checked", true);
+            if(menu.delete == 1) $("#delete_"+menu.menu_id).prop("checked", true);
+        })
+        $(".switchery-small").remove();
+        loadSwitcher();
+
+
+        // var btn = $(e).attr("btn");
+        // if (btn == "edit"){
+
+
+        // } else {
+        //     $("#roleForm").trigger("reset");
+        //     $("#roleForm").attr("action", "/master/role/add");
+        // }
 
     }
 
     function saveInit(form){
         saveData(form, function() {
             loadData();
-            $("#roleForm").attr("action", "/master/role/add");
+            $("#roleForm").attr("action", "/master/role/update");
             $(".switchery-small").remove();
             loadSwitcher();
         });

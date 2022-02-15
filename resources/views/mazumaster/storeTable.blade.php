@@ -93,7 +93,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="" method="post" enctype="multipart/form-data" id="storeForm">
+            <form action="/master/store/add" method="post" enctype="multipart/form-data" id="storeForm">
                 @csrf
                 <input type="hidden" name="store_id" id="store_id">
                 <div class="modal-body">
@@ -192,106 +192,33 @@
         });
     }
 
-    function loadDataPartType(){
-        $('#searchTableType').DataTable().destroy();
-        $('#searchTableType').DataTable({
-            "bPaginate": true,
-            "bLengthChange": true,
-            "bFilter": true,
-            "bInfo": true,
-            "bAutoWidth": false,
-            "ajax": '/master/part-type/load',
-            "aoColumns": [
-                {  "mRender": function (data, type, row, num) {
-                        return num.row+1;
-                    }
-                },
-                { "data": "code" },
-                { "data": "part_type" },
-                {
-                    "mData": "part_type_id",
-                    "mRender": function (data, type, row) {
-                        var button = "";
-                        @if(isAccess('update', $MenuID))
-                            button += "<button class='btn waves-effect waves-light btn-info btn-icon' data-toggle='modal' data-target='#large-Modal' onClick='return_value_type(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-edit'></i></button>";
-                        @endif
-                        @if(isAccess('delete', $MenuID))
-                            button += "<button class='btn waves-effect waves-light btn-warning btn-icon' data-confirm='Are you sure|want to delete part type "+ row.part_type +" ??' data-url='/master/part-type/delete/" + data + "' onClick='deleteInitType(this)'>&nbsp;<i class='icofont icofont-trash'></i></button>";
-                        @endif
-                        return button;
-                    }
-                }
-            ]
-        });
-    }
-
     function return_value(e, data){
 
         var btn = $(e).attr("btn");
         if (btn == "edit"){
-            $("#divisiForm").attr("action", "/master/divisi/update");
-            $("#defaultModalLabel").text("Edit Divisi")
-            $("#divisi_id").val(data.divisi_id);
-            $("#divisi_code").val(data.divisi_code);
-            $("#divisi_name").val(data.divisi_name);
-            $("#part_type_id_divisi").val(data.part_type_id);
-            $("#is_productionChk").prop('checked', data.is_production === 1 ? true : false);
-            productionChange();
+            $("#storeForm").attr("action", "/master/store/update");
+            $("#defaultModalLabel").text("Edit Store")
+            $("#store_id").val(data.store_id);
+            $("#store_name").val(data.store_name);
+            $("#description").val(data.description);
+            $("#store_telephone").val(data.store_telephone);
+            $("#store_fax").val(data.store_fax);
+            $("#store_email").val(data.store_email);
+            $("#store_address").val(data.store_address);
+            $("#npwp").val(data.npwp);
 
         } else {
-            $("#divisiForm").trigger("reset");
-            $("#is_productionChk").prop('checked', false);
-            $("#divisiForm").attr("action", "/master/divisi/add");
-            $("#defaultModalLabel").text("Add Divisi")
-            productionChange();
+            $("#storeForm").trigger("reset");
+            $("#storeForm").attr("action", "/master/store/add");
+            $("#defaultModalLabel").text("Add Store")
         }
-
-        $("#part_type_id_divisi").trigger('change');
     }
 
-    function return_value_type(e, data){
-        $("#table-data").hide();
-        $("#input-data").show();
-
-        var btn = $(e).attr("btn");
-        if (btn == "edit"){
-
-            $("#typeForm").attr("action", "/master/part-type/update");
-            $("#part_type_id").val(data.part_type_id);
-            $("#code").val(data.code);
-            $("#part_type").val(data.part_type);
-
-        } else {
-            $("#typeForm").trigger("reset");
-            $("#typeForm").attr("action", "/master/part-type/add");
-        }
-
-    }
-
-    function closeInput(){
-        $("#table-data").show();
-        $("#input-data").hide();
-    }
 
     function saveInit(form, modalId){
-        if(validateForm()){
-            $("#is_production").val($("#is_productionChk").prop("checked") ? 1 : 0);
-            saveDataModal(form, modalId, function() {
-                loadData();
-            });
-        }
-    }
-    function saveInitType(form, modalId){
         saveDataModal(form, modalId, function() {
-            loadDataPartType();
+            loadData();
         });
-    }
-
-    function validateForm(){
-        var is_error = 0;
-        is_error += validateRequired('#divisi_name', '#divisi_name_error');
-
-        return is_error === 0 ? true : false;
     }
 
     function deleteInit(e){
@@ -305,14 +232,5 @@
             loadDataPartType();
         });
     }
-
-    function productionChange(){
-        if($("#is_productionChk").prop("checked")){
-            $("#part_type_option").show();
-        }else{
-            $("#part_type_option").hide();
-        }
-    }
-
 </script>
 @endsection

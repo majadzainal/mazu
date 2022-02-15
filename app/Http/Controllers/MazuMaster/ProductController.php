@@ -16,11 +16,13 @@ use Intervention\Image\Facades\Image;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Models\MazuMaster\ProductCategory;
 use App\Http\Controllers\MazuMaster\StockController;
+use App\Models\MazuMaster\ProductComposition;
+use App\Models\MazuMaster\ProductSupplier;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ProductController extends Controller
 {
-    public $MenuID = '00206';
+    public $MenuID = '01101';
 
     public $objStock;
 
@@ -42,12 +44,16 @@ class ProductController extends Controller
         $unitList = Unit::where('store_id', $store_id)->where('is_active', 1)->select('unit_id', 'unit_name')->get();
         $productCategoryList = ProductCategory::where('store_id', $store_id)->where('is_active', 1)->get();
         $warehouseList = Warehouse::where('store_id', $store_id)->where('is_active', 1)->select('warehouse_id', 'warehouse_name')->get();
+        $productSupplierList = ProductSupplier::where('store_id', $store_id)->where('is_active', 1)
+                            ->with('unit')->get();
 
+        // dd($productSupplierList);
         return view('mazumaster.productTable', [
-            'MenuID'        => $this->MenuID,
-            'unitList'      => $unitList,
-            'productCategoryList'    => $productCategoryList,
-            'warehouseList' => $warehouseList
+            'MenuID'                    => $this->MenuID,
+            'unitList'                  => $unitList,
+            'productCategoryList'       => $productCategoryList,
+            'warehouseList'             => $warehouseList,
+            'productSupplierList'       => $productSupplierList,
         ]);
 
     }
@@ -58,7 +64,7 @@ class ProductController extends Controller
         }
 
         $productList = Product::where('store_id', getStoreId())->where('is_active', 1)
-                    ->with('category', 'unit', 'stockWarehouse', 'stockWarehouse.warehouse')
+                    ->with('category', 'unit', 'stockWarehouse', 'stockWarehouse.warehouse', 'composition', 'composition.productSupplier', 'composition.productSupplier.unit')
                     ->orderBy('created_at', 'DESC')->get();
 
         return['data'=> $productList];
@@ -73,6 +79,7 @@ class ProductController extends Controller
         //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
         // }
 
+        // dd($request);
         DB::beginTransaction();
         try {
 
@@ -104,6 +111,15 @@ class ProductController extends Controller
             ]);
 
             if ($product){
+                for ($i=0; $i<count($request->product_supplier_id); $i++ ){
+                    ProductComposition::create([
+                        'product_id'                    => $product->product_id,
+                        'product_supplier_id'           => $request->product_supplier_id[$i],
+                        'amount_usage'                  => $request->amount_usage[$i],
+                        'order_item'                    => $i,
+                    ]);
+                }
+
                 $this->objStock->plusStock($product->product_id, $request->warehouse_id, $request->stock_warehouse, "Add Product");
                 DB::commit();
                 return response()->json(['status' => 'Success', 'message' => 'add product success.'], 200);
@@ -162,6 +178,20 @@ class ProductController extends Controller
             ]);
 
             if ($product){
+                $deletedRows = ProductComposition::where('product_id', $product->product_id)->get();
+                foreach ($deletedRows as $ls) {
+                    $ls->delete();
+                }
+
+                for ($i=0; $i<count($request->product_supplier_id); $i++ ){
+                    ProductComposition::create([
+                        'product_id'                    => $product->product_id,
+                        'product_supplier_id'           => $request->product_supplier_id[$i],
+                        'amount_usage'                  => $request->amount_usage[$i],
+                        'order_item'                    => $i,
+                    ]);
+                }
+
                 $this->objStock->plusStock($product->product_id, $request->warehouse_id, $request->stock_warehouse, "Edit Product");
                 DB::commit();
                 return response()->json(['status' => 'Success', 'message' => 'edit product success.'], 200);

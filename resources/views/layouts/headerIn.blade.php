@@ -171,11 +171,16 @@
                             <div class="pcoded-navigation-label">Menu</div>
                             <ul class="pcoded-item pcoded-left-item">
                                 @php
+                                    $user = Auth::user();
                                     $menu = getMenu();
                                     $menu_before = "";
                                 @endphp
 
                                 @foreach($menu as $ls)
+                                    @if ($ls->menu->is_superuser != $user->is_superuser)
+                                        @continue
+                                    @endif
+
                                     @if($ls->menu->menu_parents == null)
                                         @php
                                             $classActive = $ls->menu->menu_id === $MenuID ? 'active' : '';
@@ -210,6 +215,9 @@
                                             </a>
                                             <ul class="pcoded-submenu" style="display:{{$displayBlok}};">
                                                 @foreach($menu->where('menu.parent_menu', $ls->menu->menu_parents->menu_id) as $subls)
+                                                @if ($subls->menu->is_superuser != $user->is_superuser)
+                                                    @continue
+                                                @endif
                                                 @php
                                                     $classActive = $subls->menu->menu_id === $MenuID ? 'active' : '';
                                                 @endphp

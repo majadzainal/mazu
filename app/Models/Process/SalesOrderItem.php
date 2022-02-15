@@ -12,10 +12,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class SalesOrderItem extends Model
 {
     use HasFactory;
-    protected $primaryKey = 'soitem_id';
+    protected $primaryKey = 'so_item_id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $table = 'tp_so_item';
+    protected $table = 'tp_sales_order_item';
     protected $guarded = [
 
     ];

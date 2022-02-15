@@ -15,7 +15,8 @@ class CreateTlStockTable extends Migration
     {
         Schema::create('tl_stock', function (Blueprint $table) {
             $table->increments('log_stock_id');
-            $table->uuid('product_id');
+            $table->uuid('product_id')->nullable();
+            $table->uuid('product_supplier_id')->nullable();
             $table->unsignedInteger('warehouse_id');
             $table->float('qty');
             $table->string('type');
@@ -26,6 +27,7 @@ class CreateTlStockTable extends Migration
             $table->timestamps();
 
             $table->foreign('product_id')->references('product_id')->on('tm_product');
+            $table->foreign('product_supplier_id')->references('product_supplier_id')->on('tm_product_supplier');
             $table->foreign('warehouse_id')->references('warehouse_id')->on('tm_warehouse');
         });
     }

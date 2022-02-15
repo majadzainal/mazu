@@ -135,7 +135,6 @@ function printData(data_id, form){
 
 function afterPrint(form){
     updatePrint(form);
-    partSupplierChangeFilter();
 }
 
 function updatePrint(form){

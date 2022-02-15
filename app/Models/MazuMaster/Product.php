@@ -27,8 +27,14 @@ class Product extends Model
     {
         return $this->hasOne(Unit::class, 'unit_id', 'unit_id');
     }
+
     public function stockWarehouse()
     {
         return $this->hasOne(Stock::class, 'product_id', 'product_id');
+    }
+
+    public function composition()
+    {
+        return $this->hasMany(ProductComposition::class, 'product_id', 'product_id')->orderBy('order_item', 'ASC');
     }
 }

@@ -21,6 +21,7 @@ use App\Http\Controllers\Process\BudgetingController;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Setting\NumberingFormController;
 use App\Http\Controllers\Production\ProductionScheduleController;
+use App\Models\MazuMaster\PaidType;
 
 class SalesOrderController extends Controller
 {
@@ -46,10 +47,13 @@ class SalesOrderController extends Controller
                 'MenuID' => $this->MenuID,
             ]);
         }
+
+        $store_id = getStoreId();
         $today = Carbon::today()->toDateString();
-        $customerList = Customer::where('is_active', 1)->with('divisi')->get();
-        $partCustomerList = PartCustomer::where('is_active', 1)->with('divisi', 'unit', 'part_price', 'bom.bom_item.part_customer.part_price', 'bom.bom_item.part_supplier.part_price', 'bop.bop_item')->get();
+        $customerList = Customer::where('is_active', 1)->where('store_id', $store_id)->with('divisi')->get();
+        $partCustomerList = PartCustomer::where('is_active', 1)->where('store_id', $store_id)->with('divisi', 'unit', 'part_price', 'bom.bom_item.part_customer.part_price', 'bom.bom_item.part_supplier.part_price', 'bop.bop_item')->get();
         $processPriceList = ProcessPrice::where('is_active', 1)->where('effective_date', '<=', $today)->get();
+        $paidTypeList = PaidType::where('is_active', 1)->with('divisi')->get();
 
 
         return view('process.salesOrderTable', [

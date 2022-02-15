@@ -22,6 +22,7 @@ class CreateTmMenuTable extends Migration
             $table->tinyInteger('parent');
             $table->string('parent_menu');
             $table->smallInteger('order');
+            $table->tinyInteger('is_superuser');
             $table->tinyInteger('is_active');
             $table->timestamps();
         });
