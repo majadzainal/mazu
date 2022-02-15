@@ -44,8 +44,7 @@ class RoleSuperuserController extends Controller
 
         $store_id = getStoreId();
 
-        $roleList = Role::where('store_id', $store_id)
-                ->where('is_superuser', 0)
+        $roleList = Role::where('is_superuser', 0)
                 ->where('is_active', 1)->with('menu_role')->get();
         return['data'=> $roleList];
     }
