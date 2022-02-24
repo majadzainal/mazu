@@ -18,6 +18,7 @@ use App\Http\Controllers\MazuMaster\CustomerController;
 use App\Http\Controllers\MazuMaster\PaidTypeController;
 use App\Http\Controllers\MazuMaster\SupplierController;
 use App\Http\Controllers\Master\UserSuperuserController;
+use App\Http\Controllers\MazuMaster\BroadcastEmailController;
 use App\Http\Controllers\MazuMaster\WarehouseController;
 use App\Http\Controllers\Setting\NumberingFormController;
 use App\Http\Controllers\Setting\RoleSuperuserController;
@@ -387,6 +388,15 @@ Route::group(['middleware' => 'auth'], function () {
     // Route::post('/process/purchase-order-supplier/add', [PurchaseOrderSupplierController::class, 'addPOSupplier']);
     // Route::post('/process/purchase-order-supplier/update', [PurchaseOrderSupplierController::class, 'updatePOSupplier']);
     // Route::get('/process/purchase-order-supplier/delete/{id}', [PurchaseOrderSupplierController::class, 'deletePOSupplier']);
+
+    //=============================SUPERUSER USER 997==========================
+    Route::get('/master/broadcast-email/table', [BroadcastEmailController::class, 'emailTable']);
+    Route::get('/master/broadcast-email/load', [BroadcastEmailController::class, 'loadBroadcast']);
+    Route::get('/master/broadcast-email/load-customer', [BroadcastEmailController::class, 'loadCustomer']);
+    Route::post('/master/broadcast-email/add', [BroadcastEmailController::class, 'addBroadcast']);
+    Route::post('/master/broadcast-email/update', [BroadcastEmailController::class, 'updateBroadcast']);
+    Route::get('/master/broadcast-email/{id}', [BroadcastEmailController::class, 'deleteBroadcast']);
+    Route::post('/master/broadcast-email/do-broadcast', [BroadcastEmailController::class, 'doBroadcast']);
 
     //=============================SUPERUSER USER 997==========================
     Route::get('/users-superuser/table', [UserSuperuserController::class, 'listUser']);

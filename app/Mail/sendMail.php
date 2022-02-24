@@ -29,7 +29,7 @@ class sendMail extends Mailable
      */
     public function build()
     {
-        return $this->from('sabierp2021@gmail.com', $this->emailVal->subject)
+        return $this->from('info@lhh.co.id', $this->emailVal->subject)
                     ->view('mails.poEmail')
                     ->attach(public_path('assets/tempFile/').$this->emailVal->attach, [
                       'as' => $this->emailVal->attach,

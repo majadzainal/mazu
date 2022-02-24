@@ -119,6 +119,12 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Email</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="email" id="email" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label class="col-sm-2 col-form-label">Date Of Birth</label>
                         <div class="col-sm-4">
                             <input type="date" name="date_of_birth" id="date_of_birth" class="form-control" required>
@@ -196,6 +202,7 @@
             $("#date_of_birth").val(data.date_of_birth);
             $("#description").val(data.description);
             $("#address").val(data.address);
+            $("#email").val(data.email);
             loadSelect2()
 
         } else {

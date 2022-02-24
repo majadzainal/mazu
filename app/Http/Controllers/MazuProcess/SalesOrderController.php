@@ -465,6 +465,8 @@ class SalesOrderController extends Controller
 
         $SO = SalesOrder::with('customer', 'items', 'items.product', 'items.product.unit')
                             ->where('so_id', $so_id)->first();
+
+        // dd($SO);
         if($SO){
             $data = ['data'  => $SO];
             $pdf = PDF::loadView('mazuprocess.print.salesOrder', $data);
