@@ -1,19 +1,57 @@
 <?php
 
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Setting\Menu_Role;
+use App\Models\MazuMaster\Company;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Process\OpnameSchedule;
-use App\Models\User;
 
 function getMenu(){
     $getmenu = Menu_Role::where('role_id', Auth::user()->role)
                 ->where('access', 1)
                 ->with('menu', 'menu.menu_parents')
-                ->get();
+                ->get()
+                ->sortBy('menu.order',SORT_REGULAR, false);
 
     return $getmenu;
+}
+
+function getLogo(){
+
+    $store_id =  $store_id = User::where('user_id', Auth::user()->user_id)
+                ->pluck('store_id')->first();
+    $logo = Company::where('store_id', $store_id)->pluck('logo')->first();
+
+    if($logo){
+        return $logo;
+    }else{
+        $logo = "logo.png";
+        return $logo;
+    }
+}
+function getBanner(){
+
+    $store_id =  $store_id = User::where('user_id', Auth::user()->user_id)
+                ->pluck('store_id')->first();
+    $banner = Company::where('store_id', $store_id)->pluck('banner_invoice')->first();
+
+    if($banner){
+        return $banner;
+    }else{
+        $banner = "banner.png";
+        return $banner;
+    }
+}
+
+function getCompany(){
+
+    $store_id =  $store_id = User::where('user_id', Auth::user()->user_id)
+                ->pluck('store_id')->first();
+    $company = Company::where('store_id', $store_id)->get()->first();
+
+    return $company;
 }
 
 function getStoreId(){
@@ -91,16 +129,12 @@ function getOpnameType(){
     $status = [
                 [
                     "opname_type_id" => 1,
-                    "opname_type" => "Finished Goods"
+                    "opname_type" => "Product"
                 ],
                 [
                     "opname_type_id" => 2,
-                    "opname_type" => "Raw Material"
+                    "opname_type" => "Bahan Material"
                 ],
-                [
-                    "opname_type_id" => 3,
-                    "opname_type" => "WIP"
-                ]
             ];
 
 
@@ -219,6 +253,10 @@ function getSOType(){
                 [
                     "type" => 7,
                     "type_name" => "CUSTOMER REGULER"
+                ],
+                [
+                    "type" => 8,
+                    "type_name" => "PURCHASE ORDER CUSTOMER"
                 ],
             ];
 

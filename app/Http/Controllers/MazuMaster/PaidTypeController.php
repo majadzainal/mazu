@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PaidTypeController extends Controller
 {
-    public $MenuID = '00301';
+    public $MenuID = '00209';
 
     public function listPaidType(){
         if(!isAccess('read', $this->MenuID)){

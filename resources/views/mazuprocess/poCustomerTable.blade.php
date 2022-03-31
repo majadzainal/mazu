@@ -71,8 +71,9 @@
                                                     <th>Customer</th>
                                                     <th>PO. Date</th>
                                                     <th>Due Date</th>
-                                                    <th>Total Price</th>
-                                                    <th>Total Price After Discount</th>
+                                                    <th>Total Price (Rp. )</th>
+                                                    <th>Total Price After Discount (Rp. )</th>
+                                                    <th>DP (Rp. )</th>
                                                     <th>Description</th>
                                                 </tr>
                                             </thead>
@@ -234,6 +235,26 @@
                                             </div>
                                         </div>
                                         <div class="form-group row">
+                                            <div class="col-sm-8 col-form-label text-right">
+                                                <div class="checkbox-color checkbox-primary">
+                                                    <input name="is_shipping_cost"  id="is_shipping_cost" type="hidden">
+                                                    <input name="is_shipping_costCHK" id="is_shipping_costCHK" oninput="oninputShipping()" type="checkbox" >
+                                                    <label for="is_shipping_costCHK">
+                                                        <strong>Shipping Cost</strong>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend" id="basic-addon2">
+                                                        <label class="input-group-text">Rp. </label>
+                                                    </span>
+                                                    <input type="text"  readonly name="shipping_cost-form" id="shipping_cost-form" class="form-control currency text-right" placeholder="0">
+                                                    <input type="hidden" readonly name="shipping_cost" id="shipping_cost" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
                                             <label class="col-sm-8 col-form-label text-right"><strong>Grand Total </strong> <span class="text-danger">*</span></label>
                                             <div class="col-sm-4">
                                                 <div class="input-group">
@@ -245,14 +266,59 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-4 col-form-label text-right"><strong>Paid Type </strong> <span class="text-danger">*</span></label>
+                                            <div class="col-sm-4">
+                                                <select name="paid_type_id" id="paid_type_id" onchange="paidTypeChange()" class="js-example-placeholder col-sm-12">
+                                                    <option value="">--Select--</option>
+                                                    @foreach($paidTypeList as $ls)
+                                                        <option value="{{ $ls->paid_type_id }}">{{ $ls->type_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend" id="basic-addon2">
+                                                        <label class="input-group-text">Rp. </label>
+                                                    </span>
+                                                    <input type="text" value="0" name="dec_paid-form" id="dec_paid-form" class="form-control currency text-right" placeholder="Discount (%)">
+                                                    <input type="hidden" value="0" name="dec_paid" id="dec_paid" class="form-control">
+                                                    <input type="hidden" value="0" name="dec_paid_fin" id="dec_paid_fin" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-8 col-form-label text-right"><strong>The Return </strong> <span class="text-danger">*</span></label>
+                                            <div class="col-sm-4">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend" id="basic-addon2">
+                                                        <label class="input-group-text">Rp. </label>
+                                                    </span>
+                                                    <input type="text" value="0" readonly name="money_changes-form" id="money_changes-form" class="form-control currency text-right" placeholder="">
+                                                    <input type="hidden" value="0" readonly name="money_changes" id="money_changes" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-8 col-form-label text-right"><strong>Paid Remain </strong> <span class="text-danger">*</span></label>
+                                            <div class="col-sm-4">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend" id="basic-addon2">
+                                                        <label class="input-group-text">Rp. </label>
+                                                    </span>
+                                                    <input type="text" value="0" readonly name="dec_remain-form" id="dec_remain-form" class="form-control currency text-right" placeholder="">
+                                                    <input type="hidden" value="0" readonly name="dec_remain" id="dec_remain" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="form-group row modal-footer">
                                             <div class="col-sm-12" style="text-align:right;">
                                                 <button type="button" class="btn btn-default waves-effect closeForm">Close</button>
                                                 <input type="hidden" name="is_process" id="is_process">
                                                 <input type="hidden" name="is_draft" id="is_draft">
-                                                <button type="button" id="btnCancelPO" class="btn btn-danger waves-effect waves-light" onClick="cancelInit('#btnCancelPO')">Batalkan Process</button>
-                                                <button type="button" class="btn btn-secondary waves-effect waves-light" onClick="saveInit('#poCustomerForm', 0)">Save as draft</button>
-                                                <button type="button" class="btn btn-primary waves-effect waves-light" onClick="saveInit('#poCustomerForm', 1)">Save</button>
+                                                {{-- <button type="button" id="btnCancelPO" class="btn btn-danger waves-effect waves-light" onClick="cancelInit('#btnCancelPO')">Batalkan Process</button> --}}
+                                                <button type="button" class="btn btn-secondary waves-effect waves-light" id="saveAsDraft" onClick="saveInit('#poCustomerForm', 0)">Save as draft</button>
+                                                <button type="button" class="btn btn-primary waves-effect waves-light" id="saveAsProcess" onClick="saveInit('#poCustomerForm', 1)">Save</button>
                                             </div>
                                         </div>
 
@@ -353,7 +419,7 @@
                 { "data": "po_number" },
                 {  "mRender": function (data, type, row, num) {
                         var customerStatus = "";
-                        customerStatus += row.customer.customer_name;
+                        customerStatus += row.customer.customer_name+" ";
                         customerStatus += row.is_process === 1 ? "<span class='btn-success btn-sm' > -procesed- </span>" : "";
                         customerStatus += row.is_draft === 1 ? "<span class='btn-secondary btn-sm' > -draft- </span>" : "";
                         customerStatus += row.is_void === 1 ? "<span class='btn-danger btn-sm' > -void- </span>" : "";
@@ -363,10 +429,20 @@
                 { "data": "po_date" },
                 { "data": "due_date" },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.total_price.toLocaleString();
+                        var total_price = row.total_price !== null ? row.total_price : 0;
+                        return "Rp. " + total_price.toLocaleString();
                     }
                 },
-                { "data": "total_price_after_discount" },
+                {  "mRender": function (data, type, row, num) {
+                        var total_price_after_discount = row.total_price_after_discount !== null ? row.total_price_after_discount : 0;
+                        return "Rp. " + total_price_after_discount.toLocaleString();
+                    }
+                },
+                {  "mRender": function (data, type, row, num) {
+                        var dec_paid = row.dec_paid !== null ? row.dec_paid : 0;
+                        return "Rp. " + dec_paid.toLocaleString();
+                    }
+                },
                 { "data": "description" },
             ]
         });
@@ -412,9 +488,9 @@
     }
 
     function addProductToPO(data, item){
-
+        // console.log(data.price);
         var qty_order = 0;
-        var price = 0;
+        var price = data.price;
         var percent_discount = 0;
         var total_price = 0;
         var total_discount = 0
@@ -422,14 +498,13 @@
         var description = "";
         if(item != undefined){
             qty_order = item.qty_order != undefined ? item.qty_order : qty_order;
-            price = item.price != undefined ? item.price : price;
+            price = item !== undefined ? item.price : data.price;
             percent_discount = item.percent_discount != undefined ? item.percent_discount : percent_discount;
             total_price = item.total_price != undefined ? item.total_price : total_price;
             total_discount = item.total_discount != undefined ? item.total_discount : total_discount;
             total_price_after_discount = item.total_price_after_discount != undefined ? item.total_price_after_discount : total_price_after_discount;
             description = item.description != undefined ? item.description : description;
         }
-
 
         var addProduct = '<tr>';
 
@@ -502,7 +577,14 @@
         var ppnPrice = parseFloat(0);
         var grandTotal = parseFloat(0);
         var is_ppn = $("#is_ppnCHK").prop("checked");
-
+        var is_shipping = $("#is_shipping_costCHK").prop("checked");
+        if(is_shipping){
+            $("#shipping_cost-form").prop('readonly', false);
+        }else{
+            $("#shipping_cost-form").val(0);
+            $("#shipping_cost").val(0);
+            $("#shipping_cost-form").prop('readonly', true);
+        }
 
         $('#bodyProduct tr').each(function() {
             if (!this.rowIndex) return; // skip first row
@@ -531,12 +613,17 @@
             ppnPrice = (parseFloat(totalPriceAfterDiscount) * (10 / 100 ));
         }
 
-        grandTotal = (totalPriceAfterDiscount + ppnPrice);
+        var shippingCostForm = $("#shipping_cost-form").val();
+        var shippingCost = parseFloat(shippingCostForm.split(",").join(""));
 
         $("#ppn-form").val(ppnPrice);
         $("#ppn-form").trigger("focusout");
         $("#ppn").val(ppnPrice);
 
+        $("#shipping_cost-form").trigger("focusout");
+        $("#shipping_cost").val(shippingCost);
+
+        grandTotal = (totalPriceAfterDiscount + ppnPrice) + shippingCost;
         $("#grand_total-form").val(grandTotal);
         $("#grand_total-form").trigger("focusout");
         $("#grand_total").val(grandTotal);
@@ -548,6 +635,60 @@
 
     function oninputPPN(){
         calculateTotal();
+    }
+
+    function oninputShipping(){
+        calculateTotal();
+    }
+
+    $("#dec_paid-form").bind('keyup', function (e) {
+        calculatePaid();
+    });
+
+    $("#shipping_cost-form").bind('keyup', function (e) {
+        calculateTotal();
+    });
+
+    function calculatePaid(){
+        var grandTotal = $("#grand_total").val();
+        var decPaidForm = $("#dec_paid-form").val();
+        var decPaidFormFin = parseFloat(decPaidForm.split(",").join(""));
+        $("#dec_paid").val(decPaidFormFin);
+
+        var decPaid = $("#dec_paid").val();
+        var moneyChanges = parseFloat(decPaid) - parseFloat(grandTotal);
+        var decRemain = parseFloat(grandTotal) - parseFloat(decPaid);
+        var decRemainFin = decRemain > parseFloat(0) ? decRemain : 0;
+        var moneyChangesFin = moneyChanges > parseFloat(0) ? moneyChanges : 0;
+        var decPaidFin = moneyChangesFin <= parseFloat(0) ? parseFloat(decPaid) : (parseFloat(decPaid) - parseFloat(moneyChangesFin));
+
+
+        $("#dec_paid_fin").val(decPaidFin);
+        $("#dec_remain").val(decRemainFin);
+        $("#money_changes").val(moneyChangesFin);
+        $("#money_changes-form").val(moneyChangesFin);
+        $("#dec_remain-form").val(decRemainFin);
+        $("#money_changes-form").trigger("focusout");
+        $("#dec_remain-form").trigger("focusout");
+    }
+
+    function paidTypeChange(){
+        var paidTypeList = {!! json_encode($paidTypeList) !!};
+        var paidTypeId = $("#paid_type_id").val();
+        if(paidTypeId !== ""){
+            var paidType = paidTypeList.find(x => x.paid_type_id == paidTypeId);
+
+            if(parseInt(paidType.is_credit) == 1){
+                $("#dec_paid").val(0);
+                $("#dec_paid_fin").val(0);
+                $("#dec_paid-form").val(0);
+                $("#dec_paid-form").attr('readonly', true);
+            }else{
+                $("#dec_paid").attr('readonly', false);
+                $("#dec_paid-form").attr('readonly', false);
+            }
+            calculatePaid();
+        }
     }
 
     async function return_value(e, data){
@@ -575,11 +716,22 @@
             $("#total_price_after_discount").val(data.total_price_after_discount);
 
             $("#is_ppnCHK").prop('checked', parseInt(data.ppn) > 0 ? true : false);
+            $("#is_shipping_costCHK").prop('checked', parseInt(data.ppn) > 0 ? true : false);
 
+            if(data.paid_type_id !== null){
+                $("#paid_type_id").val(data.paid_type_id);
+                $("#dec_paid-form").attr('readonly', false);
+            }
 
             $("#ppn-form").val(data.ppn);
-
             $("#ppn").val(data.ppn);
+
+            $("#shipping_cost-form").val(data.shipping_cost);
+            $("#shipping_cost").val(data.shipping_cost);
+
+            $("#dec_paid-form").val(data.dec_paid);
+            $("#dec_paid").val(data.dec_paid);
+            $("#dec_paid_fin").val(data.dec_paid);
 
             $("#grand_total-form").val(data.grand_total);
             $("#grand_total").val(data.grand_total);
@@ -593,13 +745,31 @@
             $("#discount-form").trigger("focusout");
             $("#total_price_after_discount-form").trigger("focusout");
             $("#ppn-form").trigger("focusout");
+            $("#dec_paid-form").trigger("focusout");
+            $("#customer_id").trigger("change");
+            $("#paid_type_id").trigger("change");
             $("#grand_total-form").trigger("focusout");
 
+            if(data.is_process){
+                $("#saveAsDraft").hide();
+                $("#saveAsProcess").hide();
+            }else{
+                $("#saveAsDraft").show();
+                $("#saveAsProcess").show();
+            }
+
+            calculateTotal();
+            calculatePaid();
         } else {
             $("#poCustomerForm").trigger("reset");
             $("#customer_id").trigger('change');
+            $("#paid_type_id").trigger("change");
             $("#btnCancelPO").hide();
             $("#poCustomerForm").attr("action", "/process/purchase-order-customer/add");
+            $("#dec_paid-form").attr('readonly', true);
+
+            $("#saveAsDraft").show();
+            $("#saveAsProcess").show();
 
         }
         $("#input").show();

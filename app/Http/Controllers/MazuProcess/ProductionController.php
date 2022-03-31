@@ -16,15 +16,18 @@ use App\Models\MazuProcess\ProductionItem;
 use App\Models\MazuProcess\PurchaseOrderCustomer;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Setting\NumberingFormController;
+use App\Http\Controllers\MazuProcess\GeneralLedgerController;
 
 class ProductionController extends Controller
 {
     public $MenuID = '041';
     public $objNumberingForm;
     public $generateType = 'F_PRODUCTION';
+    public $objGl;
 
     public function __construct()
     {
+        $this->objGl = new GeneralLedgerController();
         $this->objNumberingForm = new NumberingFormController();
     }
     public function listPOSupplier(){
@@ -37,13 +40,13 @@ class ProductionController extends Controller
         }
 
         $store_id = getStoreId();
-        $poCustomerList = PurchaseOrderCustomer::where('store_id', $store_id)->where('is_active', 1)->where('is_process', 1)->where('is_open', 1)->with('customer', 'items', 'items.product', 'items.product.unit')->get();
+        // $poCustomerList = PurchaseOrderCustomer::where('store_id', $store_id)->where('is_active', 1)->where('is_process', 1)->where('is_open', 1)->with('customer', 'items', 'items.product', 'items.product.unit')->get();
         $supplierList = Supplier::where('store_id', $store_id)->where('is_active', 1)->get();
         $productSupplierList = ProductSupplier::where('store_id', $store_id)->where('is_active', 1)->with('unit', 'stockWarehouse', 'stockWarehouse.warehouse')->get();
 
         return view('mazuprocess.productionTable', [
             'MenuID'            => $this->MenuID,
-            'poCustomerList'      => $poCustomerList,
+            // 'poCustomerList'      => $poCustomerList,
             'supplierList'      => $supplierList,
             'productSupplierList'       => $productSupplierList,
         ]);
@@ -101,7 +104,7 @@ class ProductionController extends Controller
             $pos = Production::create([
                 'production_id'                 => $production_id,
                 'po_number'                     => $po_number,
-                'po_customer_id'                => $request->po_customer_id,
+                // 'po_customer_id'                => $request->po_customer_id,
                 'po_date'                       => $request->po_date,
                 'due_date'                      => $request->due_date,
                 'supplier_id'                   => $request->supplier_id,
@@ -138,6 +141,10 @@ class ProductionController extends Controller
                         $arrsuccess++;
                     }
                 }
+
+                if($pos->is_process){
+                    $this->objGl->debitProduction($pos);
+                }
             }
 
             if ($pos && $arrsuccess == count($request->product_supplier_id)){
@@ -173,7 +180,7 @@ class ProductionController extends Controller
             $prod->update([
                 'po_number'                     => $po_number,
                 'po_date'                       => $request->po_date,
-                'po_customer_id'                => $request->po_customer_id,
+                // 'po_customer_id'                => $request->po_customer_id,
                 'due_date'                      => $request->due_date,
                 'supplier_id'                   => $request->supplier_id,
                 'description'                   => $request->description,
@@ -212,6 +219,10 @@ class ProductionController extends Controller
                         $arrsuccess++;
                     }
                 }
+
+                if($prod->is_process){
+                    $this->objGl->debitProduction($prod);
+                }
             }
 
             if ($prod && $arrsuccess == count($request->product_supplier_id)){
@@ -245,6 +256,7 @@ class ProductionController extends Controller
                 $prod->is_void = 0;
                 $prod->is_open = 0;
                 $prod->update();
+                $this->objGl->debitProductionDelete($prod);
                 DB::commit();
                 return response()->json(['status' => 'Success', 'message' => 'Delete production success.'], 200);
             } else {

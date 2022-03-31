@@ -58,5 +58,10 @@ class SalesOrder extends Model
         return $this->hasOne(Owner::class, 'owner_id', 'owner_id');
     }
 
+    public function poCust()
+    {
+        return $this->hasOne(PurchaseOrderCustomer::class, 'po_customer_id', 'po_customer_id');
+    }
+
 
 }

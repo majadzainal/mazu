@@ -127,7 +127,7 @@
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label">Date Of Birth</label>
                         <div class="col-sm-4">
-                            <input type="date" name="date_of_birth" id="date_of_birth" class="form-control" required>
+                            <input type="date" name="date_of_birth" id="date_of_birth" class="form-control">
                         </div>
                     </div>
                 </div>

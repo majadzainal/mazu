@@ -24,15 +24,19 @@ class CreateTpSalesOrderTable extends Migration
             $table->uuid('outlet_id')->nullable();
             $table->uuid('exc_reseller_id')->nullable();
             $table->uuid('owner_id')->nullable();
+            $table->uuid('po_customer_id')->nullable();
             $table->string('description')->nullable();
             $table->decimal('total_hpp', 11, 2)->nullable();
             $table->decimal('total_price', 11, 2)->nullable();
             $table->decimal('percent_discount', 11, 2)->nullable();
             $table->decimal('total_price_after_discount', 11, 2)->nullable();
             $table->decimal('ppn', 11, 2)->nullable();
+            $table->decimal('shipping_cost', 11, 2)->nullable();
             $table->decimal('grand_total', 11, 2)->nullable();
+            $table->decimal('grand_total_wshipping', 11, 2)->nullable();
             $table->decimal('dec_paid', 11, 2)->nullable();
             $table->decimal('dec_remain', 11, 2)->nullable();
+            $table->tinyInteger('is_po_customer');
             $table->tinyInteger('is_process');
             $table->tinyInteger('is_draft');
             $table->tinyInteger('is_void');
@@ -47,6 +51,7 @@ class CreateTpSalesOrderTable extends Migration
             $table->foreign('outlet_id')->references('outlet_id')->on('tm_outlet');
             $table->foreign('exc_reseller_id')->references('exc_reseller_id')->on('tm_exc_reseller');
             $table->foreign('owner_id')->references('owner_id')->on('tm_owner');
+            $table->foreign('po_customer_id')->references('po_customer_id')->on('tp_po_customer');
         });
     }
 

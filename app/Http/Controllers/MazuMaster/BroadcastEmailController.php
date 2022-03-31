@@ -40,7 +40,7 @@ class BroadcastEmailController extends Controller implements ShouldQueue
             return['data'=> ''];
         }
 
-        $bcList = BroadcastEmail::where('store_id', getStoreId())->orderBy('created_at', 'DESC')->get();
+        $bcList = BroadcastEmail::where('store_id', getStoreId())->where('is_birthday', 0)->orderBy('created_at', 'DESC')->get();
         return['data'=> $bcList];
     }
 
@@ -113,6 +113,7 @@ class BroadcastEmailController extends Controller implements ShouldQueue
                 'banner'                => $file_name,
                 'store_id'              => getStoreId(),
                 'is_active'             => 1,
+                'is_birthday'           => 0,
             ]);
 
             if ($bc){

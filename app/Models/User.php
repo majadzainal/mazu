@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Setting\Role;
 use App\Models\Master\Employee;
+use App\Models\MazuMaster\Store;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -61,5 +62,10 @@ class User extends Authenticatable
     public function roles()
     {
         return $this->hasOne(Role::class, 'role_id', 'role');
+    }
+
+    public function store()
+    {
+        return $this->hasOne(Store::class, 'store_id', 'store_id');
     }
 }

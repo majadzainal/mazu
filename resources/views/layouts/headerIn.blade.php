@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>MAZU - Label | Jakarta</title>
+    <title>{{ auth()->user()->store->store_name }} System</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -88,7 +88,7 @@
                             </div>
                         </div>
                         <a href="#">
-                            MAZU - Label System
+                            {{ auth()->user()->store->store_name }} System
                         </a>
                         <a class="mobile-options waves-effect waves-light">
                             <i class="ti-more"></i>
@@ -109,7 +109,7 @@
                         <ul class="nav-right">
                             <li class="user-profile header-notification">
                                 <a href="#!" class="waves-effect waves-light">
-                                    <img src="{{ asset ('/assets/files/assets/images/mazu-label.jpg') }}" class="img-radius" alt="User-Profile-Image">
+                                    <img src="/uploads/{{ getLogo()}}" class="img-radius" alt="User-Profile-Image">
                                     <span>{{ auth()->user()->employee->employee_name }}</span>
                                     <i class="ti-angle-down"></i>
                                 </a>
@@ -145,7 +145,7 @@
                         <div class="pcoded-inner-navbar main-menu">
                             <div class="">
                                 <div class="main-menu-header">
-                                    <img class="img-80 img-radius" src="{{ asset ('/assets/files/assets/images/mazu-label.jpg') }}" alt="User-Profile-Image">
+                                    <img class="img-80 img-radius" src="/uploads/{{ getLogo()}}" alt="User-Profile-Image">
                                     <div class="user-details">
                                         <span id="more-details">{{ auth()->user()->employee->employee_name }}<i class="fa fa-caret-down"></i></span>
                                     </div>

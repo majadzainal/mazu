@@ -11,20 +11,23 @@ use App\Models\MazuMaster\Supplier;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
+use App\Models\MazuProcess\PurchaseOrderCustomer;
 use App\Models\MazuProcess\PurchaseOrderSupplier;
 use App\Models\MazuProcess\PurchaseOrderSupplierItem;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Setting\NumberingFormController;
-use App\Models\MazuProcess\PurchaseOrderCustomer;
+use App\Http\Controllers\MazuProcess\GeneralLedgerController;
 
 class PurchaseOrderSupplierController extends Controller
 {
     public $MenuID = '021';
     public $objNumberingForm;
     public $generateType = 'F_PURCHASE_ORDER_SUPPLIER';
+    public $objGl;
 
     public function __construct()
     {
+        $this->objGl = new GeneralLedgerController();
         $this->objNumberingForm = new NumberingFormController();
     }
     public function listPOSupplier(){
@@ -136,6 +139,9 @@ class PurchaseOrderSupplierController extends Controller
                         $arrsuccess++;
                     }
                 }
+                if($pos->is_process){
+                    $this->objGl->debitPoSupplier($pos);
+                }
             }
 
             if ($pos && $arrsuccess == count($request->product_id)){
@@ -210,6 +216,10 @@ class PurchaseOrderSupplierController extends Controller
                         $arrsuccess++;
                     }
                 }
+
+                if($pos->is_process){
+                    $this->objGl->debitPoSupplier($pos);
+                }
             }
 
             if ($pos && $arrsuccess == count($request->product_id)){
@@ -242,6 +252,7 @@ class PurchaseOrderSupplierController extends Controller
                 $pos->is_void = 0;
                 $pos->is_open = 0;
                 $pos->update();
+                $this->objGl->debitPoSupplierDelete($pos);
                 DB::commit();
                 return response()->json(['status' => 'Success', 'message' => 'Delete purchase order supplier success.'], 200);
             } else {

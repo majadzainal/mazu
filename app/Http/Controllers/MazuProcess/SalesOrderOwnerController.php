@@ -10,6 +10,7 @@ use App\Models\MazuMaster\Stock;
 use App\Models\MazuMaster\Product;
 use Illuminate\Support\Facades\DB;
 use App\Models\MazuMaster\PaidType;
+use Illuminate\Support\Facades\App;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\MazuProcess\SalesOrder;
@@ -21,6 +22,7 @@ use App\Models\MazuMaster\ProductComposition;
 use App\Http\Controllers\MazuMaster\StockController;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Setting\NumberingFormController;
+use App\Http\Controllers\MazuProcess\GeneralLedgerController;
 
 class SalesOrderOwnerController extends Controller
 {
@@ -29,10 +31,12 @@ class SalesOrderOwnerController extends Controller
     public $objNumberingForm;
     public $generateType = 'F_SALES_ORDER';
     public $so_type = 6;
+    public $objGl;
 
     public function __construct()
     {
         $this->objStock = new StockController();
+        $this->objGl = new GeneralLedgerController();
         $this->objNumberingForm = new NumberingFormController();
     }
 
@@ -144,9 +148,12 @@ class SalesOrderOwnerController extends Controller
                 'percent_discount'              => $request->percent_discount,
                 'total_price_after_discount'    => $request->total_price_after_discount,
                 'ppn'                           => $request->ppn,
-                'grand_total'                   => $request->grand_total,
+                'shipping_cost'                 => $request->shipping_cost,
+                'grand_total'                   => (floatval($request->grand_total) - floatval($request->shipping_cost)),
+                'grand_total_wshipping'         => $request->grand_total,
                 'dec_paid'                      => $decPaid,
                 'dec_remain'                    => $decRemain,
+                'is_po_customer'                => 0,
                 'is_process'                    => $request->is_process,
                 'is_draft'                      => $request->is_draft,
                 'is_void'                       => 0,
@@ -202,12 +209,19 @@ class SalesOrderOwnerController extends Controller
                     }
                 }
                 if($request->is_process){
-                    SalesOrderPaid::create([
+                    $sales_order_paid_id = Uuid::uuid4()->toString();
+                    $soPaid = SalesOrderPaid::create([
+                        'sales_order_paid_id'           => $sales_order_paid_id,
                         'so_id'                         => $so->so_id,
                         'paid_type_id'                  => $request->paid_type_id,
                         'dec_paid'                      => $decPaid,
                         'dec_remain'                    => $decRemain,
+                        'is_po_customer'                => 0,
                     ]);
+
+                    if($soPaid){
+                        $this->objGl->creditSalesOrder($soPaid);
+                    }
                 }
             }
 
@@ -268,7 +282,9 @@ class SalesOrderOwnerController extends Controller
                 'percent_discount'              => $request->percent_discount,
                 'total_price_after_discount'    => $request->total_price_after_discount,
                 'ppn'                           => $request->ppn,
-                'grand_total'                   => $request->grand_total,
+                'shipping_cost'                 => $request->shipping_cost,
+                'grand_total'                   => (floatval($request->grand_total) - floatval($request->shipping_cost)),
+                'grand_total_wshipping'         => $request->grand_total,
                 'dec_paid'                      => $decPaid,
                 'dec_remain'                    => $decRemain,
                 'is_process'                    => $request->is_process,
@@ -328,12 +344,20 @@ class SalesOrderOwnerController extends Controller
                     }
                 }
                 if($request->is_process){
-                    SalesOrderPaid::create([
+                    $sales_order_paid_id = Uuid::uuid4()->toString();
+                    $soPaid = SalesOrderPaid::create([
+                        'sales_order_paid_id'           => $sales_order_paid_id,
                         'so_id'                         => $so->so_id,
                         'paid_type_id'                  => $request->paid_type_id,
                         'dec_paid'                      => $decPaid,
                         'dec_remain'                    => $decRemain,
+                        'is_po_customer'                => 0,
                     ]);
+
+                    if($soPaid){
+                        $this->objGl->creditSalesOrder($soPaid);
+                    }
+
                 }
             }
 
@@ -361,7 +385,7 @@ class SalesOrderOwnerController extends Controller
         try {
 
             $so = SalesOrder::where('so_id', $so_id)
-                ->with('items', 'items.product', 'items.product.stockWarehouse', 'items.product.composition', 'items.product.composition.productSupplier', 'items.product.composition.productSupplier.stockWarehouse')->get()->first();
+                ->with('paid', 'items', 'items.product', 'items.product.stockWarehouse', 'items.product.composition', 'items.product.composition.productSupplier', 'items.product.composition.productSupplier.stockWarehouse')->get()->first();
             if ($so){
                 if($so->is_process){
                     foreach ($so->items as $ls) {
@@ -379,6 +403,10 @@ class SalesOrderOwnerController extends Controller
                 $so->is_draft = 0;
                 $so->is_void = 0;
                 $so->update();
+
+                foreach($so->paid as $paid){
+                    $this->objGl->creditSalesOrderDelete($paid);
+                }
 
                 DB::commit();
                 return response()->json(['status' => 'Success', 'message' => 'Delete sales order owner success.'], 200);
@@ -427,12 +455,20 @@ class SalesOrderOwnerController extends Controller
                     'updated_user'                  => Auth::User()->employee->employee_name,
                 ]);
 
+                $sales_order_paid_id = Uuid::uuid4()->toString();
                 $paid = SalesOrderPaid::create([
+                    'sales_order_paid_id'           => $sales_order_paid_id,
                     'so_id'                         => $so->so_id,
                     'paid_type_id'                  => $request->paid_type_id_payment,
                     'dec_paid'                      => $decPaid,
                     'dec_remain'                    => $decRemain,
+                    'is_po_customer'                => 0,
                 ]);
+
+                if($paid){
+                    $this->objGl->creditSalesOrder($paid);
+                }
+
 
                 if ($so && $paid){
                     DB::commit();
@@ -449,5 +485,26 @@ class SalesOrderOwnerController extends Controller
             DB::rollback();
             return response()->json(['status' => 'Error', 'message' => $e], 202);
         }
+    }
+    public function printSalesOrder($so_id){
+
+        if(!isAccess('read', $this->MenuID)){
+            return "You do not have access for this action";
+        }
+
+        $SO = SalesOrder::with('owner', 'items', 'items.product', 'items.product.unit')
+                            ->where('so_id', $so_id)->first();
+
+        // dd($SO);
+        if($SO){
+            $data = ['data'  => $SO];
+            $pdf = App::make('dompdf.wrapper');
+            $pdf->loadView('mazuprocess.print.salesOrderOwner', $data);
+            $pdf->setPaper('A4', 'potrait');
+            return $pdf->stream('INVOICE_'.$SO->so_number.'.pdf');
+        } else {
+            return "Data not found";
+        }
+
     }
 }

@@ -104,7 +104,7 @@
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label">Date Of Birth</label>
                         <div class="col-sm-4">
-                            <input type="date" name="date_of_birth" id="date_of_birth" class="form-control" required>
+                            <input type="date" name="date_of_birth" id="date_of_birth" class="form-control">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -114,9 +114,9 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-sm-2 col-form-label">Email <span class="text-danger"> *</span></label>
+                        <label class="col-sm-2 col-form-label">Email </label>
                         <div class="col-sm-6">
-                            <input type="text" name="email_input" id="email_input" class="form-control" required>
+                            <input type="text" name="email_input" id="email_input" class="form-control">
                         </div>
                     </div>
                     <div class="form-group row">

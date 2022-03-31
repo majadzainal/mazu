@@ -118,7 +118,7 @@
                                         <div class="form-group row" id="select_po_customer_id">
                                             <label class="col-sm-2 col-form-label">PO. Customer <span class="text-danger">*</span></label>
                                             <div class="col-sm-10">
-                                                <select name="po_customer_id" id="po_customer_id" onchange="changePOCustomer()" class="js-example-placeholder col-sm-12" required>
+                                                <select name="po_customer_id" id="po_customer_id" onchange="changePOCustomer()" class="js-example-placeholder col-sm-12">
                                                     <option value="">--Select--</option>
                                                     @foreach($poCustomerList as $ls)
                                                         <option value="{{ $ls->po_customer_id }}">{{ $ls->po_number." - ".$ls->customer->customer_name}}</option>
@@ -340,9 +340,12 @@
         if(po_customer_id == undefined) return;
 
         var po = poCustArr.find(a => a.po_customer_id === po_customer_id);
-        po.items.forEach(item => {
-            addProductToPO(item.product, item);
-        });
+        if(po){
+            po.items.forEach(item => {
+                addProductToPO(item.product, item);
+            });
+        }
+
         calculateTotal();
     }
     function btnLoadDataClick(){
@@ -587,8 +590,10 @@
             $("#po_number").val(data.po_number);
             $("#po_date").val(data.po_date);
             $("#due_date").val(data.due_date);
-            $("#po_customer_id_edit").val(data.po_customer.po_number+" - "+data.po_customer.customer.customer_name);
-            $("#po_customer_id").val(data.po_customer_id);
+            if(data.po_customer){
+                $("#po_customer_id_edit").val(data.po_customer.po_number+" - "+data.po_customer.customer.customer_name);
+                $("#po_customer_id").val(data.po_customer_id);
+            }
             $("#supplier_id").val(data.supplier_id);
             $("#description").val(data.description);
 

@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models\Process;
+namespace App\Models\MazuProcess;
 
-use App\Models\Master\Warehouse;
-use App\Models\Part\PartCustomer;
-use App\Models\Part\PartSupplier;
-use App\Models\Process\StockOpname;
+use App\Models\MazuMaster\Product;
+use App\Models\MazuMaster\Warehouse;
+use App\Models\MazuProcess\StockOpname;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\MazuMaster\ProductSupplier;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class StockOpnameItem extends Model
@@ -24,13 +24,13 @@ class StockOpnameItem extends Model
     {
         return $this->hasOne(StockOpname::class, 'stock_opname_id', 'stock_opname_id');
     }
-    public function partSupplier()
+    public function product()
     {
-        return $this->hasOne(PartSupplier::class, 'part_supplier_id', 'part_supplier_id');
+        return $this->hasOne(Product::class, 'product_id', 'product_id');
     }
-    public function partCustomer()
+    public function productSupplier()
     {
-        return $this->hasOne(PartCustomer::class, 'part_customer_id', 'part_customer_id');
+        return $this->hasOne(ProductSupplier::class, 'product_supplier_id', 'product_supplier_id');
     }
     public function warehouse()
     {

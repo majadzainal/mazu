@@ -15,15 +15,18 @@ use App\Models\MazuProcess\PurchaseOrderMaterial;
 use App\Models\MazuProcess\PurchaseOrderMaterialItem;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Setting\NumberingFormController;
+use App\Http\Controllers\MazuProcess\GeneralLedgerController;
 
 class PurchaseOrderMaterialController extends Controller
 {
     public $MenuID = '022';
     public $objNumberingForm;
     public $generateType = 'F_PURCHASE_ORDER_MATERIAL_BAHAN';
+    public $objGl;
 
     public function __construct()
     {
+        $this->objGl = new GeneralLedgerController();
         $this->objNumberingForm = new NumberingFormController();
     }
     public function listPOMaterial(){
@@ -134,6 +137,10 @@ class PurchaseOrderMaterialController extends Controller
                         $arrsuccess++;
                     }
                 }
+
+                if($po->is_process){
+                    $this->objGl->debitPoMaterial($po);
+                }
             }
 
             if ($po && $arrsuccess == count($request->product_supplier_id)){
@@ -207,6 +214,9 @@ class PurchaseOrderMaterialController extends Controller
                         $arrsuccess++;
                     }
                 }
+                if($po->is_process){
+                    $this->objGl->debitPoMaterial($po);
+                }
             }
 
             if ($po && $arrsuccess == count($request->product_supplier_id)){
@@ -239,6 +249,7 @@ class PurchaseOrderMaterialController extends Controller
                 $po->is_void = 0;
                 $po->is_open = 0;
                 $po->update();
+                $this->objGl->debitPoMaterialDelete($po);
                 DB::commit();
                 return response()->json(['status' => 'Success', 'message' => 'Delete purchase order material & bahan success.'], 200);
             } else {

@@ -16,14 +16,15 @@ class CreateTmBroadcastEmailTable extends Migration
         Schema::create('tm_broadcast_email', function (Blueprint $table) {
             $table->increments('broadcast_email_id');
             $table->string('subject')->nullable();
-            $table->string('header_text')->nullable();
-            $table->string('opening_text')->nullable();
-            $table->string('content_text')->nullable();
+            $table->longText('header_text')->nullable();
+            $table->longText('opening_text')->nullable();
+            $table->longText('content_text')->nullable();
             $table->string('regards_text')->nullable();
             $table->string('regards_value_text')->nullable();
-            $table->string('footer_text')->nullable();
+            $table->longText('footer_text')->nullable();
             $table->string('banner')->nullable();
             $table->uuid('store_id');
+            $table->tinyInteger('is_birthday');
             $table->tinyInteger('is_active');
             $table->timestamps();
         });

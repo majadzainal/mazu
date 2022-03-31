@@ -12,19 +12,23 @@ use App\Http\Controllers\Setting\CounterController;
 use App\Http\Controllers\MazuMaster\OwnerController;
 use App\Http\Controllers\MazuMaster\StoreController;
 use App\Http\Controllers\MazuMaster\OutletController;
+use App\Http\Controllers\MazuMaster\CompanyController;
 use App\Http\Controllers\MazuMaster\EndorseController;
 use App\Http\Controllers\MazuMaster\ProductController;
 use App\Http\Controllers\MazuMaster\CustomerController;
 use App\Http\Controllers\MazuMaster\PaidTypeController;
 use App\Http\Controllers\MazuMaster\SupplierController;
+use App\Http\Controllers\MazuProcess\CashOutController;
+use App\Http\Controllers\Process\StockOpnameController;
 use App\Http\Controllers\Master\UserSuperuserController;
-use App\Http\Controllers\MazuMaster\BroadcastEmailController;
 use App\Http\Controllers\MazuMaster\WarehouseController;
 use App\Http\Controllers\Setting\NumberingFormController;
 use App\Http\Controllers\Setting\RoleSuperuserController;
 use App\Http\Controllers\MazuProcess\ProductionController;
 use App\Http\Controllers\MazuProcess\SalesOrderController;
 use App\Http\Controllers\MazuMaster\LabelProductController;
+use App\Http\Controllers\MazuProcess\SalesOrderPoController;
+use App\Http\Controllers\MazuMaster\BroadcastEmailController;
 use App\Http\Controllers\MazuMaster\InventoryOutletController;
 use App\Http\Controllers\MazuMaster\ProductCategoryController;
 use App\Http\Controllers\MazuMaster\ProductSupplierController;
@@ -36,6 +40,8 @@ use App\Http\Controllers\MazuProcess\ReceivingProductController;
 use App\Http\Controllers\MazuProcess\SalesOrderMedsosController;
 use App\Http\Controllers\MazuProcess\SalesOrderOutletController;
 use App\Http\Controllers\MazuProcess\SalesOrderEndorseController;
+use App\Http\Controllers\MazuMaster\StockOpnameScheduleController;
+use App\Http\Controllers\MazuProcess\StockOpnameProductController;
 use App\Http\Controllers\MazuProcess\DeliveryOrderOutletController;
 use App\Http\Controllers\MazuProcess\PurchaseOrderCustomerController;
 use App\Http\Controllers\MazuProcess\PurchaseOrderMaterialController;
@@ -46,6 +52,13 @@ use App\Http\Controllers\MazuMaster\InventoryProductSupplierController;
 use App\Http\Controllers\MazuProcess\DeliveryOrderExcResellerController;
 use App\Http\Controllers\MazuProcess\ReceivingProductSupplierController;
 use App\Http\Controllers\MazuMaster\InventoryExclusiveResellerController;
+use App\Http\Controllers\MazuProcess\ReportGeneralLedgerController;
+use App\Http\Controllers\MazuProcess\ReportSalesOrderController;
+use App\Http\Controllers\MazuProcess\ReportSalesOrderEndorseController;
+use App\Http\Controllers\MazuProcess\ReportSalesOrderExcResellerController;
+use App\Http\Controllers\MazuProcess\ReportSalesOrderMedsosController;
+use App\Http\Controllers\MazuProcess\ReportSalesOrderOutletController;
+use App\Http\Controllers\MazuProcess\ReportSalesOrderOwnerController;
 
 $this->path = public_path('assets/files/import/');
 //use Illuminate\Support\Facades\Route;
@@ -100,6 +113,17 @@ Route::group(['middleware' => 'auth'], function () {
 
     //=============================DASHBOARD 001 ==========================
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('HOME');
+    Route::get('/dashboard/sales-order/load/{start_date}/{end_date}', [DashboardController::class, 'loadSales']);
+    Route::get('/dashboard/sales-order-product/load/{start_date}/{end_date}', [DashboardController::class, 'loadProductSales']);
+    Route::get('/dashboard/sales-order-product-category/load/{start_date}/{end_date}/{product_category_id}', [DashboardController::class, 'loadProductSalesByCategory']);
+    Route::get('/dashboard/sales-order-by-product/load/{start_date}/{end_date}/{product_id}', [DashboardController::class, 'loadProductSalesByProduct']);
+    Route::get('/dashboard/get-email-birthday', [DashboardController::class, 'getBirthdayMail']);
+    Route::post('/dashboard/send-email-birthday', [DashboardController::class, 'addBroadcast']);
+
+    //=============================MASTER STORE 00201==========================
+    Route::get('/master/company/table', [CompanyController::class, 'company']);
+    Route::get('/master/company/load', [CompanyController::class, 'loadCompany']);
+    Route::post('/master/company/update', [CompanyController::class, 'updateCompany']);
 
     //=============================MASTER STORE 00201==========================
     Route::get('/master/store/table', [StoreController::class, 'listStore']);
@@ -236,6 +260,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/process/sales-order-exclusive-reseller/delete/{so_id}', [SalesOrderExcResellerController::class, 'deleteSO']);
     Route::post('/process/sales-order-exclusive-reseller-payment/add', [SalesOrderExcResellerController::class, 'addPayment']);
     Route::get('/process/sales-order-exclusive-reseller-payment/load/{so_id}', [SalesOrderExcResellerController::class, 'loadPayment']);
+    Route::get('/process/sales-order-exclusive-reseller-print/{so_id}', [SalesOrderExcResellerController::class, 'printSalesOrder']);
 
     //=============================SALES ORDER OUTLET 00601==========================
     Route::get('/process/sales-order-outlet/table', [SalesOrderOutletController::class, 'listSO']);
@@ -247,6 +272,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/process/sales-order-outlet/delete/{so_id}', [SalesOrderOutletController::class, 'deleteSO']);
     Route::post('/process/sales-order-outlet-payment/add', [SalesOrderOutletController::class, 'addPayment']);
     Route::get('/process/sales-order-outlet-payment/load/{so_id}', [SalesOrderOutletController::class, 'loadPayment']);
+    Route::get('/process/sales-order-outlet-print/{so_id}', [SalesOrderOutletController::class, 'printSalesOrder']);
 
     //=============================SALES ORDER 00501==========================
     Route::get('/process/sales-order/table', [SalesOrderController::class, 'listSO']);
@@ -260,6 +286,18 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/process/sales-order-payment/load/{so_id}', [SalesOrderController::class, 'loadPayment']);
     Route::get('/process/sales-order-print/{so_id}', [SalesOrderController::class, 'printSalesOrder']);
 
+    //=============================SALES ORDER PO 00502==========================
+    Route::get('/process/sales-order-po/table', [SalesOrderPoController::class, 'listSO']);
+    Route::get('/process/sales-order-po/load/{start_date}/{end_date}', [SalesOrderPoController::class, 'loadSO']);
+    Route::get('/process/sales-order-po/load-product', [SalesOrderPoController::class, 'loadProduct']);
+    Route::get('/process/sales-order-po/get-label/{product_label}', [SalesOrderPoController::class, 'getProductLabel']);
+    Route::post('/process/sales-order-po/add', [SalesOrderPoController::class, 'addSO']);
+    Route::post('/process/sales-order-po/update', [SalesOrderPoController::class, 'updateSO']);
+    Route::get('/process/sales-order-po/delete/{so_id}', [SalesOrderPoController::class, 'deleteSO']);
+    Route::post('/process/sales-order-po-payment/add', [SalesOrderPoController::class, 'addPayment']);
+    Route::get('/process/sales-order-po-payment/load/{so_id}', [SalesOrderPoController::class, 'loadPayment']);
+    Route::get('/process/sales-order-po-print/{so_id}', [SalesOrderPoController::class, 'printSalesOrder']);
+
     //=============================SALES ORDER ENDORSE 00601==========================
     Route::get('/process/sales-order-endorse/table', [SalesOrderEndorseController::class, 'listSO']);
     Route::get('/process/sales-order-endorse/load/{start_date}/{end_date}', [SalesOrderEndorseController::class, 'loadSO']);
@@ -270,6 +308,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/process/sales-order-endorse/delete/{so_id}', [SalesOrderEndorseController::class, 'deleteSO']);
     Route::post('/process/sales-order-endorse-payment/add', [SalesOrderEndorseController::class, 'addPayment']);
     Route::get('/process/sales-order-endorse-payment/load/{so_id}', [SalesOrderEndorseController::class, 'loadPayment']);
+    Route::get('/process/sales-order-endorse-print/{so_id}', [SalesOrderEndorseController::class, 'printSalesOrder']);
 
     //=============================SALES ORDER SOSMED 00602==========================
     Route::get('/process/sales-order-sosmed/table', [SalesOrderMedsosController::class, 'listSO']);
@@ -281,6 +320,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/process/sales-order-sosmed/delete/{so_id}', [SalesOrderMedsosController::class, 'deleteSO']);
     Route::post('/process/sales-order-sosmed-payment/add', [SalesOrderMedsosController::class, 'addPayment']);
     Route::get('/process/sales-order-sosmed-payment/load/{so_id}', [SalesOrderMedsosController::class, 'loadPayment']);
+    Route::get('/process/sales-order-sosmed-print/{so_id}', [SalesOrderMedsosController::class, 'printSalesOrder']);
 
     //=============================SALES ORDER SPECIAL GIFT 00603==========================
     Route::get('/process/sales-order-special-gift/table', [SalesOrderSpecialGiftController::class, 'listSO']);
@@ -292,6 +332,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/process/sales-order-special-gift/delete/{so_id}', [SalesOrderSpecialGiftController::class, 'deleteSO']);
     Route::post('/process/sales-order-special-gift-payment/add', [SalesOrderSpecialGiftController::class, 'addPayment']);
     Route::get('/process/sales-order-special-gift-payment/load/{so_id}', [SalesOrderSpecialGiftController::class, 'loadPayment']);
+    Route::get('/process/sales-order-special-gift-print/{so_id}', [SalesOrderSpecialGiftController::class, 'printSalesOrder']);
 
     //=============================SALES ORDER OWNER 00604==========================
     Route::get('/process/sales-order-owner/table', [SalesOrderOwnerController::class, 'listSO']);
@@ -303,6 +344,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/process/sales-order-owner/delete/{so_id}', [SalesOrderOwnerController::class, 'deleteSO']);
     Route::post('/process/sales-order-owner-payment/add', [SalesOrderOwnerController::class, 'addPayment']);
     Route::get('/process/sales-order-owner-payment/load/{so_id}', [SalesOrderOwnerController::class, 'loadPayment']);
+    Route::get('/process/sales-order-owner-print/{so_id}', [SalesOrderOwnerController::class, 'printSalesOrder']);
 
     //=============================PRODUCT 01101==========================
     Route::get('/master/product/table', [ProductController::class, 'listProduct']);
@@ -327,6 +369,29 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/master/product-supplier-inventory/table', [InventoryProductSupplierController::class, 'listInventory']);
     Route::get('/master/product-supplier-inventory/load-product', [InventoryProductSupplierController::class, 'loadProduct']);
     Route::get('/master/product-supplier-inventory/load-log-stock/{product_id}', [InventoryProductSupplierController::class, 'loadLogStock']);
+
+    //=============================CASH OUT 014==========================
+    Route::get('/process/cash-out/table', [CashOutController::class, 'cashOutTable']);
+    Route::get('/process/cash-out/load/{start_date}/{end_date}', [CashOutController::class, 'loadCashOut']);
+    Route::post('/process/cash-out/add', [CashOutController::class, 'addCashOut']);
+    Route::post('/process/cash-out/update', [CashOutController::class, 'updateCashOut']);
+    Route::get('/process/cash-out/delete/{id}', [CashOutController::class, 'deleteCashOut']);
+
+    //=============================STOCK OPNAME SCHEDULE 01501==========================
+    Route::get('/process/stock-opname-schedule/tabel', [StockOpnameScheduleController::class, 'listOpnameSchedule']);
+    Route::get('/process/stock-opname-schedule/load', [StockOpnameScheduleController::class, 'loadOpnameSchedule']);
+    Route::post('/process/stock-opname-schedule/add', [StockOpnameScheduleController::class, 'addOpnameSchedule']);
+    Route::post('/process/stock-opname-schedule/update', [StockOpnameScheduleController::class, 'updateOpnameSchedule']);
+    Route::get('/process/stock-opname-schedule/delete/{id}', [StockOpnameScheduleController::class, 'deleteOpnameSchedule']);
+    Route::get('/process/stock-opname-schedule/close/{id}', [StockOpnameScheduleController::class, 'closeOpnameSchedule']);
+
+    //=============================STOCK OPNAME PRODUCT 01502==========================
+    Route::get('/process/stock-opname-product/tabel', [StockOpnameProductController::class, 'listStockOpname']);
+    Route::get('/process/stock-opname-product/load-opname', [StockOpnameProductController::class, 'loadData']);
+    Route::get('/process/stock-opname-product/load', [StockOpnameProductController::class, 'loadProduct']);
+    Route::get('/process/stock-opname-product/load-opname-item/{id}', [StockOpnameProductController::class, 'loadProductEdit']);
+    Route::post('/process/stock-opname-product/add', [StockOpnameProductController::class, 'addOpnameProduct']);
+    Route::get('/process/stock-opname-product/delete/{id}', [StockOpnameProductController::class, 'deleteOpname']);
 
     //=============================PO SUPPLIER 021==========================
     Route::get('/process/purchase-order-supplier/table', [PurchaseOrderSupplierController::class, 'listPOSupplier']);
@@ -377,6 +442,34 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/process/receiving-product-supplier/get-label/{label_product}', [ReceivingProductSupplierController::class, 'getProductLabel']);
     // Route::post('/process/production/update', [ProductionController::class, 'updateProduction']);
     Route::get('/process/receiving-product-supplier/delete/{id}', [ReceivingProductSupplierController::class, 'deleteRecProduct']);
+
+    //=============================REPORT SALES ORDER 09201==========================
+    Route::get('/report/sales-order/table', [ReportSalesOrderController::class, 'reportSOTable']);
+    Route::get('/report/sales-order/load/{start_date}/{end_date}', [ReportSalesOrderController::class, 'loadReportSO']);
+
+    //=============================REPORT SALES ORDER EXCLUSIVE RESELLER 09202==========================
+    Route::get('/report/sales-order-exclusive-reseller/table', [ReportSalesOrderExcResellerController::class, 'reportSOTable']);
+    Route::get('/report/sales-order-exclusive-reseller/load/{start_date}/{end_date}', [ReportSalesOrderExcResellerController::class, 'loadReportSO']);
+
+    //=============================REPORT SALES ORDER ENDORSE 09203==========================
+    Route::get('/report/sales-order-endorse/table', [ReportSalesOrderEndorseController::class, 'reportSOTable']);
+    Route::get('/report/sales-order-endorse/load/{start_date}/{end_date}', [ReportSalesOrderEndorseController::class, 'loadReportSO']);
+
+    //=============================REPORT SALES ORDER MEDSOS 09204==========================
+    Route::get('/report/sales-order-medsos/table', [ReportSalesOrderMedsosController::class, 'reportSOTable']);
+    Route::get('/report/sales-order-medsos/load/{start_date}/{end_date}', [ReportSalesOrderMedsosController::class, 'loadReportSO']);
+
+    //=============================REPORT SALES ORDER OUTLET 09205==========================
+    Route::get('/report/sales-order-outlet/table', [ReportSalesOrderOutletController::class, 'reportSOTable']);
+    Route::get('/report/sales-order-outlet/load/{start_date}/{end_date}', [ReportSalesOrderOutletController::class, 'loadReportSO']);
+
+    //=============================REPORT SALES ORDER OWNER 09206==========================
+    Route::get('/report/sales-order-owner/table', [ReportSalesOrderOwnerController::class, 'reportSOTable']);
+    Route::get('/report/sales-order-owner/load/{start_date}/{end_date}', [ReportSalesOrderOwnerController::class, 'loadReportSO']);
+
+    //=============================REPORT SALES ORDER OWNER 09207==========================
+    Route::get('/report/general-ledger/table', [ReportGeneralLedgerController::class, 'reportTable']);
+    Route::get('/report/general-ledger/load/{start_date}/{end_date}', [ReportGeneralLedgerController::class, 'loadReport']);
 
     //=============================GENERATE LABEL 091==========================
     Route::get('/master/generate-label-product/table', [LabelProductController::class, 'generateLabelProduct']);

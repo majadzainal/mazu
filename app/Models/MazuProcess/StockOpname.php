@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Models\Process;
+namespace App\Models\MazuProcess;
 
-use App\Models\Master\Plant;
-use App\Models\Process\OpnameSchedule;
-use App\Models\Process\StockOpnameItem;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\MazuProcess\StockOpnameItem;
+use App\Models\MazuMaster\StockOpnameSchedule;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class StockOpname extends Model
@@ -26,11 +25,6 @@ class StockOpname extends Model
 
     public function schedule()
     {
-        return $this->hasOne(OpnameSchedule::class, 'opname_schedule_id', 'opname_schedule_id');
-    }
-
-    public function plant()
-    {
-        return $this->hasOne(Plant::class, 'plant_id', 'plant_id');
+        return $this->hasOne(StockOpnameSchedule::class, 'stock_opname_schedule_id', 'stock_opname_schedule_id');
     }
 }

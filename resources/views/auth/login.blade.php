@@ -18,12 +18,12 @@
       <div class="card login-card">
         <div class="row no-gutters">
           <div class="col-md-5">
-            <img src="{{ asset ('/assets/login/images/buildrekadaya.jpg') }}" alt="login" class="login-card-img">
+            <img src="{{ asset ('/assets/login/images/LOGOMAZU.png') }}" alt="login" class="login-card-img">
           </div>
           <div class="col-md-7">
             <div class="card-body">
               <div class="brand-wrapper">
-                <img src="{{ asset ('/assets/login/images/rekadayafull.png') }}" alt="logo" class="logo">
+                <img src="{{ asset ('/assets/login/images/LOGOMAZU1.png') }}" alt="logo" class="logo">
               </div><br>
               <form method="POST" action="{{ route('login') }}" id="formLogin">
                 @csrf

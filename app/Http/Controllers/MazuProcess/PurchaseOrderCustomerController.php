@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\MazuMaster\Product;
 use Illuminate\Support\Facades\DB;
 use App\Models\MazuMaster\Customer;
+use App\Models\MazuMaster\PaidType;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -15,15 +16,18 @@ use App\Models\MazuProcess\PurchaseOrderCustomer;
 use App\Models\MazuProcess\PurchaseOrderCustomerItem;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Setting\NumberingFormController;
+use App\Http\Controllers\MazuProcess\GeneralLedgerController;
 
 class PurchaseOrderCustomerController extends Controller
 {
     public $MenuID = '031';
     public $objNumberingForm;
     public $generateType = 'F_PURCHASE_ORDER_CUSTOMER';
+    public $objGl;
 
     public function __construct()
     {
+        $this->objGl = new GeneralLedgerController();
         $this->objNumberingForm = new NumberingFormController();
     }
 
@@ -39,11 +43,13 @@ class PurchaseOrderCustomerController extends Controller
         $store_id = getStoreId();
         $customerList = Customer::where('store_id', $store_id)->where('is_active', 1)->get();
         $productList = Product::where('store_id', $store_id)->where('is_active', 1)->with('unit', 'stockWarehouse', 'stockWarehouse.warehouse')->get();
+        $paidTypeList = PaidType::where('store_id', $store_id)->where('is_active', 1)->get();
 
         return view('mazuprocess.poCustomerTable', [
             'MenuID'            => $this->MenuID,
             'customerList'      => $customerList,
             'productList'       => $productList,
+            'paidTypeList'       => $paidTypeList,
         ]);
     }
 
@@ -89,8 +95,14 @@ class PurchaseOrderCustomerController extends Controller
             $arrsuccess = 0;
             $po_customer_id = Uuid::uuid4()->toString();
             $po_number = "";
+            $decPaid = floatval(0);
+            $decRemain = floatval(0);
+            $paidTypeId = null;
             if($request->is_process){
                 $po_number = $this->objNumberingForm->GENERATE_FORM_NUMBER($this->generateType);
+                $decPaid = $request->dec_paid_fin;
+                $decRemain = $request->dec_remain;
+                $paidTypeId = $request->paid_type_id;
             }
 
 
@@ -105,7 +117,13 @@ class PurchaseOrderCustomerController extends Controller
                 'percent_discount'              => $request->percent_discount,
                 'total_price_after_discount'    => $request->total_price_after_discount,
                 'ppn'                           => $request->ppn,
-                'grand_total'                   => $request->grand_total,
+                'shipping_cost'                 => $request->shipping_cost,
+                'grand_total'                   => (floatval($request->grand_total) - floatval($request->shipping_cost)),
+                'grand_total_wshipping'         => $request->grand_total,
+                'dec_paid'                      => $decPaid,
+                'dec_remain'                    => $decRemain,
+                'paid_type_id'                  => $paidTypeId,
+                'is_so_created'                 => 0,
                 'is_process'                    => $request->is_process,
                 'is_draft'                      => $request->is_draft,
                 'is_open'                       => 1,
@@ -132,6 +150,10 @@ class PurchaseOrderCustomerController extends Controller
                     if($item){
                         $arrsuccess++;
                     }
+                }
+
+                if($poc->is_process){
+                    $this->objGl->creditPoCustomer($poc);
                 }
             }
 
@@ -160,8 +182,14 @@ class PurchaseOrderCustomerController extends Controller
         try {
             $arrsuccess = 0;
             $po_number = "";
+            $decPaid = floatval(0);
+            $decRemain = floatval(0);
+            $paidTypeId = null;
             if($request->is_process){
                 $po_number = $this->objNumberingForm->GENERATE_FORM_NUMBER($this->generateType);
+                $decPaid = $request->dec_paid_fin;
+                $decRemain = $request->dec_remain;
+                $paidTypeId = $request->paid_type_id;
             }
 
             $poc = PurchaseOrderCustomer::find($request->po_customer_id);
@@ -175,7 +203,12 @@ class PurchaseOrderCustomerController extends Controller
                 'percent_discount'              => $request->percent_discount,
                 'total_price_after_discount'    => $request->total_price_after_discount,
                 'ppn'                           => $request->ppn,
-                'grand_total'                   => $request->grand_total,
+                'shipping_cost'                 => $request->shipping_cost,
+                'grand_total'                   => (floatval($request->grand_total) - floatval($request->shipping_cost)),
+                'grand_total_wshipping'         => $request->grand_total,
+                'dec_paid'                      => $decPaid,
+                'dec_remain'                    => $decRemain,
+                'paid_type_id'                  => $paidTypeId,
                 'is_process'                    => $request->is_process,
                 'is_draft'                      => $request->is_draft,
                 'is_void'                       => 0,
@@ -205,6 +238,10 @@ class PurchaseOrderCustomerController extends Controller
                     if($item){
                         $arrsuccess++;
                     }
+                }
+
+                if($poc->is_process){
+                    $this->objGl->creditPoCustomer($poc);
                 }
             }
 
@@ -238,6 +275,8 @@ class PurchaseOrderCustomerController extends Controller
                 $poc->is_void = 0;
                 $poc->is_open = 0;
                 $poc->update();
+
+                $this->objGl->creditPoCustomerDelete($poc);
                 DB::commit();
                 return response()->json(['status' => 'Success', 'message' => 'Delete purchase order customer success.'], 200);
             } else {

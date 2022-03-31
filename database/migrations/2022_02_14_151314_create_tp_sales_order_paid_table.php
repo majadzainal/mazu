@@ -14,11 +14,12 @@ class CreateTpSalesOrderPaidTable extends Migration
     public function up()
     {
         Schema::create('tp_sales_order_paid', function (Blueprint $table) {
-            $table->increments('sales_order_paid_id');
+            $table->uuid('sales_order_paid_id')->primary();
             $table->uuid('so_id');
             $table->uuid('paid_type_id');
             $table->decimal('dec_paid', 11, 2)->nullable();
             $table->decimal('dec_remain', 11, 2)->nullable();
+            $table->tinyInteger('is_po_customer');
             $table->timestamps();
 
             $table->foreign('so_id')->references('so_id')->on('tp_sales_order');

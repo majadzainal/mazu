@@ -9,9 +9,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class SalesOrderPaid extends Model
 {
-    protected $primaryKey = 'sales_order_paid_id';
-    public $incrementing = false;
     protected $table = 'tp_sales_order_paid';
+    protected $primaryKey = 'sales_order_paid_id';
+    protected $keyType = 'string';
+    public $incrementing = false;
     protected $guarded = [
 
     ];

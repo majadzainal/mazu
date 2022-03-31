@@ -109,7 +109,7 @@
                                             </div>
                                             <label class="col-sm-5 col-form-label">Auto generate after save as process</label>
                                         </div>
-                                        <div class="form-group row" id="input_po_customer_id">
+                                        {{-- <div class="form-group row" id="input_po_customer_id">
                                             <label class="col-sm-2 col-form-label">PO. Customer <span class="text-danger">*</span></label>
                                             <div class="col-sm-4">
                                                 <input type="text" readonly name="po_customer_id_edit" id="po_customer_id_edit" class="form-control">
@@ -120,12 +120,10 @@
                                             <div class="col-sm-10">
                                                 <select name="po_customer_id" id="po_customer_id" onchange="changePOCustomer()" class="js-example-placeholder col-sm-12" required>
                                                     <option value="">--Select--</option>
-                                                    @foreach($poCustomerList as $ls)
-                                                        <option value="{{ $ls->po_customer_id }}">{{ $ls->po_number." - ".$ls->customer->customer_name}}</option>
-                                                    @endforeach
+
                                                 </select>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                         <div class="form-group row">
                                             <label class="col-sm-2 col-form-label">Supplier <span class="text-danger">*</span></label>
                                             <div class="col-sm-10">
@@ -271,7 +269,7 @@
                                                 <button type="button" class="btn btn-primary waves-effect waves-light" onClick="saveInit('#productionForm', 1)">Save</button>
                                             </div>
                                         </div>
-                                        <div class="bg-secondary p-4 text-white">
+                                        {{-- <div class="bg-secondary p-4 text-white">
                                             <div class="form-group row">
                                                 <label class="col-sm-12 col-form-label">
                                                     <strong>Product PO Customer</strong>
@@ -376,7 +374,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                     </form>
                                 </div>
                             </div>
@@ -438,17 +436,17 @@
         loadProductSupplier();
         $("#input").hide();
     } );
-    function changePOCustomer(){
-        var po_customer_id = $("#po_customer_id").val();
-        var poCustArr =  {!! json_encode($poCustomerList) !!};
-        if(po_customer_id == undefined) return;
+    // function changePOCustomer(){
+    //     var po_customer_id = $("#po_customer_id").val();
 
-        var po = poCustArr.find(a => a.po_customer_id === po_customer_id);
-        po.items.forEach(item => {
-            addProductToPO(item.product, item);
-        });
-        calculateTotal_po();
-    }
+    //     if(po_customer_id == undefined) return;
+
+    //     var po = poCustArr.find(a => a.po_customer_id === po_customer_id);
+    //     po.items.forEach(item => {
+    //         addProductToPO(item.product, item);
+    //     });
+    //     calculateTotal_po();
+    // }
     function btnLoadDataClick(){
         var start_date = $("#start_date").val();
         var end_date = $("#end_date").val();
@@ -811,13 +809,19 @@
         $("#bodyProduction").html("");
         var btn = $(e).attr("btn");
         if (btn == "edit"){
+            console.log(data);
             $("#productionForm").attr("action", "/process/production/update");
             $("#production_id").val(data.production_id);
-            $("#po_number").val(data.po_number);
+            var poNumber = "";
+            poNumber = data.po_number !== null ? data.po_number : "";
+            $("#po_number").val(poNumber);
             $("#po_date").val(data.po_date);
             $("#due_date").val(data.due_date);
-            $("#po_customer_id_edit").val(data.po_customer.po_number+" - "+data.po_customer.customer.customer_name);
-            $("#po_customer_id").val(data.po_customer_id);
+            var poCustNumber = data.po_customer !== null ? data.po_customer.po_number : "";
+            var poCustName = data.po_customer !== null ? data.po_customer.customer.customer_name : "";
+            $("#po_customer_id_edit").val(poCustNumber+" - "+poCustName);
+            var poCustid = data.po_customer_id !== null ? data.po_customer_id : "";
+            $("#po_customer_id").val(poCustid);
             $("#supplier_id").val(data.supplier_id);
             $("#description").val(data.description);
 
