@@ -143,8 +143,14 @@
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-6" style="text-align:left;">
-                                            <button class="btn btn-success btn-sm btn-round waves-effect waves-light" id="check-all" btn="cek_all" onClick="checkAll(this)"></i> Select All Label </button>
-                                            <button class="btn btn-danger btn-sm btn-round waves-effect waves-light" data-toggle="modal" data-target="#large-Modal" onClick="printLabel()"> Print Selected Label</button>
+                                            <button type="button" class="btn btn-success btn-sm btn-round waves-effect waves-light" id="check-all" btn="cek_all" onClick="checkAll(this)"></i> Select All Label </button>
+                                            {{-- <button class="btn btn-danger btn-sm btn-round waves-effect waves-light" data-toggle="modal" data-target="#large-Modal" onClick="printLabel()"> Print Selected Label</button> --}}
+                                            <button type="button" class="btn btn-danger btn-sm btn-round waves-effect waves-light" onClick="printLabel()"> Print Selected Label</button>
+                                            <form action="/master/generate-label-product/update" method="post" enctype="multipart/form-data" id="partLabelFormUpdate">
+                                                @csrf
+                                                <input type="hidden" name="itemListUpdate" id="itemListUpdate">
+                                            </form>
+
                                         </div>
                                         @if(isAccess('create', $MenuID))
                                         <div class="col-sm-6" style="text-align:right;">
@@ -234,8 +240,8 @@
             </div>
             <div class="modal-body text-center">
                 <div class="form-group row text-center">
-                    <div class="col-sm-12">
-                        <table id="print_area" style="width: 100%; border: 1px;">
+                    <div style="width:384px">
+                        <table id="print_area" style="width: 100%; border: 1px solid;">
                             <tbody id="tableBodyPrint">
 
                             </tbody>
@@ -243,10 +249,7 @@
                     </div>
                 </div>
                 <div class="clear-both"></div>
-                <form action="/master/generate-label-product/update" method="post" enctype="multipart/form-data" id="partLabelFormUpdate">
-                    @csrf
-                    <input type="hidden" name="itemListUpdate" id="itemListUpdate">
-                </form>
+
             <div class="modal-footer">
                 <button type="button" id="closeModal" class="btn btn-default waves-effect" data-dismiss="modal">Close</button>
                 <button type="button"
@@ -391,42 +394,71 @@
 
         var itemList = getItemPrint();
         if(itemList.length >= 1){
-            var i = 1;
-            var label = "";
-            itemList.forEach(function(data){
-                var classQr = "qrClass"+data.label_product_id;
-                label += '<tr>';
-                label += '<td>';
-                label += '<table style="width:100%; border:none;">';
-                label += '<tr>';
-                label += '<td class="text-center">';
-                label += '<div class="'+classQr+'"></div>';
-                label += '</td>';
-                label += '</tr>';
-                label += '<tr>';
-                label += '<td class="text-center">';
-                label += data.no_label;
-                label += '</td>';
-                label += '</tr>';
-                label += '<tr>';
-                label += '<td class="text-center">';
-                label += data.product_code;
-                label += '</td>';
-                label += '</tr>';
-                label += '</table>';
-                label += '</td>';
-                label += '</tr>';
+            // var itemList = getItemPrint()
+            document.getElementById('itemListUpdate').value = JSON.stringify(itemList);
+            printData("#partLabelFormUpdate");
+            // var i = 1;
+            // var label = "";
+            // itemList.forEach(function(data){
+            //     var classQr = "qrClass"+data.label_product_id;
+            //     label += '<tr style="width:384px; border:1px">';
+            //     label += '<td>';
+            //     label += '<table style="width:100%; border:none;">';
+            //     label += '<tr>';
+            //     label += '<td class="text-center">';
+            //     label += '<div class="'+classQr+'"></div>';
+            //     label += '</td>';
+            //     label += '</tr>';
+            //     label += '<tr>';
+            //     label += '<td class="text-center">';
+            //     label += data.no_label;
+            //     label += '</td>';
+            //     label += '</tr>';
+            //     label += '<tr>';
+            //     label += '<td class="text-center">';
+            //     label += data.product_code;
+            //     label += '</td>';
+            //     label += '</tr>';
+            //     label += '</table>';
+            //     label += '</td>';
+            //     label += '</tr>';
 
-            });
+            // });
 
-            $('#tableBodyPrint').append(label);
+            // $('#tableBodyPrint').append(label);
 
-            itemList.forEach(function(data){
-                var classQr = ".qrClass"+data.label_product_id;
-                $(classQr).qrcode({width: 100,height: 100,text: data.no_label});
-            });
+            // itemList.forEach(function(data){
+            //     var classQr = ".qrClass"+data.label_product_id;
+            //     $(classQr).qrcode({width: 100,height: 100,text: data.no_label});
+            // });
         }
     }
+
+    function printData(form){
+
+        var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+        if (!$(form)[0].checkValidity()) {
+            $(form)[0].reportValidity();
+        } else {
+            $.ajax({
+                type: "POST",
+                url: $(form).attr("action"),
+                data: $(form).serialize(),
+                success: function(res){
+                    if(res.status.toLowerCase() === 'Success'.toLowerCase()){
+                        swal(res.status, res.message, res.status.toLowerCase());
+                        $(form).trigger("reset");
+                        window.open('/master/print-generate-label-product/'+res.print_id, '_blank');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert(xhr.status);
+                    alert(thrownError);
+                }
+            });
+        }
+
+        }
 
     function getItemPrint(){
         $("#searchTable").DataTable().search("").draw()
@@ -475,14 +507,15 @@
     })
 
     function printInit(e){
-        var itemList = getItemPrint()
-        document.getElementById('itemListUpdate').value = JSON.stringify(itemList);
+        window.open('/master/print-generate-label-product/print', '_blank');
+        // var itemList = getItemPrint()
+        // document.getElementById('itemListUpdate').value = JSON.stringify(itemList);
         printConfirm(e, function() {
             $("#closeModal").click();
         });
 
-        productChangeFilter();
-        $("#closeModal").click();
+        // productChangeFilter();
+        // $("#closeModal").click();
     }
 
 </script>

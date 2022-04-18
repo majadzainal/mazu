@@ -96,6 +96,7 @@ class SalesOrderOutletController extends Controller
         $data = LabelProduct::where('no_label', strtoupper($product_label))
                         ->where('is_print', 1)
                         ->where('is_checked_in', 0)
+                        ->where('store_id', getStoreId())
                         ->get()->first();
 
         return['data'=> $data];
@@ -106,9 +107,9 @@ class SalesOrderOutletController extends Controller
         if(!isAccess('create', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        // if(isOpname()){
-        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        // }
+        if(isOpname()){
+            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        }
 
         DB::beginTransaction();
         try {
@@ -129,7 +130,7 @@ class SalesOrderOutletController extends Controller
                 $compositionList = ProductComposition::where('product_id', $request->product_id[$i])
                                         ->with('productSupplier')->get();
 
-                $totalHpp += floatval($productHpp);
+                $totalHpp += (floatval($productHpp) * floatval($request->qty_order_item[$i]));
                 foreach ($compositionList as $ls) {
                     $amount_usage = ((floatval($ls->amount_usage) * floatval($request->qty_order_item[$i])));
                     $totalHpp += floatval($amount_usage) * floatval($ls->productSupplier->price);
@@ -243,9 +244,10 @@ class SalesOrderOutletController extends Controller
         if(!isAccess('create', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        // if(isOpname()){
-        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        // }
+        if(isOpname()){
+            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        }
+
         // dd($request);
         DB::beginTransaction();
         try {
@@ -265,7 +267,7 @@ class SalesOrderOutletController extends Controller
                 $compositionList = ProductComposition::where('product_id', $request->product_id[$i])
                                         ->with('productSupplier')->get();
 
-                $totalHpp += floatval($productHpp);
+                $totalHpp += (floatval($productHpp) * floatval($request->qty_order_item[$i]));
                 foreach ($compositionList as $ls) {
                     $amount_usage = ((floatval($ls->amount_usage) * floatval($request->qty_order_item[$i])));
                     $totalHpp += floatval($amount_usage) * floatval($ls->productSupplier->price);
@@ -378,9 +380,9 @@ class SalesOrderOutletController extends Controller
         if(!isAccess('delete', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        // if(isOpname()){
-        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        // }
+        if(isOpname()){
+            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        }
 
         try {
 
@@ -439,9 +441,10 @@ class SalesOrderOutletController extends Controller
         if(!isAccess('create', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        // if(isOpname()){
-        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        // }
+        if(isOpname()){
+            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        }
+
         DB::beginTransaction();
         try {
             $decPaid = $request->dec_paid_fin_payment;

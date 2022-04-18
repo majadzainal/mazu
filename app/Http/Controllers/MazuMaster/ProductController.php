@@ -75,14 +75,14 @@ class ProductController extends Controller
         if(!isAccess('create', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        // if(isOpname()){
-        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        // }
+        if(isOpname()){
+            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        }
 
         // dd($request);
         DB::beginTransaction();
         try {
-
+            // dd($request);
             $file_name = "";
             if($request->images != ""){
                 // if($request->images->before)
@@ -111,13 +111,17 @@ class ProductController extends Controller
             ]);
 
             if ($product){
-                for ($i=0; $i<count($request->product_supplier_id); $i++ ){
-                    ProductComposition::create([
-                        'product_id'                    => $product->product_id,
-                        'product_supplier_id'           => $request->product_supplier_id[$i],
-                        'amount_usage'                  => $request->amount_usage[$i],
-                        'order_item'                    => $i,
-                    ]);
+                if($request->product_supplier_id){
+                    if(count($request->product_supplier_id) > 0){
+                        for ($i=0; $i<count($request->product_supplier_id); $i++ ){
+                            ProductComposition::create([
+                                'product_id'                    => $product->product_id,
+                                'product_supplier_id'           => $request->product_supplier_id[$i],
+                                'amount_usage'                  => $request->amount_usage[$i],
+                                'order_item'                    => $i,
+                            ]);
+                        }
+                    }
                 }
 
                 $this->objStock->plusStock($product->product_id, $request->warehouse_id, $request->stock_warehouse, "Add Product");
@@ -140,9 +144,9 @@ class ProductController extends Controller
         if(!isAccess('update', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        // if(isOpname()){
-        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        // }
+        if(isOpname()){
+            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        }
         // dd($request);
         DB::beginTransaction();
         try {
@@ -182,16 +186,18 @@ class ProductController extends Controller
                 foreach ($deletedRows as $ls) {
                     $ls->delete();
                 }
-
-                for ($i=0; $i<count($request->product_supplier_id); $i++ ){
-                    ProductComposition::create([
-                        'product_id'                    => $product->product_id,
-                        'product_supplier_id'           => $request->product_supplier_id[$i],
-                        'amount_usage'                  => $request->amount_usage[$i],
-                        'order_item'                    => $i,
-                    ]);
+                if($request->product_supplier_id){
+                    if(count($request->product_supplier_id) > 0){
+                        for ($i=0; $i<count($request->product_supplier_id); $i++ ){
+                            ProductComposition::create([
+                                'product_id'                    => $product->product_id,
+                                'product_supplier_id'           => $request->product_supplier_id[$i],
+                                'amount_usage'                  => $request->amount_usage[$i],
+                                'order_item'                    => $i,
+                            ]);
+                        }
+                    }
                 }
-
                 $this->objStock->plusStock($product->product_id, $request->warehouse_id, $request->stock_warehouse, "Edit Product");
                 DB::commit();
                 return response()->json(['status' => 'Success', 'message' => 'edit product success.'], 200);
@@ -213,9 +219,9 @@ class ProductController extends Controller
         if(!isAccess('delete', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        // if(isOpname()){
-        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        // }
+        if(isOpname()){
+            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        }
 
         try {
 

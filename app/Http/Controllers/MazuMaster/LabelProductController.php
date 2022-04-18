@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\MazuMaster;
 
+use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
 use App\Models\MazuMaster\Product;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\MazuMaster\LabelProduct;
@@ -33,6 +35,7 @@ class LabelProductController extends Controller
         }
 
         $productList = Product::where('is_active', 1)
+                    ->where('store_id', getStoreId())
                     ->with('category')->get();
 
         return view('mazumaster.generateLabelProductTable', [
@@ -45,6 +48,7 @@ class LabelProductController extends Controller
     function loadLabel($product_id){
         $dataList = LabelProduct::where('product_id', $product_id)
                         ->where('is_print', 0)
+                        ->where('store_id', getStoreId())
                         ->with('product', 'product.unit', 'product.category')
                         ->get();
 
@@ -99,9 +103,11 @@ class LabelProductController extends Controller
         DB::beginTransaction();
         try {
             if(count($itemList)){
+                $print_id = Uuid::uuid4()->toString();
                 foreach($itemList as $ls){
                     $label = LabelProduct::find($ls['label_product_id']);
                     if($label){
+                        $label->print_id = $print_id;
                         $label->is_print = 1;
                         $label->update();
                     }
@@ -110,10 +116,33 @@ class LabelProductController extends Controller
 
             DB::commit();
             return response()->json(['status' => 'Success',
-                        'message' => 'Print label success.'], 200);
+                        'message' => 'Print label success.',
+                        'print_id' => $print_id], 200);
         } catch (ModelNotFoundException  $e) {
             DB::rollback();
             return response()->json(['status' => 'Error', 'message' => $e], 202);
         }
+    }
+
+    public function printLabel($print_id){
+
+        if(!isAccess('read', $this->MenuID)){
+            return "You do not have access for this action";
+        }
+
+        $labelList = LabelProduct::with('product', 'product.category')
+                            ->where('print_id', $print_id)->get();
+        // dd($labelList);
+        if($labelList){
+            $dataList = ['dataList'  => $labelList];
+            $pdf = App::make('dompdf.wrapper');
+            $pdf->loadView('mazumaster.print.printLabel', $dataList);
+            // $pdf->setPaper('A4', 'potrait');
+            $pdf->setPaper([0, 0, 288, 432], 'potrait');
+            return $pdf->stream('PrintLabel.pdf');
+        } else {
+            return "Data not found";
+        }
+
     }
 }

@@ -922,7 +922,6 @@
     }
 
     function addToTableProductItem(data){
-
         var isAdded = false;
         $('#doItemTableList tr').each(function() {
             if (!this.rowIndex) return; // skip first row
@@ -1150,10 +1149,10 @@
         calculatePaid();
     }
 
-    function addScanClickPO(){
-        var product_label = $("#product_label").val();
-        addToReceivingTablePO(product_label);
-    }
+    // function addScanClickPO(){
+    //     var product_label = $("#product_label").val();
+    //     addToReceivingTablePO(product_label);
+    // }
 
     function addScanClick(){
         var product_label = $("#product_label").val();
@@ -1172,6 +1171,7 @@
         if(product_label !== ""){
             var data = await getData('/process/sales-order-po/get-label/'+product_label);
             if(data != null){
+                console.log(data);
                 addToTableProductItem(data);
             }
             else{

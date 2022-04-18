@@ -476,6 +476,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/master/generate-label-product/load/{product_id}', [LabelProductController::class, 'loadLabel']);
     Route::post('/master/generate-label-product/add', [LabelProductController::class, 'addGenerateLabel']);
     Route::post('/master/generate-label-product/update', [LabelProductController::class, 'updateGenerateLabel']);
+    Route::get('/master/print-generate-label-product/{print_id}', [LabelProductController::class, 'printLabel']);
     // Route::get('/process/purchase-order-supplier/load/{start_date}/{end_date}', [PurchaseOrderSupplierController::class, 'loadPOSupplier']);
     // Route::get('/process/purchase-order-supplier/load-product', [PurchaseOrderSupplierController::class, 'loadProduct']);
     // Route::post('/process/purchase-order-supplier/add', [PurchaseOrderSupplierController::class, 'addPOSupplier']);

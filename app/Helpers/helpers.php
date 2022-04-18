@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Setting\Menu_Role;
 use App\Models\MazuMaster\Company;
+use App\Models\MazuMaster\StockOpnameSchedule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Process\OpnameSchedule;
@@ -71,8 +72,9 @@ function isAccess($crud, $menuId){
 }
 
 function isOpname(){
-    $opnameScheduleIsOpen = OpnameSchedule::where('is_closed', 0)
+    $opnameScheduleIsOpen = StockOpnameSchedule::where('is_closed', 0)
             ->where('is_active', 1)
+            ->where('store_id', getStoreId())
             ->get()->first();
 
     $result = $opnameScheduleIsOpen ? true : false;
@@ -342,9 +344,9 @@ function getNumberingFormType(){
                 [
                     "numbering_form_type" => "F_PURCHASE_ORDER_CUSTOMER"
                 ],
-                [
-                    "numbering_form_type" => "F_PURCHASE_ORDER_SUPPLIER"
-                ],
+                // [
+                //     "numbering_form_type" => "F_PURCHASE_ORDER_SUPPLIER"
+                // ],
                 [
                     "numbering_form_type" => "F_PURCHASE_ORDER_SUPPLIER"
                 ],

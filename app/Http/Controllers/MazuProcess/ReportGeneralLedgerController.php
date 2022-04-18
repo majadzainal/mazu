@@ -35,13 +35,19 @@ class ReportGeneralLedgerController extends Controller
         }
 
         $store_id = getStoreId();
+        $credit = GeneralLedger::whereDate('gl_date', '<', $start_date)
+                    ->where('store_id', $store_id)
+                    ->sum('credit');
+        $debit = GeneralLedger::whereDate('gl_date', '<', $start_date)
+                    ->where('store_id', $store_id)
+                    ->sum('debit');
         $glList = GeneralLedger::whereBetween('gl_date', [$start_date, $end_date])
                             ->where('store_id', $store_id)
                             ->with('poCustomer', 'poSupplier', 'production', 'poMaterial', 'soPaid', 'soPaid.salesOrder', 'cashOut')
                             ->orderBy('created_at', 'asc')
                             ->get();
         // dd($glList);
-        $saldo = floatVal(0);
+        $saldo = floatVal($credit) - floatVal($debit);
         $dataList = [];
         foreach($glList as $item){
             $data['gl_date'] = $item->gl_date;
