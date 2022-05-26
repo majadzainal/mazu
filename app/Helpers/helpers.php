@@ -371,6 +371,9 @@ function getNumberingFormType(){
                 [
                     "numbering_form_type" => "F_SALES_ORDER"
                 ],
+                [
+                    "numbering_form_type" => "F_STOCK_OPNAME"
+                ],
             ];
 
 

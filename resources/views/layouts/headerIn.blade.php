@@ -26,6 +26,9 @@
     <link rel="stylesheet" type="text/css" href="{{ asset ('/assets/files/assets/icon/font-awesome/css/font-awesome.min.css') }}">
     <!-- Select 2 css -->
     <link rel="stylesheet" href="{{ asset ('/assets/files/bower_components/select2/css/select2.min.css') }}" />
+    <!-- Multi Select css -->
+    <link rel="stylesheet" type="text/css" href="{{ asset ('/assets/files/bower_components/bootstrap-multiselect/css/bootstrap-multiselect.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset ('/assets/files/bower_components/multiselect/css/multi-select.css') }}" />
     <!-- Data Table Css -->
     <link rel="stylesheet" type="text/css" href="{{ asset ('/assets/files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset ('/assets/files/assets/pages/data-table/css/buttons.dataTables.min.css') }}">

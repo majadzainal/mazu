@@ -46,7 +46,10 @@ class LabelProductController extends Controller
     }
 
     function loadLabel($product_id){
-        $dataList = LabelProduct::where('product_id', $product_id)
+        $find = array('"','[',']');
+        $prod_list = str_replace($find,"",$product_id);
+        $arraySearch = explode(',', $prod_list);
+        $dataList = LabelProduct::wherein('product_id', $arraySearch)
                         ->where('is_print', 0)
                         ->where('store_id', getStoreId())
                         ->with('product', 'product.unit', 'product.category')

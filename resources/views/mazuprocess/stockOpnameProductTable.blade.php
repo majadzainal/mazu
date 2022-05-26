@@ -261,9 +261,9 @@
 
         $('#searchTable1').DataTable().destroy();
         $('#searchTable1').DataTable({
-            "bPaginate": true,
-            "bLengthChange": true,
-            "bFilter": true,
+            "bPaginate": false,
+            "bLengthChange": false,
+            "bFilter": false,
             "bInfo": true,
             "autoWidth": false,
             "columnDefs": [
@@ -346,9 +346,9 @@
 
         $('#searchTable1').DataTable().destroy();
         $('#searchTable1').DataTable({
-            "bPaginate": true,
-            "bLengthChange": true,
-            "bFilter": true,
+            "bPaginate": false,
+            "bLengthChange": false,
+            "bFilter": false,
             "bInfo": true,
             "autoWidth": false,
             "columnDefs": [
@@ -547,11 +547,8 @@
             var tr = $(this).parent().parent();
             var product_id = tr.find(".product_id").val();
             var warehouse_id = parseInt(tr.find(".warehouse_id").val());
-            console.log(product_id);
-            console.log(warehouse_id);
             var items = itemList.filter(a => a.product_id === product_id && a.warehouse_id === warehouse_id);
             // console.log(itemList);
-            console.log(items);
             if (items){
                 // console.log(items);
                 tr.find(".stock_adjustment").val(items[0].stock_adjustment);

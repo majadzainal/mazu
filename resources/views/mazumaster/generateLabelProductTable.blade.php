@@ -132,14 +132,14 @@
                                 <div class="card-block">
                                     <div class="form-group row">
                                         <label class="col-sm-2 col-form-label">Product <span class="text-danger"> *</span></label>
-                                        <div class="col-sm-6">
-                                            <select name="product_id_filter" id="product_id_filter" onChange="productChangeFilter()" class="js-example-placeholder col-sm-12" required>
-                                                <option value="">--Select--</option>
+                                        <div class="col-sm-10">
+                                            <select name="product_id_filter_multi" id="product_id_filter_multi" onChange="productChangeFilterMulti()" class="js-example-basic-multiple col-sm-12" multiple="multiple">
                                                 @foreach($productList as $ls)
                                                     <option value="{{ $ls->product_id }}">{{ $ls->category->category_code."-".$ls->product_code." ".$ls->product_name}}</option>
                                                 @endforeach
                                             </select>
                                         </div>
+
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-6" style="text-align:left;">
@@ -268,7 +268,7 @@
 @include('layouts.footerIn')
 <script>
     $(document).ready(function() {
-        productChangeFilter();
+        productChangeFilterMulti();
         $("#input").hide();
         $("#table").show();
     } );
@@ -330,7 +330,7 @@
 
     function saveInit(form, modalId){
         saveDataModal(form, modalId, function() {
-            productChangeFilter();
+            productChangeFilterMulti();
             $('.closeForm').click();
         });
     }
@@ -360,6 +360,16 @@
         var product_id = $("#product_id_filter").val();
         if(product_id !== ""){
             loadData(product_id);
+            $("#check-all").attr("btn", "cek_all");
+            $("#check-all").text("Select All Label");
+        }
+    }
+
+    function productChangeFilterMulti(){
+        var product_id = $("#product_id_filter_multi").val();
+        var arrStr = encodeURIComponent(JSON.stringify(product_id));
+        if(product_id !== ""){
+            loadData(arrStr);
             $("#check-all").attr("btn", "cek_all");
             $("#check-all").text("Select All Label");
         }
