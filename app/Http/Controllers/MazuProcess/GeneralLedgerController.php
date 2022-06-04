@@ -49,6 +49,7 @@ class GeneralLedgerController extends Controller
         try {
             $gl = GeneralLedger::where('cash_out_id', $cashOut->cash_out_id)->get()->first();
             if($gl){
+                // $gl->forceDelete();
                 $gl->delete();
             }
         } catch (Exception  $e) {
@@ -86,7 +87,8 @@ class GeneralLedgerController extends Controller
         try {
             $gl = GeneralLedger::where('po_customer_id', $poCust->po_customer_id)->get()->first();
             if($gl){
-                $gl->delete();
+                $gl->forceDelete();
+                // $gl->delete();
             }
         } catch (Exception  $e) {
             return response()->json(['status' => 'Error', 'message' => $e->getMessage()], 202);
@@ -123,7 +125,8 @@ class GeneralLedgerController extends Controller
         try {
             $gl = GeneralLedger::where('po_material_id', $poMat->po_material_id)->get()->first();
             if($gl){
-                $gl->delete();
+                $gl->forceDelete();
+                // $gl->delete();
             }
         } catch (Exception  $e) {
             return response()->json(['status' => 'Error', 'message' => $e->getMessage()], 202);
@@ -160,7 +163,8 @@ class GeneralLedgerController extends Controller
         try {
             $gl = GeneralLedger::where('po_supplier_id', $poSupplier->po_supplier_id)->get()->first();
             if($gl){
-                $gl->delete();
+                $gl->forceDelete();
+                // $gl->delete();
             }
         } catch (Exception  $e) {
             return response()->json(['status' => 'Error', 'message' => $e->getMessage()], 202);
@@ -198,7 +202,8 @@ class GeneralLedgerController extends Controller
         try {
             $gl = GeneralLedger::where('production_id', $prod->production_id)->get()->first();
             if($gl){
-                $gl->delete();
+                $gl->forceDelete();
+                // $gl->delete();
             }
         } catch (Exception  $e) {
             return response()->json(['status' => 'Error', 'message' => $e->getMessage()], 202);
@@ -236,6 +241,7 @@ class GeneralLedgerController extends Controller
         try {
             $gl = GeneralLedger::where('sales_order_paid_id', $soPaid->sales_order_paid_id)->get()->first();
             if($gl){
+                // $gl->forceDelete();
                 $gl->delete();
             }
         } catch (Exception  $e) {

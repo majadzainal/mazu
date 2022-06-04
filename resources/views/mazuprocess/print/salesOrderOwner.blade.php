@@ -270,8 +270,19 @@ table {
                 {{ "Rp. ".number_format($data->total_price_after_discount) }}
             </td>
         </tr>
+        @php
+            $invBank = getInvoiceBank();
+            $haveBank = count($invBank);
+            $invBank1 = $haveBank > 0 ? $invBank[0] : null;
+            $invBank2 = $haveBank > 1 ? $invBank[1] : null;
+        @endphp
         <tr>
-            <td colspan="8"  class="f_arial" style="text-align:left;vertical-align:top;">
+            <td colspan="7"  class="f_arial" style="text-align:left;vertical-align:top;">
+                @if ($invBank1 !== null)
+                {{ $invBank1->type_name." An. ".$invBank1->account_name." | ".$invBank1->account_number }}
+                @endif
+            </td>
+            <td colspan="1"  class="f_arial" style="text-align:left;vertical-align:top;">
 
             </td>
 
@@ -287,7 +298,12 @@ table {
             </td>
         </tr>
         <tr>
-            <td colspan="8"  class="f_arial" style="text-align:left;vertical-align:top;">
+            <td colspan="7"  class="f_arial" style="text-align:left;vertical-align:top;">
+                @if ($invBank2 !== null)
+                {{ $invBank2->type_name." An. ".$invBank2->account_name." | ".$invBank2->account_number }}
+                @endif
+            </td>
+            <td colspan="1"  class="f_arial" style="text-align:left;vertical-align:top;">
 
             </td>
 
