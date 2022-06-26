@@ -342,7 +342,8 @@
         var scheduleList = {!! json_encode($scheduleList) !!};
         var opname_schedule_id = $('#opname_schedule_id_edit').val();
         var schedule = scheduleList.find(a => a.opname_schedule_id === opname_schedule_id);
-        export_name = "Stok Opname Product "+schedule.opname_date;
+        var opname_date = schedule !== undefined ? schedule.opname_date : "";
+        export_name = "Stok Opname Product "+opname_date;
 
         $('#searchTable1').DataTable().destroy();
         $('#searchTable1').DataTable({
@@ -352,9 +353,10 @@
             "bInfo": true,
             "autoWidth": false,
             "columnDefs": [
-                { "targets": 0, "visible": false },
                 { "targets": 1, "visible": false },
                 { "targets": 2, "visible": false },
+                { "targets": 3, "visible": false },
+                { "targets": 4, "visible": false },
             ],
             "dom": 'Bfrtip',
             "buttons": [
@@ -374,12 +376,21 @@
             ],
             "ajax": '/process/stock-opname-product/load-opname-item/'+stokOpnameId,
             "aoColumns": [
+                { "mRender": function (data, type, row, num) {
+                        return num.row+1;
+                    }
+                },
                 { "data": "product.product_id" },
                 { "data": "warehouse.warehouse_id" },
                 { "data": "unit_id" },
                 {  "mRender": function (data, type, row, num) {
                         var part = row.product.product_code+' - '+ row.product.product_name;
                         return part;
+                    }
+                },
+                {  "mRender": function (data, type, row, num) {
+                        var product = row.product.product_code+' - '+ row.product.product_name;
+                        return product;
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
@@ -503,13 +514,16 @@
     }
 
     function trigerForm(schedule){
-        var startTime = moment(schedule.start_datetime, 'YYYY-MM-DD HH:mm:ss').toDate();
-        var now = new Date();
+        if(schedule !== undefined){
+            var startTime = moment(schedule.start_datetime, 'YYYY-MM-DD HH:mm:ss').toDate();
+            var now = new Date();
 
-        if (now < startTime)
-        {
-            swal("Info!", "Time is not starting stock opname!");
+            if (now < startTime)
+            {
+                swal("Info!", "Time is not starting stock opname!");
+            }
         }
+
     }
 
     function importExcelClick(inputFileId){
