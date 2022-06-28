@@ -79,6 +79,7 @@
                                                     <th>Grand Total (Rp.)</th>
                                                     <th>Total Paid (Rp.)</th>
                                                     <th>Paid Remain (Rp.)</th>
+                                                    <th>Note / Description</th>
                                                 </tr>
                                             </thead>
 
@@ -180,50 +181,51 @@
                 },
                 { "data": "so_date" },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.total_hpp.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        return "Rp. " + formatRupiah(parseInt(row.total_hpp));
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.shipping_cost.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        return "Rp. " + formatRupiah(parseInt(row.shipping_cost));
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.grand_total.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        return "Rp. " + formatRupiah(parseInt(row.grand_total));
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.dec_paid.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        return "Rp. " + formatRupiah(parseInt(row.dec_paid));
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.dec_remain.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        return "Rp. " + formatRupiah(parseInt(row.dec_remain));
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        var hpp = '<input type="text" value="'+"Rp. " + row.total_hpp.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+'">';
+                        var hpp = '<input type="text" value="'+"Rp. " + formatRupiah(parseInt(row.total_hpp))+'">';
                         return hpp;
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        var shipping_cost = '<input type="text" value="'+"Rp. " + row.shipping_cost.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+'">';
+                        var shipping_cost = '<input type="text" value="'+"Rp. " + formatRupiah(parseInt(row.shipping_cost))+'">';
                         return shipping_cost;
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        var grand_total = '<input type="text" value="'+"Rp. " + row.grand_total.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+'">';
+                        var grand_total = '<input type="text" value="'+"Rp. " + formatRupiah(parseInt(row.grand_total))+'">';
                         return grand_total;
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        var dec_paid = '<input type="text" value="'+"Rp. " + row.dec_paid.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+'">';
+                        var dec_paid = '<input type="text" value="'+"Rp. " + formatRupiah(parseInt(row.dec_paid))+'">';
                         return dec_paid;
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        var dec_remain = '<input type="text" value="'+"Rp. " + row.dec_remain.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+'">';
+                        var dec_remain = '<input type="text" value="'+"Rp. " + formatRupiah(parseInt(row.dec_remain))+'">';
                         return dec_remain;
                     }
                 },
+                { "data": "description" },
             ],
             "initComplete": function(settings, json) {
                 json.data.forEach(item => {
@@ -234,16 +236,16 @@
                     totalPaidRemain = parseInt(totalPaidRemain) + parseInt(item.dec_remain);
                 });
                 totalMargin = parseInt(totalGrandTotal) - parseInt(totalHPP);
-                var totalMarginFin = 'Rp. '+ parseInt(totalMargin).toFixed(2).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
-                var totalHPPFin = 'Rp. '+ parseInt(totalHPP).toFixed(2).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
-                var totalGrandTotalFin = 'Rp. '+ parseInt(totalGrandTotal).toFixed(2).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                var totalMarginFin = 'Rp. '+ formatRupiah(parseInt(totalMargin));
+                var totalHPPFin = 'Rp. '+ formatRupiah(parseInt(totalHPP));
+                var totalGrandTotalFin = 'Rp. '+ formatRupiah(parseInt(totalGrandTotal));
                 var row = '<tr>';
                 row += '<td colspan="4">TOTAL (Rp.)</td>';
-                row += '<td class="text-right">Rp. '+ parseInt(totalHPP).toFixed(2).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ","); +'</td>';
-                row += '<td class="text-right">Rp. '+ parseInt(totalShipping).toFixed(2).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ","); +'</td>';
-                row += '<td class="text-right">Rp. '+ parseInt(totalGrandTotal).toFixed(2).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ","); +'</td>';
-                row += '<td class="text-right">Rp. '+ parseInt(totalPaid).toFixed(2).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ","); +'</td>';
-                row += '<td class="text-right">Rp. '+ parseInt(totalPaidRemain).toFixed(2).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ","); +'</td>';
+                row += '<td class="text-right">Rp. '+ formatRupiah(parseInt(totalHPP)); +'</td>';
+                row += '<td class="text-right">Rp. '+ formatRupiah(parseInt(totalShipping)); +'</td>';
+                row += '<td class="text-right">Rp. '+ formatRupiah(parseInt(totalGrandTotal)); +'</td>';
+                row += '<td class="text-right">Rp. '+ formatRupiah(parseInt(totalPaid)); +'</td>';
+                row += '<td class="text-right">Rp. '+ formatRupiah(parseInt(totalPaidRemain)); +'</td>';
                 row += '</tr>';
                 row += '<tr>';
                 row += '<td colspan="4">TOTAL MARGIN (Rp.)</td>';

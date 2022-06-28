@@ -178,15 +178,15 @@
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.debit.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        return "Rp. " + formatRupiah(parseInt(row.debit));
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.credit.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        return "Rp. " + formatRupiah(parseInt(row.credit));
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.saldo.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        return "Rp. " + formatRupiah(parseInt(row.saldo));
                     }
                 },
                 {  "mRender": function (data, type, row, num) {

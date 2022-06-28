@@ -7,7 +7,7 @@
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <div class="page-header-title">
-                        <h5 class="m-b-10">REPORT SALES ORDER EXCLUSIVE RESELLER TABLE</h5>
+                        <h5 class="m-b-10">REPORT SALES ORDER SPECIAL GIFT TABLE</h5>
                         <p class="m-b-0">&nbsp;</p>
                     </div>
                 </div>
@@ -17,7 +17,7 @@
                             <a href="index-2.html"> <i class="fa fa-home"></i> </a>
                         </li>
                         <li class="breadcrumb-item"><a href="#!">Report</a></li>
-                        <li class="breadcrumb-item"><a href="#!">Sales Order Exclusive Reseller</a></li>
+                        <li class="breadcrumb-item"><a href="#!">Sales Order Special Gift</a></li>
                     </ul>
                 </div>
             </div>
@@ -33,7 +33,7 @@
                         <div class="col-sm-12" id="table">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5>Report Sales Order Exclusive Reseller</h5>
+                                    <h5>Report Sales Order Special Gift</h5>
                                     <span></span>
                                     <div class="card-header-right">
                                         <ul class="list-unstyled card-option">
@@ -67,7 +67,7 @@
                                                 <tr>
                                                     <th>No.</th>
                                                     <th>Sales Order No.</th>
-                                                    <th>Exclusive Sales Order</th>
+                                                    <th>Special Gift Customer</th>
                                                     <th>SO. Date</th>
                                                     <th>HPP (Rp.)</th>
                                                     <th>Shippimg Cost (Rp.)</th>
@@ -121,6 +121,10 @@
 
     }
 
+    function addFoot(){
+
+    }
+
     function loadData(start_date, end_date){
         var totalHPP = 0;
         var totalShipping = 0;
@@ -159,7 +163,7 @@
                     title: 'Report-Sales-Order-Exc-Reseller-' + export_name,
                 },
             ],
-            "ajax": '/report/sales-order-exclusive-reseller/load/'+start_date+'/'+end_date,
+            "ajax": '/report/sales-order-special-gift/load/'+start_date+'/'+end_date,
             "aoColumns": [
                 {  "mRender": function (data, type, row, num) {
                         console.log(row);
@@ -176,7 +180,7 @@
                 },
                 {  "mRender": function (data, type, row, num) {
                         var customerStatus = "";
-                        customerStatus += row.exc_reseller !== null ? row.exc_reseller.reseller_code+" - "+row.exc_reseller.reseller_name : "";
+                        customerStatus += row.customer !== null ? row.customer.customer_name : "";
                         return customerStatus;
                     }
                 },

@@ -59,6 +59,7 @@ use App\Http\Controllers\MazuProcess\ReportSalesOrderExcResellerController;
 use App\Http\Controllers\MazuProcess\ReportSalesOrderMedsosController;
 use App\Http\Controllers\MazuProcess\ReportSalesOrderOutletController;
 use App\Http\Controllers\MazuProcess\ReportSalesOrderOwnerController;
+use App\Http\Controllers\MazuProcess\ReportSalesOrderSpesialGiftController;
 
 $this->path = public_path('assets/files/import/');
 //use Illuminate\Support\Facades\Route;
@@ -454,6 +455,10 @@ Route::group(['middleware' => 'auth'], function () {
     //=============================REPORT SALES ORDER ENDORSE 09203==========================
     Route::get('/report/sales-order-endorse/table', [ReportSalesOrderEndorseController::class, 'reportSOTable']);
     Route::get('/report/sales-order-endorse/load/{start_date}/{end_date}', [ReportSalesOrderEndorseController::class, 'loadReportSO']);
+
+    //=============================REPORT SALES ORDER ENDORSE 09208==========================
+    Route::get('/report/sales-order-special-gift/table', [ReportSalesOrderSpesialGiftController::class, 'reportSOTable']);
+    Route::get('/report/sales-order-special-gift/load/{start_date}/{end_date}', [ReportSalesOrderSpesialGiftController::class, 'loadReportSO']);
 
     //=============================REPORT SALES ORDER MEDSOS 09204==========================
     Route::get('/report/sales-order-medsos/table', [ReportSalesOrderMedsosController::class, 'reportSOTable']);

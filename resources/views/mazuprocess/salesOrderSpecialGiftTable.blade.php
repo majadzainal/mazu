@@ -601,23 +601,23 @@
                 },
                 { "data": "so_date" },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.total_price.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        return "Rp. " + formatRupiah(parseInt(row.total_price));
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.total_price_after_discount.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        return "Rp. " + formatRupiah(parseInt(row.total_price_after_discount));
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.grand_total.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        return "Rp. " + formatRupiah(parseInt(row.grand_total));
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.dec_paid.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        return "Rp. " + formatRupiah(parseInt(row.dec_paid));
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.dec_remain.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        return "Rp. " + formatRupiah(parseInt(row.dec_remain));
                     }
                 },
                 { "data": "description" },
@@ -1230,11 +1230,11 @@ function loadDataPayment(so_id){
             { "data": "paid_type.account_name" },
             { "data": "paid_type.account_number" },
             {  "mRender": function (data, type, row, num) {
-                    return "Rp. " + row.dec_paid.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                    return "Rp. " + formatRupiah(parseInt(row.dec_paid));
                 }
             },
             {  "mRender": function (data, type, row, num) {
-                    return "Rp. " + row.dec_remain.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                    return "Rp. " + formatRupiah(parseInt(row.dec_remain));
                 }
             },
             {  "mRender": function (data, type, row, num) {
