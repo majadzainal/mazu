@@ -703,6 +703,7 @@ class ComposerStaticInitc360a417a05f7a27e3da6ae7641772da
         'App\\Http\\Controllers\\MazuProcess\\ReportSalesOrderMedsosController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuProcess/ReportSalesOrderMedsosController.php',
         'App\\Http\\Controllers\\MazuProcess\\ReportSalesOrderOutletController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuProcess/ReportSalesOrderOutletController.php',
         'App\\Http\\Controllers\\MazuProcess\\ReportSalesOrderOwnerController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuProcess/ReportSalesOrderOwnerController.php',
+        'App\\Http\\Controllers\\MazuProcess\\ReportSalesOrderSpesialGiftController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuProcess/ReportSalesOrderSpesialGiftController.php',
         'App\\Http\\Controllers\\MazuProcess\\SalesOrderController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuProcess/SalesOrderController.php',
         'App\\Http\\Controllers\\MazuProcess\\SalesOrderEndorseController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuProcess/SalesOrderEndorseController.php',
         'App\\Http\\Controllers\\MazuProcess\\SalesOrderExcResellerController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuProcess/SalesOrderExcResellerController.php',

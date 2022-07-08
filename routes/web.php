@@ -33,6 +33,7 @@ use App\Http\Controllers\MazuMaster\InventoryOutletController;
 use App\Http\Controllers\MazuMaster\ProductCategoryController;
 use App\Http\Controllers\MazuMaster\ProductSupplierController;
 use App\Http\Controllers\MazuMaster\CustomerCategoryController;
+use App\Http\Controllers\MazuMaster\EventScheduleController;
 use App\Http\Controllers\MazuMaster\InventoryProductController;
 use App\Http\Controllers\MazuProcess\SalesOrderOwnerController;
 use App\Http\Controllers\MazuMaster\ExclusiveResellerController;
@@ -195,6 +196,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/master/endorse/add', [EndorseController::class, 'addEndorse']);
     Route::post('/master/endorse/update', [EndorseController::class, 'updateEndorse']);
     Route::get('/master/endorse/delete/{id}', [EndorseController::class, 'deleteEndorse']);
+
+    //=============================EVENT SCHEDULE 00212==========================
+    Route::get('/master/event-schedule/table', [EventScheduleController::class, 'listEventSchedule']);
+    Route::get('/master/event-schedule/load', [EventScheduleController::class, 'loadEventSchedule']);
+    Route::post('/master/event-schedule/add', [EventScheduleController::class, 'addEventSchedule']);
+    Route::post('/master/event-schedule/update', [EventScheduleController::class, 'updateEventSchedule']);
+    Route::get('/master/event-schedule/close/{id}', [EventScheduleController::class, 'closeEventSchedule']);
+    Route::get('/master/event-schedule/delete/{id}', [EventScheduleController::class, 'deleteEventSchedule']);
 
     //=============================OUTLET LIST 00301==========================
     Route::get('/master/outlet/table', [OutletController::class, 'listOutlet']);

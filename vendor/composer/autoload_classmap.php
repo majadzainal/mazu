@@ -81,6 +81,7 @@ return array(
     'App\\Http\\Controllers\\MazuProcess\\ReportSalesOrderMedsosController' => $baseDir . '/app/Http/Controllers/MazuProcess/ReportSalesOrderMedsosController.php',
     'App\\Http\\Controllers\\MazuProcess\\ReportSalesOrderOutletController' => $baseDir . '/app/Http/Controllers/MazuProcess/ReportSalesOrderOutletController.php',
     'App\\Http\\Controllers\\MazuProcess\\ReportSalesOrderOwnerController' => $baseDir . '/app/Http/Controllers/MazuProcess/ReportSalesOrderOwnerController.php',
+    'App\\Http\\Controllers\\MazuProcess\\ReportSalesOrderSpesialGiftController' => $baseDir . '/app/Http/Controllers/MazuProcess/ReportSalesOrderSpesialGiftController.php',
     'App\\Http\\Controllers\\MazuProcess\\SalesOrderController' => $baseDir . '/app/Http/Controllers/MazuProcess/SalesOrderController.php',
     'App\\Http\\Controllers\\MazuProcess\\SalesOrderEndorseController' => $baseDir . '/app/Http/Controllers/MazuProcess/SalesOrderEndorseController.php',
     'App\\Http\\Controllers\\MazuProcess\\SalesOrderExcResellerController' => $baseDir . '/app/Http/Controllers/MazuProcess/SalesOrderExcResellerController.php',
