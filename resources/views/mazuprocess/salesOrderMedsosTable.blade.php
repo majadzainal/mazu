@@ -216,7 +216,7 @@
                                                     <input name="is_ppn"  id="is_ppn" type="hidden">
                                                     <input name="is_ppnCHK" id="is_ppnCHK" oninput="oninputPPN()" type="checkbox" >
                                                     <label for="is_ppnCHK">
-                                                        <strong>PPN 10%</strong>
+                                                        <strong>PPN 11%</strong>
                                                     </label>
                                                 </div>
                                             </div>
@@ -627,7 +627,7 @@
             $("#soForm").attr("action", "/process/sales-order-sosmed/update");
             $("#so_id").val(data.so_id);
             $("#so_number").val(data.so_number);
-            $("#so_date").val(data.so_date);
+            $("#so_date").val(moment(data.so_date).format('YYYY-MM-DD'));
             $("#medsos_description").val(data.medsos_description);
             $("#description").val(data.description);
 
@@ -650,8 +650,8 @@
 
             $("#ppn").val(data.ppn);
 
-            $("#grand_total-form").val(data.grand_total);
-            $("#grand_total").val(data.grand_total);
+            $("#grand_total-form").val(data.grand_total_wshipping);
+            $("#grand_total").val(data.grand_total_wshipping);
 
             $("#total_paid-form").val(data.dec_paid);
             $("#total_paid").val(data.dec_paid);
@@ -680,6 +680,7 @@
             $("#soForm").trigger("reset");
             $("#btnCancelPO").hide();
             $("#soForm").attr("action", "/process/sales-order-sosmed/add");
+            $("#so_date").val(moment(new Date()).format('YYYY-MM-DD'));
 
             $("#saveInitProccess").show();
             $("#saveAsDraft").show();
@@ -953,7 +954,7 @@ function calculateTotal(){
     $("#total_price_after_discount").val(totalPriceAfterDiscount);
 
     if(is_ppn){
-        ppnPrice = (parseFloat(totalPriceAfterDiscount) * (10 / 100 ));
+        ppnPrice = (parseFloat(totalPriceAfterDiscount) * {{ getPPN() }});
     }
 
     var shippingCostForm = $("#shipping_cost-form").val();
@@ -1182,8 +1183,8 @@ function return_value_payment(e, data){
         $("#payment_form_close").hide();
     }
     $("#so_id_payment").val(data.so_id);
-    $("#grand_total_payment-form").val(data.grand_total);
-    $("#grand_total_payment").val(data.grand_total);
+    $("#grand_total_payment-form").val(data.grand_total_wshipping);
+        $("#grand_total_payment").val(data.grand_total_wshipping);
     $("#total_paid_payment-form").val(data.dec_paid);
     $("#total_paid_payment").val(data.dec_paid);
     $("#dec_paid_payment-form").val(0);

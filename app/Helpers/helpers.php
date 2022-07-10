@@ -6,6 +6,7 @@ use App\Models\Setting\Menu_Role;
 use App\Models\MazuMaster\Company;
 use App\Models\MazuMaster\PaidType;
 use App\Models\MazuMaster\StockOpnameSchedule;
+use App\Models\MazuMaster\Store;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Process\OpnameSchedule;
@@ -47,6 +48,12 @@ function getBanner(){
     }
 }
 
+function getPPN(){
+    $ppn = floatval(11/100);
+
+    return $ppn;
+}
+
 function getCompany(){
 
     $store_id =  $store_id = User::where('user_id', Auth::user()->user_id)
@@ -74,6 +81,15 @@ function getStoreId(){
     ->pluck('store_id')->first();
 
     return $store_id;
+}
+
+function isEvent(){
+    $store_id = User::where('user_id', Auth::user()->user_id)
+    ->pluck('store_id')->first();
+    $is_event = Store::where('store_id', $store_id)
+    ->pluck('is_event')->first();
+
+    return $is_event;
 }
 
 function isAccess($crud, $menuId){

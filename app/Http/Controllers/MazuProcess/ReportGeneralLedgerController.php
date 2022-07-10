@@ -6,6 +6,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use PhpParser\Node\Stmt\Foreach_;
 use App\Http\Controllers\Controller;
+use App\Models\MazuMaster\EventSchedule;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Models\MazuProcess\GeneralLedger;
 
@@ -23,8 +24,13 @@ class ReportGeneralLedgerController extends Controller
             ]);
         }
 
+        $isEvent = isEvent();
+        $eventList = EventSchedule::where('is_active', 1)->where('is_closed', 0)->get();
+
         return view('mazuprocess.reportGeneralLedgerTable', [
             'MenuID' => $this->MenuID,
+            'isEvent' => $isEvent,
+            'eventList' => $eventList,
         ]);
 
     }
@@ -33,6 +39,8 @@ class ReportGeneralLedgerController extends Controller
         if(!isAccess('read', $this->MenuID)){
             return['data'=> ''];
         }
+
+        $isEvent = isEvent();
 
         $store_id = getStoreId();
         $credit = GeneralLedger::whereDate('gl_date', '<', $start_date)
@@ -47,7 +55,7 @@ class ReportGeneralLedgerController extends Controller
                             ->orderBy('created_at', 'asc')
                             ->get();
         // dd($glList);
-        $saldo = floatVal($credit) - floatVal($debit);
+        $saldo = $isEvent ? 0 : floatVal($credit) - floatVal($debit);
         $dataList = [];
         foreach($glList as $item){
             $data['gl_date'] = $item->gl_date;

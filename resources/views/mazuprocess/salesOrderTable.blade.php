@@ -111,13 +111,31 @@
                                             </div>
                                             <label class="col-sm-5 col-form-label">Auto generate after save as process</label>
                                         </div>
+                                        @if ($isEvent)
+                                        <div class="form-group row">
+                                            <label class="col-sm-2 col-form-label">Event <span class="text-danger">*</span></label>
+                                            <div class="col-sm-10">
+                                                <select name="event_schedule_id" id="event_schedule_id" class="js-example-placeholder col-sm-12" required>
+                                                    <option value="">--Select--</option>
+                                                    @foreach($eventList as $ls)
+                                                        <option value="{{ $ls->event_schedule_id }}">{{ $ls->event_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        @endif
                                         <div class="form-group row">
                                             <label class="col-sm-2 col-form-label">Customer <span class="text-danger">*</span></label>
                                             <div class="col-sm-10">
                                                 <select name="customer_id" id="customer_id" class="js-example-placeholder col-sm-12" required>
                                                     <option value="">--Select--</option>
                                                     @foreach($customerList as $ls)
-                                                        <option value="{{ $ls->customer_id }}">{{ $ls->customer_name }}</option>
+                                                        @if ($isEvent)
+                                                            <option value="{{ $ls->customer_id }}">{{ $ls->customer_name." - ".$ls->store->store_name }}</option>
+                                                        @else
+                                                            <option value="{{ $ls->customer_id }}">{{ $ls->customer_name }}</option>
+                                                        @endif
+
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -218,7 +236,7 @@
                                                     <input name="is_ppn"  id="is_ppn" type="hidden">
                                                     <input name="is_ppnCHK" id="is_ppnCHK" oninput="oninputPPN()" type="checkbox" >
                                                     <label for="is_ppnCHK">
-                                                        <strong>PPN 10%</strong>
+                                                        <strong>PPN 11%</strong>
                                                     </label>
                                                 </div>
                                             </div>
@@ -632,7 +650,7 @@
             $("#soForm").attr("action", "/process/sales-order/update");
             $("#so_id").val(data.so_id);
             $("#so_number").val(data.so_number);
-            $("#so_date").val(data.so_date);
+            $("#so_date").val(moment(data.so_date).format('YYYY-MM-DD'));
             $("#customer_id").val(data.customer_id);
             $("#description").val(data.description);
 
@@ -658,8 +676,8 @@
             $("#shipping_cost-form").val(data.shipping_cost);
             $("#shipping_cost").val(data.shipping_cost);
 
-            $("#grand_total-form").val(data.grand_total);
-            $("#grand_total").val(data.grand_total);
+            $("#grand_total-form").val(data.grand_total_wshipping);
+            $("#grand_total").val(data.grand_total_wshipping);
 
             $("#total_paid-form").val(data.dec_paid);
             $("#total_paid").val(data.dec_paid);
@@ -693,6 +711,7 @@
             $("#customer_id").trigger('change');
             $("#btnCancelPO").hide();
             $("#soForm").attr("action", "/process/sales-order/add");
+            $("#so_date").val(moment(new Date()).format('YYYY-MM-DD'));
 
             $("#saveInitProccess").show();
             $("#saveAsDraft").show();
@@ -968,7 +987,7 @@
         $("#total_price_after_discount").val(totalPriceAfterDiscount);
 
         if(is_ppn){
-            ppnPrice = (parseFloat(totalPriceAfterDiscount) * (10 / 100 ));
+            ppnPrice = (parseFloat(totalPriceAfterDiscount) * {{ getPPN() }});
         }
 
         var shippingCostForm = $("#shipping_cost-form").val();
@@ -1199,8 +1218,8 @@
             $("#payment_form_close").hide();
         }
         $("#so_id_payment").val(data.so_id);
-        $("#grand_total_payment-form").val(data.grand_total);
-        $("#grand_total_payment").val(data.grand_total);
+        $("#grand_total_payment-form").val(data.grand_total_wshipping);
+        $("#grand_total_payment").val(data.grand_total_wshipping);
         $("#total_paid_payment-form").val(data.dec_paid);
         $("#total_paid_payment").val(data.dec_paid);
         $("#dec_paid_payment-form").val(0);

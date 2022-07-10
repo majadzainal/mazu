@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MazuProcess;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\MazuProcess\SalesOrder;
+use App\Models\MazuMaster\EventSchedule;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class ReportSalesOrderController extends Controller
@@ -21,8 +22,12 @@ class ReportSalesOrderController extends Controller
             ]);
         }
 
+        $isEvent = isEvent();
+        $eventList = EventSchedule::where('is_active', 1)->where('is_closed', 0)->get();
         return view('mazuprocess.reportSalesOrderTable', [
             'MenuID' => $this->MenuID,
+            'isEvent' => $isEvent,
+            'eventList' => $eventList,
         ]);
 
     }

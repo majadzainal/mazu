@@ -46,9 +46,6 @@
                                     </div>
                                 </div>
                                 <div class="card-block">
-                                    @if(isAccess('create', $MenuID))
-                                        <button type="button" class="btn btn-primary btn-sm btn-round waves-effect waves-light" btn="add" onClick="return_value(this, '')"><i class="icofont icofont-plus-circle"></i> Add</button>
-                                    @endif
                                     <div class="form-group row">
                                         <label class="col-sm-12 col-form-label">Select periode for load data.</label>
                                         <label class="col-sm-2 col-form-label">Period <span class="text-danger"> *</span></label>

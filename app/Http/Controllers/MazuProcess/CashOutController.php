@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\MazuProcess\CashOut;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Models\MazuMaster\EventSchedule;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Http\Controllers\MazuProcess\GeneralLedgerController;
 
@@ -29,8 +30,14 @@ class CashOutController extends Controller
                 'MenuID' => $this->MenuID,
             ]);
         }
+
+        $isEvent = isEvent();
+        $eventList = EventSchedule::where('is_active', 1)->where('is_closed', 0)->get();
+
         return view('mazuprocess.cashOutTable', [
             'MenuID' => $this->MenuID,
+            'isEvent' => $isEvent,
+            'eventList' => $eventList,
         ]);
 
     }

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\MazuLog;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\MazuLog\LogStock;
+use App\Models\MazuMaster\Product;
+use App\Models\MazuMaster\ProductSupplier;
 use Illuminate\Support\Facades\Auth;
 
 class LogStockController extends Controller
@@ -26,6 +28,7 @@ class LogStockController extends Controller
     }
 
     function justAddLog($product_id, $warehouse_id, $qty, $type, $description){
+        $store_id = Product::where('product_id', $product_id)->pluck('store_id')->first();
         LogStock::create([
             'product_id'        => $product_id,
             'warehouse_id'      => $warehouse_id,
@@ -33,7 +36,7 @@ class LogStockController extends Controller
             'qty'               => $qty,
             'date_log'          => date("Y-m-d"),
             'description'       => $description,
-            'store_id'          => getStoreId(),
+            'store_id'          => $store_id,
             'created_user'      => Auth::User()->employee->employee_name,
         ]);
     }
@@ -56,6 +59,7 @@ class LogStockController extends Controller
     }
 
     function justAddLogSupplier($product_supplier_id, $warehouse_id, $qty, $type, $description){
+        $store_id = ProductSupplier::where('product_supplier_id', $product_supplier_id)->pluck('store_id')->first();
         LogStock::create([
             'product_supplier_id'        => $product_supplier_id,
             'warehouse_id'      => $warehouse_id,
@@ -63,7 +67,7 @@ class LogStockController extends Controller
             'qty'               => $qty,
             'date_log'          => date("Y-m-d"),
             'description'       => $description,
-            'store_id'          => getStoreId(),
+            'store_id'          => $store_id,
             'created_user'      => Auth::User()->employee->employee_name,
         ]);
     }

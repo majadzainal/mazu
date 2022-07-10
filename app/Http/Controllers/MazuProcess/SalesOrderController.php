@@ -22,6 +22,8 @@ use App\Models\MazuMaster\ProductComposition;
 use App\Http\Controllers\MazuMaster\StockController;
 use App\Http\Controllers\Setting\NumberingFormController;
 use App\Http\Controllers\MazuProcess\GeneralLedgerController;
+use App\Models\MazuMaster\EventSchedule;
+use App\Models\MazuMaster\Store;
 
 class SalesOrderController extends Controller
 {
@@ -49,13 +51,27 @@ class SalesOrderController extends Controller
         }
 
         $store_id = getStoreId();
-        $customerList = Customer::where('store_id', $store_id)->where('is_active', 1)->get();
-        $productList = Product::where('store_id', $store_id)->where('is_active', 1)
-                    ->with('unit', 'stockWarehouse', 'stockWarehouse.warehouse', 'composition', 'composition.productSupplier')->get();
-        $paidTypeList = PaidType::where('store_id', $store_id)->where('is_active', 1)->get();
+        $isEvent = isEvent();
+        $eventList = [];
+        if($isEvent){
+            $eventList = EventSchedule::where('is_active', 1)->where('is_closed', 0)->get();
+            $customerList = Customer::where('is_active', 1)->with('store')->get();
+            $productList = Product::where('is_active', 1)
+                        ->with('unit', 'stockWarehouse', 'stockWarehouse.warehouse', 'composition', 'composition.productSupplier')->get();
+
+            $paidTypeList = PaidType::where('is_active', 1)->get();
+        }else{
+            $customerList = Customer::where('store_id', $store_id)->where('is_active', 1)->get();
+            $productList = Product::where('store_id', $store_id)->where('is_active', 1)
+                        ->with('unit', 'stockWarehouse', 'stockWarehouse.warehouse', 'composition', 'composition.productSupplier')->get();
+
+            $paidTypeList = PaidType::where('store_id', $store_id)->where('is_active', 1)->get();
+        }
 
         return view('mazuprocess.salesOrderTable', [
             'MenuID'            => $this->MenuID,
+            'isEvent'           => $isEvent,
+            'eventList'         => $eventList,
             'customerList'      => $customerList,
             'productList'       => $productList,
             'paidTypeList'      => $paidTypeList,
@@ -84,19 +100,36 @@ class SalesOrderController extends Controller
             return['data'=> ''];
         }
 
-        $productList = Product::where('store_id', getStoreId())->where('is_active', 1)
-                    ->with('category', 'unit', 'stockWarehouse', 'stockWarehouse.warehouse')
-                    ->orderBy('created_at', 'DESC')->get();
+        $isEvent = isEvent();
+        if($isEvent){
+            $productList = Product::where('is_active', 1)
+                ->with('category', 'unit', 'stockWarehouse', 'stockWarehouse.warehouse')
+                ->orderBy('created_at', 'DESC')->get();
+        }else{
+            $productList = Product::where('store_id', getStoreId())->where('is_active', 1)
+                ->with('category', 'unit', 'stockWarehouse', 'stockWarehouse.warehouse')
+                ->orderBy('created_at', 'DESC')->get();
+        }
+
 
         return['data'=> $productList];
     }
 
     function getProductLabel($product_label){
-        $data = LabelProduct::where('no_label', strtoupper($product_label))
-                        ->where('is_print', 1)
-                        ->where('is_checked_in', 0)
-                        ->where('store_id', getStoreId())
-                        ->get()->first();
+        $store_id = getStoreId();
+        $isEvent = isEvent();
+        if($isEvent){
+            $data = LabelProduct::where('no_label', strtoupper($product_label))
+                            ->where('is_print', 1)
+                            ->where('is_checked_in', 0)
+                            ->get()->first();
+        }else{
+            $data = LabelProduct::where('no_label', strtoupper($product_label))
+                            ->where('is_print', 1)
+                            ->where('is_checked_in', 0)
+                            ->where('store_id', $store_id)
+                            ->get()->first();
+        }
 
         return['data'=> $data];
     }
@@ -165,6 +198,24 @@ class SalesOrderController extends Controller
             ]);
 
             if($so){
+                // if($so->is_process){
+                //     $storeList = Store::where('is_active', 1)->where('is_event', 0)->get();
+                //     foreach($storeList as $store){
+                //         $so_id_store = Uuid::uuid4()->toString();
+                //         $hpp_store = floatval(0);
+                //         $total_price_store = floatval(0);
+                //         $total_price_after_discount_store = floatval(0);
+                //         for ($i=0; $i<count($request->product_id); $i++ ){
+                //             $product_store = Product::where('product_id', $request->product_id[$i])->get()->first();
+                //             if($product_store->store_id === $store->store_id){
+                //                 $hpp_store += $product_store->hpp;
+                //                 $total_price_store += $request->total_price_item[$i];
+                //                 $total_price_after_discount_store += $request->total_price_after_discount_item[$i];
+                //             }
+
+                //         }
+                //     }
+                // }
                 for ($i=0; $i<count($request->product_id); $i++ ){
                     $hpp = floatval(0);
                     $productHppItem = Product::where('product_id', $request->product_id[$i])->pluck('hpp')->first();

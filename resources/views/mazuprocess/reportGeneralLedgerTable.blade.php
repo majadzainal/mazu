@@ -46,8 +46,18 @@
                                     </div>
                                 </div>
                                 <div class="card-block">
-                                    @if(isAccess('create', $MenuID))
-                                        <button type="button" class="btn btn-primary btn-sm btn-round waves-effect waves-light" btn="add" onClick="return_value(this, '')"><i class="icofont icofont-plus-circle"></i> Add</button>
+                                    @if ($isEvent)
+                                    <div class="form-group row">
+                                        <label class="col-sm-2 col-form-label">Event <span class="text-danger">*</span></label>
+                                        <div class="col-sm-10">
+                                            <select name="event_schedule_id" id="event_schedule_id" onchange="changeEvent()" class="js-example-placeholder col-sm-12" required>
+                                                <option value="">--Select--</option>
+                                                @foreach($eventList as $ls)
+                                                    <option value="{{ $ls->event_schedule_id }}">{{ $ls->event_name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
                                     @endif
                                     <div class="form-group row">
                                         <label class="col-sm-12 col-form-label">Select periode for load data.</label>
@@ -105,6 +115,16 @@
         $("#payment").hide();
     });
 
+    function changeEvent(){
+        var eventSchedule = $("#event_schedule_id").val();
+        var eventList = {!! json_encode($eventList) !!};
+        var event = eventList.find(x => x.event_schedule_id === eventSchedule);
+        $("#start_date").val(event.start_date);
+        $("#end_date").val(event.end_date);
+
+        btnLoadDataClick();
+    }
+
     function btnLoadDataClick(){
         var start_date = $("#start_date").val();
         var end_date = $("#end_date").val();
@@ -113,10 +133,6 @@
             loadData(start_date, end_date);
 
         }
-
-    }
-
-    function addFoot(){
 
     }
 
