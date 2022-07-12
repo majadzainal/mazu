@@ -7,7 +7,7 @@
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <div class="page-header-title">
-                        <h5 class="m-b-10">CASH OUT TABLE</h5>
+                        <h5 class="m-b-10">CASH IN TABLE</h5>
                         <p class="m-b-0">&nbsp;</p>
                     </div>
                 </div>
@@ -17,7 +17,7 @@
                             <a href="index-2.html"> <i class="fa fa-home"></i> </a>
                         </li>
                         <li class="breadcrumb-item"><a href="#!">Process</a></li>
-                        <li class="breadcrumb-item"><a href="#!">Cash Out</a></li>
+                        <li class="breadcrumb-item"><a href="#!">Cash In</a></li>
                     </ul>
                 </div>
             </div>
@@ -33,7 +33,7 @@
                         <div class="col-sm-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5>Cash Out</h5>
+                                    <h5>Cash In</h5>
                                     <span></span>
                                     <div class="card-header-right">
                                         <ul class="list-unstyled card-option">
@@ -50,17 +50,6 @@
                                         <button class="btn btn-primary btn-sm btn-round waves-effect waves-light" data-toggle="modal" data-target="#large-Modal" btn="add" onClick="return_value(this, '')"><i class="icofont icofont-plus-circle"></i> Add</button>
                                     @endif
                                     <div class="form-group row">
-                                        @if ($isEvent)
-                                        <label class="col-sm-2 col-form-label">Event <span class="text-danger">*</span></label>
-                                        <div class="col-sm-10">
-                                            <select name="event_schedule_id" id="event_schedule_id" onchange="changeEvent()" class="js-example-placeholder col-sm-12" required>
-                                                <option value="">--Select--</option>
-                                                @foreach($eventList as $ls)
-                                                    <option value="{{ $ls->event_schedule_id }}">{{ $ls->event_name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        @endif
                                         <label class="col-sm-12 col-form-label">Select periode for load data.</label>
                                         <label class="col-sm-2 col-form-label">Period <span class="text-danger"> *</span></label>
                                         <div class="col-sm-4">
@@ -80,7 +69,7 @@
                                                     <th>Code</th>
                                                     <th>Name</th>
                                                     <th>Date</th>
-                                                    <th>Cash Out (Rp.)</th>
+                                                    <th>Cash IN (Rp.)</th>
                                                     <th>Description</th>
                                                 </tr>
                                             </thead>
@@ -136,7 +125,7 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-sm-2 col-form-label">Cash Out (Rp.)</label>
+                        <label class="col-sm-2 col-form-label">Cash In (Rp.)</label>
                         <div class="col-sm-4">
                             <input type="text" value="0" name="dec_cash_flow-form" id="dec_cash_flow-form" class="form-control currency text-right" placeholder="" required>
                             <input type="hidden" value="0" readonly name="dec_cash_flow" id="dec_cash_flow" class="form-control">
@@ -167,17 +156,6 @@
 
     } );
 
-
-    function changeEvent(){
-        var eventSchedule = $("#event_schedule_id").val();
-        var eventList = {!! json_encode($eventList) !!};
-        var event = eventList.find(x => x.event_schedule_id === eventSchedule);
-        $("#start_date").val(event.start_date);
-        $("#end_date").val(event.end_date);
-
-        btnLoadDataClick();
-    }
-
     function btnLoadDataClick(){
         var start_date = $("#start_date").val();
         var end_date = $("#end_date").val();
@@ -194,7 +172,7 @@
             "bLengthChange": true,
             "bFilter": true,
             "bInfo": true,
-            "ajax": '/process/cash-out/load/'+start_date+'/'+end_date,
+            "ajax": '/process/cash-in/load/'+start_date+'/'+end_date,
             "aoColumns": [
                 {  "mRender": function (data, type, row, num) {
                         return num.row+1;
@@ -208,7 +186,7 @@
                             button += "<button class='btn waves-effect waves-light btn-info btn-icon' data-toggle='modal' data-target='#large-Modal' onClick='return_value(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-edit'></i></button>";
                         @endif
                         @if(isAccess('delete', $MenuID))
-                            button += "<button class='btn waves-effect waves-light btn-warning btn-icon' data-confirm='Are you sure|want to delete cash out "+ row.cash_flow_name +" ??' data-url='/process/cash-out/delete/" + data + "' onClick='deleteInit(this)'>&nbsp;<i class='icofont icofont-trash'></i></button>";
+                            button += "<button class='btn waves-effect waves-light btn-warning btn-icon' data-confirm='Are you sure|want to delete cash out "+ row.cash_flow_name +" ??' data-url='/process/cash-in/delete/" + data + "' onClick='deleteInit(this)'>&nbsp;<i class='icofont icofont-trash'></i></button>";
                         @endif
                         return button;
                     }
@@ -230,7 +208,7 @@
         var btn = $(e).attr("btn");
 
         if (btn == "edit"){
-            $("#customerForm").attr("action", "/process/cash-out/update");
+            $("#customerForm").attr("action", "/process/cash-in/update");
             $("#defaultModalLabel").text("Edit Cash Out")
             $("#cash_flow_id").val(data.cash_flow_id);
             $("#cash_flow_code").val(data.cash_flow_code);
@@ -243,7 +221,7 @@
             $("#dec_cash_flow-form").trigger("focusout");
         } else {
             $("#customerForm").trigger("reset");
-            $("#customerForm").attr("action", "/process/cash-out/add");
+            $("#customerForm").attr("action", "/process/cash-in/add");
             $("#defaultModalLabel").text("Add Cash Out");
         }
 

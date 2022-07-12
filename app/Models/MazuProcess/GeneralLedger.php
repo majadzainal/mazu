@@ -45,6 +45,11 @@ class GeneralLedger extends Model
         return $this->hasOne(SalesOrderPaid::class, 'sales_order_paid_id', 'sales_order_paid_id');
     }
 
+    public function cashFlow()
+    {
+        return $this->hasOne(CashFlow::class, 'cash_flow_id', 'cash_flow_id');
+    }
+
     public function cashOut()
     {
         return $this->hasOne(CashOut::class, 'cash_out_id', 'cash_out_id');

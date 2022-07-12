@@ -7,14 +7,15 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\MazuProcess\CashOut;
 use App\Http\Controllers\Controller;
-use App\Models\MazuProcess\GeneralLedger;
+use App\Models\MazuProcess\CashFlow;
+use Illuminate\Support\Facades\Auth;
 use App\Models\MazuProcess\Production;
+use App\Models\MazuProcess\SalesOrder;
+use App\Models\MazuProcess\GeneralLedger;
+use App\Models\MazuProcess\SalesOrderPaid;
 use App\Models\MazuProcess\PurchaseOrderCustomer;
 use App\Models\MazuProcess\PurchaseOrderMaterial;
 use App\Models\MazuProcess\PurchaseOrderSupplier;
-use App\Models\MazuProcess\SalesOrder;
-use App\Models\MazuProcess\SalesOrderPaid;
-use Illuminate\Support\Facades\Auth;
 
 class GeneralLedgerController extends Controller
 {
@@ -242,6 +243,81 @@ class GeneralLedgerController extends Controller
             $gl = GeneralLedger::where('sales_order_paid_id', $soPaid->sales_order_paid_id)->get()->first();
             if($gl){
                 // $gl->forceDelete();
+                $gl->delete();
+            }
+        } catch (Exception  $e) {
+            return response()->json(['status' => 'Error', 'message' => $e->getMessage()], 202);
+        }
+    }
+
+
+    //CASH OUT
+    public function debitCashFlow(CashFlow $cashFlow)
+    {
+        try {
+            $now = Carbon::now();
+            $gl = GeneralLedger::where('cash_flow_id', $cashFlow->cash_flow_id)->get()->first();
+            if($gl){
+                $gl->update([
+                    'debit'                         => $cashFlow->dec_cash_flow,
+                    'updated_user'                  => Auth::User()->employee->employee_name,
+                ]);
+            }else{
+                $gl = GeneralLedger::create([
+                    'gl_date'                       => $now,
+                    'debit'                         => $cashFlow->dec_cash_flow,
+                    'cash_flow_id'                   => $cashFlow->cash_flow_id,
+                    'store_id'                      => getStoreId(),
+                    'created_user'                  => Auth::User()->employee->employee_name,
+                ]);
+            }
+        } catch (Exception  $e) {
+            return response()->json(['status' => 'Error', 'message' => $e->getMessage()], 202);
+        }
+    }
+
+    public function debitCashFlowDelete(CashFlow $cashFlow)
+    {
+        try {
+            $gl = GeneralLedger::where('cash_flow_id', $cashFlow->cash_flow_id)->get()->first();
+            if($gl){
+                $gl->delete();
+            }
+        } catch (Exception  $e) {
+            return response()->json(['status' => 'Error', 'message' => $e->getMessage()], 202);
+        }
+    }
+
+    //CASH IN
+    public function creditCashFlow(CashFlow $cashFlow)
+    {
+        try {
+            $now = Carbon::now();
+            $gl = GeneralLedger::where('cash_flow_id', $cashFlow->cash_flow_id)->get()->first();
+            if($gl){
+                $gl->update([
+                    'credit'                        => $cashFlow->dec_cash_flow,
+                    'updated_user'                  => Auth::User()->employee->employee_name,
+                ]);
+            }else{
+                $gl = GeneralLedger::create([
+                    'gl_date'                       => $now,
+                    'credit'                         => $cashFlow->dec_cash_flow,
+                    'cash_flow_id'                   => $cashFlow->cash_flow_id,
+                    'store_id'                      => getStoreId(),
+                    'created_user'                  => Auth::User()->employee->employee_name,
+                ]);
+            }
+        } catch (Exception  $e) {
+            return response()->json(['status' => 'Error', 'message' => $e->getMessage()], 202);
+        }
+    }
+
+    public function creditCashFlowDelete(CashFlow $cashFlow)
+    {
+        try {
+            $gl = GeneralLedger::where('cash_flow_id', $cashFlow->cash_flow_id)->get()->first();
+            if($gl){
                 $gl->delete();
             }
         } catch (Exception  $e) {

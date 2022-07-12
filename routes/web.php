@@ -15,6 +15,7 @@ use App\Http\Controllers\MazuMaster\OutletController;
 use App\Http\Controllers\MazuMaster\CompanyController;
 use App\Http\Controllers\MazuMaster\EndorseController;
 use App\Http\Controllers\MazuMaster\ProductController;
+use App\Http\Controllers\MazuProcess\CashInController;
 use App\Http\Controllers\MazuMaster\CustomerController;
 use App\Http\Controllers\MazuMaster\PaidTypeController;
 use App\Http\Controllers\MazuMaster\SupplierController;
@@ -27,39 +28,39 @@ use App\Http\Controllers\Setting\RoleSuperuserController;
 use App\Http\Controllers\MazuProcess\ProductionController;
 use App\Http\Controllers\MazuProcess\SalesOrderController;
 use App\Http\Controllers\MazuMaster\LabelProductController;
+use App\Http\Controllers\MazuMaster\EventScheduleController;
 use App\Http\Controllers\MazuProcess\SalesOrderPoController;
 use App\Http\Controllers\MazuMaster\BroadcastEmailController;
 use App\Http\Controllers\MazuMaster\InventoryOutletController;
 use App\Http\Controllers\MazuMaster\ProductCategoryController;
 use App\Http\Controllers\MazuMaster\ProductSupplierController;
 use App\Http\Controllers\MazuMaster\CustomerCategoryController;
-use App\Http\Controllers\MazuMaster\EventScheduleController;
 use App\Http\Controllers\MazuMaster\InventoryProductController;
 use App\Http\Controllers\MazuProcess\SalesOrderOwnerController;
 use App\Http\Controllers\MazuMaster\ExclusiveResellerController;
 use App\Http\Controllers\MazuProcess\ReceivingProductController;
+use App\Http\Controllers\MazuProcess\ReportSalesOrderController;
 use App\Http\Controllers\MazuProcess\SalesOrderMedsosController;
 use App\Http\Controllers\MazuProcess\SalesOrderOutletController;
 use App\Http\Controllers\MazuProcess\SalesOrderEndorseController;
 use App\Http\Controllers\MazuMaster\StockOpnameScheduleController;
 use App\Http\Controllers\MazuProcess\StockOpnameProductController;
 use App\Http\Controllers\MazuProcess\DeliveryOrderOutletController;
+use App\Http\Controllers\MazuProcess\ReportGeneralLedgerController;
 use App\Http\Controllers\MazuProcess\PurchaseOrderCustomerController;
 use App\Http\Controllers\MazuProcess\PurchaseOrderMaterialController;
 use App\Http\Controllers\MazuProcess\PurchaseOrderSupplierController;
+use App\Http\Controllers\MazuProcess\ReportSalesOrderOwnerController;
 use App\Http\Controllers\MazuProcess\SalesOrderExcResellerController;
 use App\Http\Controllers\MazuProcess\SalesOrderSpecialGiftController;
+use App\Http\Controllers\MazuProcess\ReportSalesOrderMedsosController;
+use App\Http\Controllers\MazuProcess\ReportSalesOrderOutletController;
 use App\Http\Controllers\MazuMaster\InventoryProductSupplierController;
+use App\Http\Controllers\MazuProcess\ReportSalesOrderEndorseController;
 use App\Http\Controllers\MazuProcess\DeliveryOrderExcResellerController;
 use App\Http\Controllers\MazuProcess\ReceivingProductSupplierController;
 use App\Http\Controllers\MazuMaster\InventoryExclusiveResellerController;
-use App\Http\Controllers\MazuProcess\ReportGeneralLedgerController;
-use App\Http\Controllers\MazuProcess\ReportSalesOrderController;
-use App\Http\Controllers\MazuProcess\ReportSalesOrderEndorseController;
 use App\Http\Controllers\MazuProcess\ReportSalesOrderExcResellerController;
-use App\Http\Controllers\MazuProcess\ReportSalesOrderMedsosController;
-use App\Http\Controllers\MazuProcess\ReportSalesOrderOutletController;
-use App\Http\Controllers\MazuProcess\ReportSalesOrderOwnerController;
 use App\Http\Controllers\MazuProcess\ReportSalesOrderSpesialGiftController;
 
 $this->path = public_path('assets/files/import/');
@@ -386,6 +387,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/process/cash-out/add', [CashOutController::class, 'addCashOut']);
     Route::post('/process/cash-out/update', [CashOutController::class, 'updateCashOut']);
     Route::get('/process/cash-out/delete/{id}', [CashOutController::class, 'deleteCashOut']);
+
+    //=============================CASH IN 016==========================
+    Route::get('/process/cash-in/table', [CashInController::class, 'cashInTable']);
+    Route::get('/process/cash-in/load/{start_date}/{end_date}', [CashInController::class, 'loadCashIn']);
+    Route::post('/process/cash-in/add', [CashInController::class, 'addCashIn']);
+    Route::post('/process/cash-in/update', [CashInController::class, 'updateCashIn']);
+    Route::get('/process/cash-in/delete/{id}', [CashInController::class, 'deleteCashIn']);
 
     //=============================STOCK OPNAME SCHEDULE 01501==========================
     Route::get('/process/stock-opname-schedule/tabel', [StockOpnameScheduleController::class, 'listOpnameSchedule']);

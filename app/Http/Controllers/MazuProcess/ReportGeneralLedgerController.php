@@ -51,7 +51,7 @@ class ReportGeneralLedgerController extends Controller
                     ->sum('debit');
         $glList = GeneralLedger::whereBetween('gl_date', [$start_date, $end_date])
                             ->where('store_id', $store_id)
-                            ->with('poCustomer', 'poSupplier', 'production', 'poMaterial', 'soPaid', 'soPaid.salesOrder', 'cashOut')
+                            ->with('poCustomer', 'poSupplier', 'production', 'poMaterial', 'soPaid', 'soPaid.salesOrder', 'cashFlow')
                             ->orderBy('created_at', 'asc')
                             ->get();
         // dd($glList);
@@ -78,7 +78,7 @@ class ReportGeneralLedgerController extends Controller
             $transNumber = $item->production !== null ? $item->production->po_number : $transNumber;
             $transNumber = $item->poMaterial !== null ? $item->poMaterial->po_number : $transNumber;
             $transNumber = $item->soPaid !== null ? $item->soPaid->salesOrder->so_number : $transNumber;
-            $transNumber = $item->cashOut !== null ? $item->cashOut->cash_out_code."-".$item->cashOut->cash_out_name : $transNumber;
+            $transNumber = $item->cashFlow !== null ? $item->cashFlow->cash_flow_code."-".$item->cashFlow->cash_flow_name : $transNumber;
             $data['transaction_number'] = $transNumber;
 
             array_push($dataList, $data);
