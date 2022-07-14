@@ -409,7 +409,7 @@
     function changeProductCategory(){
         var categoryArr = {!! json_encode($productCategoryList) !!};
         var product_category_id = $("#product_category_id").val();
-        var product_category = categoryArr.find(e => e.product_category_id === parseInt(product_category_id));
+        var product_category = categoryArr.find(e => e.product_category_id === product_category_id);
         $("#category_code").val(product_category.category_code);
     }
 
