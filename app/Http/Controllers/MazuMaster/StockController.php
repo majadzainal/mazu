@@ -20,8 +20,7 @@ class StockController extends Controller
     }
 
     function plusStock($product_id, $warehouse_id, $qty, $description){
-        $stockExist = Stock::where('product_id',$product_id)
-                    ->where('warehouse_id', $warehouse_id)->get()->first();
+        $stockExist = Stock::where('product_id',$product_id)->get()->first();
         if($stockExist){
             $stock = floatval($stockExist->stock) + floatval($qty);
             $stockExist->update([
@@ -29,9 +28,9 @@ class StockController extends Controller
                 'updated_user'      => Auth::User()->employee->employee_name,
             ]);
 
-            $this->objLogStock->addLogStockIN($product_id, $warehouse_id, $qty, $description);
+            $this->objLogStock->addLogStockIN($product_id, $stockExist->warehouse_id, $qty, $description);
 
-            $product = Product::find($product_id);
+            $product = Product::where('product_id',$product_id)->get()->first();
             $stock = floatval($product->stock) + floatval($qty);
             $product->update([
                 'stock'             => $stock,
@@ -48,7 +47,7 @@ class StockController extends Controller
             ]);
 
             $this->objLogStock->addLogStockIN($product_id, $warehouse_id, $qty, $description);
-            $product = Product::find($product_id);
+            $product = Product::where('product_id',$product_id)->get()->first();
             $stock = floatval($product->stock) + floatval($qty);
             $product->update([
                 'stock'             => $stock,
@@ -58,8 +57,7 @@ class StockController extends Controller
     }
 
     function minStock($product_id, $warehouse_id, $qty, $description){
-        $stockExist = Stock::where('product_id',$product_id)
-                    ->where('warehouse_id', $warehouse_id)->get()->first();
+        $stockExist = Stock::where('product_id',$product_id)->get()->first();
         if($stockExist){
             $stock = floatval($stockExist->stock) - floatval($qty);
             $stockExist->update([
@@ -67,9 +65,9 @@ class StockController extends Controller
                 'updated_user'      => Auth::User()->employee->employee_name,
             ]);
 
-            $this->objLogStock->addLogStockOUT($product_id, $warehouse_id, $qty, $description);
+            $this->objLogStock->addLogStockOUT($product_id, $stockExist->warehouse_id, $qty, $description);
 
-            $product = Product::find($product_id);
+            $product = Product::where('product_id',$product_id)->get()->first();
             $stock = $product->stock - $qty;
             $product->update([
                 'stock'             => $stock,

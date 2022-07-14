@@ -65,10 +65,12 @@ class StockOpnameProductController extends Controller
             return['data'=> ''];
         }
 
+        $store_id = getStoreId();
         $stock_opname = StockOpname::where('is_active', 1)
                             ->where('opname_type_id', 1)
                             ->with('opname_item', 'schedule',)
                             ->orderBy('created_at', 'desc')
+                            ->where('store_id', $store_id)
                             ->get();
 
         return['data'=> $stock_opname];
@@ -133,22 +135,24 @@ class StockOpnameProductController extends Controller
 
             if($stock_opname){
                 for ($i=0; $i<count($request->product_id); $i++ ){
-                    $item = StockOpnameItem::create([
-                        'stock_opname_id'       => $stock_opname->stock_opname_id,
-                        'product_id'            => $request->product_id[$i],
-                        'warehouse_id'          => $request->warehouse_id[$i],
-                        'stock'                 => $request->stock[$i],
-                        'stock_adjustment'      => intval($request->stock[$i]) + intval($request->stock_adjustment[$i]),
-                        'deviation'             => $request->stock_adjustment[$i],
-                        'unit_id'               => $request->unit_id[$i],
-                        'note'                  => $request->note[$i],
-                        'order_item'            => $i,
-                    ]);
+                    if(intval($request->stock_adjustment[$i]) != 0){
+                        $item = StockOpnameItem::create([
+                            'stock_opname_id'       => $stock_opname->stock_opname_id,
+                            'product_id'            => $request->product_id[$i],
+                            'warehouse_id'          => $request->warehouse_id[$i],
+                            'stock'                 => $request->stock[$i],
+                            'stock_adjustment'      => intval($request->stock[$i]) + intval($request->stock_adjustment[$i]),
+                            'deviation'             => $request->stock_adjustment[$i],
+                            'unit_id'               => $request->unit_id[$i],
+                            'note'                  => $request->note[$i],
+                            'order_item'            => $i,
+                        ]);
 
-                    if($item){
-                        $this->objStock->plusStock($item->product_id, $item->warehouse_id, $item->deviation, "Stock Opname FG. (".$stock_opname->stock_opname_number.") #".$stock_opname->stock_opname_id);
+                        if($item){
+                            $this->objStock->plusStock($item->product_id, $item->warehouse_id, $item->deviation, "Stock Opname FG. #".$stock_opname->stock_opname_id);
 
-                        $arrsuccess++;
+                            $arrsuccess++;
+                        }
                     }
                 }
 

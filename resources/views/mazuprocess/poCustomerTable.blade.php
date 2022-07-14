@@ -220,7 +220,7 @@
                                                     <input name="is_ppn"  id="is_ppn" type="hidden">
                                                     <input name="is_ppnCHK" id="is_ppnCHK" oninput="oninputPPN()" type="checkbox" >
                                                     <label for="is_ppnCHK">
-                                                        <strong>PPN 10%</strong>
+                                                        <strong>PPN 11%</strong>
                                                     </label>
                                                 </div>
                                             </div>
@@ -229,7 +229,7 @@
                                                     <span class="input-group-prepend" id="basic-addon2">
                                                         <label class="input-group-text">Rp. </label>
                                                     </span>
-                                                    <input type="text" readonly name="ppn-form" id="ppn-form" class="form-control currency text-right" placeholder="PPN 10%">
+                                                    <input type="text" readonly name="ppn-form" id="ppn-form" class="form-control currency text-right" placeholder="PPN 11%">
                                                     <input type="hidden" readonly name="ppn" id="ppn" class="form-control">
                                                 </div>
                                             </div>
@@ -610,7 +610,7 @@
         $("#total_price_after_discount").val(totalPriceAfterDiscount);
 
         if(is_ppn){
-            ppnPrice = (parseFloat(totalPriceAfterDiscount) * (10 / 100 ));
+            ppnPrice = (parseFloat(totalPriceAfterDiscount) * {{ getPPN() }});
         }
 
         var shippingCostForm = $("#shipping_cost-form").val();
