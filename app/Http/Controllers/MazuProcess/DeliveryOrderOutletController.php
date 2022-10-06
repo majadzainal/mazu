@@ -180,72 +180,75 @@ class DeliveryOrderOutletController extends Controller
 
         DB::beginTransaction();
         try {
-            $arrsuccess = 0;
-            $do_number = "";
-            if($request->is_process){
-                $do_number = $this->objNumberingForm->GENERATE_FORM_NUMBER($this->generateType);
-            }
-
             $do = DeliveryOrderOutlet::find($request->do_outlet_id);
-            $do->update([
-                'do_number'                     => $do_number,
-                'do_date'                       => $request->do_date,
-                'outlet_id'                     => $request->outlet_id,
-                'description'                   => $request->description,
-                'is_process'                    => $request->is_process,
-                'is_draft'                      => $request->is_draft,
-                'is_void'                       => 0,
-                'is_active'                     => 1,
-                'updated_user'                  => Auth::User()->employee->employee_name,
-            ]);
-
-            if($do){
-                $deletedRows = DeliveryOrderOutletItem::where('do_outlet_id', $do->do_outlet_id)->get();
-                foreach ($deletedRows as $ls) {
-                    $ls->delete();
+            if(!$do->is_process){
+                $arrsuccess = 0;
+                $do_number = "";
+                if($request->is_process){
+                    $do_number = $this->objNumberingForm->GENERATE_FORM_NUMBER($this->generateType);
                 }
+                $do->update([
+                    'do_number'                     => $do_number,
+                    'do_date'                       => $request->do_date,
+                    'outlet_id'                     => $request->outlet_id,
+                    'description'                   => $request->description,
+                    'is_process'                    => $request->is_process,
+                    'is_draft'                      => $request->is_draft,
+                    'is_void'                       => 0,
+                    'is_active'                     => 1,
+                    'updated_user'                  => Auth::User()->employee->employee_name,
+                ]);
 
-                $warehouse_id = Outlet::where('outlet_id', $do->outlet_id)
-                            ->pluck('warehouse_id')->first();
-                for ($i=0; $i<count($request->product_id); $i++ ){
-                    $item = DeliveryOrderOutletItem::create([
-                        'do_outlet_id'                  => $do->do_outlet_id,
-                        'product_id'                    => $request->product_id[$i],
-                        'qty'                           => $request->qty[$i],
-                        'warehouse_id'                  => $warehouse_id,
-                        'description'                   => $request->description_item[$i],
-                        'product_label_list'            => $request->product_label_list[$i],
-                        'order_item'                    => $arrsuccess,
-                    ]);
+                if($do){
+                    $deletedRows = DeliveryOrderOutletItem::where('do_outlet_id', $do->do_outlet_id)->get();
+                    foreach ($deletedRows as $ls) {
+                        $ls->delete();
+                    }
 
-                    if($item){
-                        if($request->is_process){
-                            $warehouseProduct = Stock::where('product_id', $item->product_id)->pluck('warehouse_id')->first();
-                            $this->objStock->minStock($item->product_id, $warehouseProduct, $item->qty, "Delivery Order Outlet ".$do_number);
-                            $this->objStockOutlet->plusStock($do->outlet_id, $item->product_id, $warehouse_id, $item->qty, "Delivery Order Outlet ".$do_number, $do->do_outlet_id);
+                    $warehouse_id = Outlet::where('outlet_id', $do->outlet_id)
+                                ->pluck('warehouse_id')->first();
+                    for ($i=0; $i<count($request->product_id); $i++ ){
+                        $item = DeliveryOrderOutletItem::create([
+                            'do_outlet_id'                  => $do->do_outlet_id,
+                            'product_id'                    => $request->product_id[$i],
+                            'qty'                           => $request->qty[$i],
+                            'warehouse_id'                  => $warehouse_id,
+                            'description'                   => $request->description_item[$i],
+                            'product_label_list'            => $request->product_label_list[$i],
+                            'order_item'                    => $arrsuccess,
+                        ]);
 
-                            $compositionList = ProductComposition::where('product_id', $item->product_id)
-                                            ->with('productSupplier.stockWarehouse')->get();
+                        if($item){
+                            if($request->is_process){
+                                $warehouseProduct = Stock::where('product_id', $item->product_id)->pluck('warehouse_id')->first();
+                                $this->objStock->minStock($item->product_id, $warehouseProduct, $item->qty, "Delivery Order Outlet ".$do_number);
+                                $this->objStockOutlet->plusStock($do->outlet_id, $item->product_id, $warehouse_id, $item->qty, "Delivery Order Outlet ".$do_number, $do->do_outlet_id);
 
-                            foreach ($compositionList as $ls) {
-                                if(!$ls->productSupplier->is_service){
-                                    $amount_usage = (floatval($ls->amount_usage) * floatval($item->qty));
-                                    $this->objStock->minStockSupplier($ls->product_supplier_id, $ls->productSupplier->stockWarehouse->warehouse_id, $amount_usage, "Delivery Order Outlet ".$do_number);
-                                    $this->objStockOutlet->plusStockSupplier($do->outlet_id, $ls->product_supplier_id, $warehouse_id, $amount_usage, "Delivery Order Outlet ".$do_number, $do->do_outlet_id);
+                                $compositionList = ProductComposition::where('product_id', $item->product_id)
+                                                ->with('productSupplier.stockWarehouse')->get();
+
+                                foreach ($compositionList as $ls) {
+                                    if(!$ls->productSupplier->is_service){
+                                        $amount_usage = (floatval($ls->amount_usage) * floatval($item->qty));
+                                        $this->objStock->minStockSupplier($ls->product_supplier_id, $ls->productSupplier->stockWarehouse->warehouse_id, $amount_usage, "Delivery Order Outlet ".$do_number);
+                                        $this->objStockOutlet->plusStockSupplier($do->outlet_id, $ls->product_supplier_id, $warehouse_id, $amount_usage, "Delivery Order Outlet ".$do_number, $do->do_outlet_id);
+                                    }
                                 }
                             }
+                            $arrsuccess++;
                         }
-                        $arrsuccess++;
                     }
                 }
-            }
 
-            if ($do && $arrsuccess == count($request->product_id)){
-                DB::commit();
-                return response()->json(['status' => 'Success', 'message' => 'Update delivery order outlet success.'], 200);
-            } else {
-                DB::rollback();
-                return response()->json(['status' => 'Error', 'message' => 'Update delivery order outlet failled, with a part error.' ], 202);
+                if ($do && $arrsuccess == count($request->product_id)){
+                    DB::commit();
+                    return response()->json(['status' => 'Success', 'message' => 'Update delivery order outlet success.'], 200);
+                } else {
+                    DB::rollback();
+                    return response()->json(['status' => 'Error', 'message' => 'Update delivery order outlet failled, with a part error.' ], 202);
+                }
+            }else{
+                return response()->json(['status' => 'Error', 'message' => 'Update delivery order outlet failled, because this DO already processed or canceled.' ], 202);
             }
         } catch (ModelNotFoundException  $e) {
             DB::rollback();
@@ -286,9 +289,8 @@ class DeliveryOrderOutletController extends Controller
                     }
                 }
                 $do->is_active = 0;
-                $do->is_process = 0;
                 $do->is_draft = 0;
-                $do->is_void = 0;
+                $do->is_void = 1;
                 $do->update();
 
                 DB::commit();
