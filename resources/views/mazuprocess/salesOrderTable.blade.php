@@ -126,8 +126,8 @@
                                         @endif
                                         <div class="form-group row">
                                             <label class="col-sm-2 col-form-label">Customer <span class="text-danger">*</span></label>
-                                            <div class="col-sm-10">
-                                                <select name="customer_id" id="customer_id" class="js-example-placeholder col-sm-12" required>
+                                            <div class="col-sm-6">
+                                                <select name="customer_id" id="customer_id" class="js-example-placeholder" required>
                                                     <option value="">--Select--</option>
                                                     @foreach($customerList as $ls)
                                                         @if ($isEvent)
@@ -138,6 +138,9 @@
 
                                                     @endforeach
                                                 </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="button" class="btn btn-primary btn-sm btn-round waves-effect waves-light" data-target="#large-Modal-customer" btn="add" onClick="return_value_add_customer(this, '')"><i class="icofont icofont-plus-circle"></i> Add</button>
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -350,6 +353,78 @@
                                             </div>
                                         </div>
 
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12" id="form_add_customer">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Add Customer</h5>
+                                    <span></span>
+                                    <div class="card-header-right">
+                                        <ul class="list-unstyled card-option">
+                                            <li><i class="fa fa fa-wrench open-card-option"></i></li>
+                                            <li><i class="fa fa-window-maximize full-card"></i></li>
+                                            <li><i class="fa fa-minus minimize-card"></i></li>
+                                            <li><i class="fa fa-refresh reload-card"></i></li>
+                                            <li><i class="fa fa-trash close-card"></i></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="card-block">
+                                    <form action="/process/sales-order/justadd-customer" method="post" enctype="multipart/form-data" id="customerForm">
+                                        @csrf
+                                        <input type="hidden" name="customer_id_add" id="customer_id_add" />
+                                        <div class="modal-body">
+                                            <div class="form-group row">
+                                                <label class="col-sm-2 col-form-label">Category <span class="text-danger"> *</span></label>
+                                                <div class="col-sm-10">
+                                                    <select name="customer_category_id" id="customer_category_id_add" class="js-example-placeholder col-sm-12" required>
+                                                        <option value="">--Select--</option>
+                                                        @foreach($custCategoryList as $ls)
+                                                            <option value="{{ $ls->customer_category_id }}">{{ $ls->cust_category_code." - ".$ls->cust_category_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-2 col-form-label">Customer Name <span class="text-danger"> *</span></label>
+                                                <div class="col-sm-6">
+                                                    <input type="text" name="customer_name" id="customer_name_add" class="form-control" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-2 col-form-label">Description</label>
+                                                <div class="col-sm-10">
+                                                    <input type="text" name="description" id="description_add" class="form-control" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-2 col-form-label">Address</label>
+                                                <div class="col-sm-10">
+                                                    <input type="text" name="address" id="address_add" class="form-control" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-2 col-form-label">Email</label>
+                                                <div class="col-sm-10">
+                                                    <input type="text" name="email" id="email_add" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label class="col-sm-2 col-form-label">Date Of Birth</label>
+                                                <div class="col-sm-4">
+                                                    <input type="date" name="date_of_birth" id="date_of_birth_add" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" id="closeModal" class="btn btn-default waves-effect" onClick="hideCustFormAndShowSalesOrder()">Close</button>
+                                            <button type="button" class="btn btn-primary waves-effect waves-light" onClick="saveInitCustomer('#customerForm')">Save</button>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
@@ -571,6 +646,7 @@
         // loadProduct();
         $("#input").hide();
         $("#payment").hide();
+        $("#form_add_customer").hide();
     });
 
     function loadData(start_date, end_date){
@@ -594,7 +670,8 @@
                             button += "<button class='btn waves-effect waves-light btn-info btn-icon' onClick='return_value(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-edit'></i></button>";
                             button += "<button class='btn waves-effect waves-light btn-info btn-icon' onClick='return_value_payment(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-table'></i></button>";
                         @endif
-                        button += "<button class='btn waves-effect waves-light btn-danger btn-icon' onClick='return_print(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-printer'></i></button>";
+                        button += "<button class='btn waves-effect waves-light btn-warning btn-icon' onClick='return_print(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-ui-note'></i></button>";
+                        button += "<button class='btn waves-effect waves-light btn-danger btn-icon' onClick='return_print_struk(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-printer'></i></button>";
                         @if(isAccess('delete', $MenuID))
                             button += "<button class='btn waves-effect waves-light btn-warning btn-icon' data-confirm='Are you sure|want to delete "+ row.so_number +"("+ row.customer.customer_name+") sales order??' data-url='/process/sales-order/delete/" + data + "' onClick='deleteInit(this)'>&nbsp;<i class='icofont icofont-trash'></i></button>";
                         @endif
@@ -720,6 +797,7 @@
         $("#input").show();
         $("#table").hide();
         $("#payment").hide();
+        $("#form_add_customer").hide();
         document.documentElement.scrollTop = 0;
     }
 
@@ -809,6 +887,9 @@
 
     function return_print(e, data){
         window.open('/process/sales-order-print/'+data.so_id, '_blank');
+    }
+    function return_print_struk(e, data){
+        window.open('/process/sales-order-print-struk/'+data.so_id, '_blank');
     }
 
 
@@ -1093,6 +1174,22 @@
         });
     }
 
+    function saveInitCustomer(form){
+        saveDataReturn(form, function(res) {
+            var addCust = res.data;
+            $("#customer_id").append('<option value='+addCust.customer_id+'>'+addCust.customer_name+'</option>');
+            $("#customer_id").val(addCust.customer_id);
+            $("#customer_id").trigger("change");
+        });
+    }
+
+    function hideCustFormAndShowSalesOrder(){
+        $("#input").show();
+        $("#table").hide();
+        $("#payment").hide();
+        $("#form_add_customer").hide();
+    }
+
     function deleteInit(e){
         deleteConfirm(e, function() {
             btnLoadDataClick();
@@ -1206,9 +1303,25 @@
         }
     }
 
+    function return_value_add_customer (e, data){
+        $("#customer_name_add").val("");
+        $("#description_add").val("");
+        $("#address_add").val("");
+        $("#email_add").val("");
+        $("#form_add_customer").show();
+        $("#input").hide();
+        $("#table").hide();
+        $("#payment").hide();
+
+        var dateNow = new Date();
+        $("#date_of_birth_add").val(moment(dateNow).format('YYYY-MM-DD'));
+        document.documentElement.scrollTop = 0;
+    }
+
     function return_value_payment(e, data){
         $("#table").hide();
         $("#input").hide();
+        $("#form_add_customer").hide();
         $("#payment").show();
         if(parseFloat(data.dec_remain) === parseFloat(0)){
             $("#payment_form").hide();

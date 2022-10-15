@@ -25,6 +25,33 @@ function saveData(form, callback){
 
 }
 
+function saveDataReturn(form, callback){
+
+    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+    if (!$(form)[0].checkValidity()) {
+        $(form)[0].reportValidity();
+    } else {
+        $.ajax({
+            type: "POST",
+            url: $(form).attr("action"),
+            data: $(form).serialize(),
+            success: function(res) {
+                swal(res.status, res.message, res.status.toLowerCase());
+                if(res.status.toLowerCase() === 'Success'.toLowerCase()){
+                    $("#closeModal").click();
+                    $(form).trigger("reset");
+                }
+                callback(res);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert(xhr.status);
+                alert(thrownError);
+            }
+        });
+    }
+
+}
+
 function saveDataModal(form, closeModalId, callback){
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     if (!$(form)[0].checkValidity()) {

@@ -291,11 +291,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/process/sales-order/load-product', [SalesOrderController::class, 'loadProduct']);
     Route::get('/process/sales-order/get-label/{product_label}', [SalesOrderController::class, 'getProductLabel']);
     Route::post('/process/sales-order/add', [SalesOrderController::class, 'addSO']);
+    Route::post('/process/sales-order/justadd-customer', [SalesOrderController::class, 'justAddCustomer']);
     Route::post('/process/sales-order/update', [SalesOrderController::class, 'updateSO']);
     Route::get('/process/sales-order/delete/{so_id}', [SalesOrderController::class, 'deleteSO']);
     Route::post('/process/sales-order-payment/add', [SalesOrderController::class, 'addPayment']);
     Route::get('/process/sales-order-payment/load/{so_id}', [SalesOrderController::class, 'loadPayment']);
     Route::get('/process/sales-order-print/{so_id}', [SalesOrderController::class, 'printSalesOrder']);
+    Route::get('/process/sales-order-print-struk/{so_id}', [SalesOrderController::class, 'printSalesOrderStruk']);
 
     //=============================SALES ORDER PO 00502==========================
     Route::get('/process/sales-order-po/table', [SalesOrderPoController::class, 'listSO']);

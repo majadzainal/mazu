@@ -6,6 +6,7 @@ use Exception;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
 use App\Models\MazuMaster\Stock;
+use App\Models\MazuMaster\Store;
 use App\Models\MazuMaster\Product;
 use Illuminate\Support\Facades\DB;
 use App\Models\MazuMaster\Customer;
@@ -15,15 +16,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\MazuProcess\SalesOrder;
 use App\Models\MazuMaster\LabelProduct;
+use App\Models\MazuMaster\EventSchedule;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Models\MazuProcess\SalesOrderItem;
 use App\Models\MazuProcess\SalesOrderPaid;
+use App\Models\MazuMaster\CustomerCategory;
 use App\Models\MazuMaster\ProductComposition;
 use App\Http\Controllers\MazuMaster\StockController;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Setting\NumberingFormController;
 use App\Http\Controllers\MazuProcess\GeneralLedgerController;
-use App\Models\MazuMaster\EventSchedule;
-use App\Models\MazuMaster\Store;
 
 class SalesOrderController extends Controller
 {
@@ -56,12 +58,14 @@ class SalesOrderController extends Controller
         if($isEvent){
             $eventList = EventSchedule::where('is_active', 1)->where('is_closed', 0)->get();
             $customerList = Customer::where('is_active', 1)->with('store')->get();
+            $custCategoryList = CustomerCategory::where('is_active', 1)->with('store')->get();
             $productList = Product::where('is_active', 1)
                         ->with('unit', 'stockWarehouse', 'stockWarehouse.warehouse', 'composition', 'composition.productSupplier')->get();
 
             $paidTypeList = PaidType::where('is_active', 1)->get();
         }else{
             $customerList = Customer::where('store_id', $store_id)->where('is_active', 1)->get();
+            $custCategoryList = CustomerCategory::where('store_id', $store_id)->where('is_active', 1)->get();
             $productList = Product::where('store_id', $store_id)->where('is_active', 1)
                         ->with('unit', 'stockWarehouse', 'stockWarehouse.warehouse', 'composition', 'composition.productSupplier')->get();
 
@@ -73,9 +77,48 @@ class SalesOrderController extends Controller
             'isEvent'           => $isEvent,
             'eventList'         => $eventList,
             'customerList'      => $customerList,
+            'custCategoryList'  => $custCategoryList,
             'productList'       => $productList,
             'paidTypeList'      => $paidTypeList,
         ]);
+    }
+
+    public function justAddCustomer(Request $request){
+        // if(!isAccess('create', $this->MenuID)){
+        //     return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
+        // }
+        // if(isOpname()){
+        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        // }
+
+        try {
+            $isEvent = isEvent();
+            $store_id = "";
+            if($isEvent){
+                $store_id = CustomerCategory::where('customer_category_id', $request->customer_category_id)->pluck('store_id')->first();
+            }else{
+                $store_id = getStoreId();
+            }
+            $customer_id = Uuid::uuid4()->toString();
+            $customer = Customer::create([
+                'customer_id'                   => $customer_id,
+                'customer_name'                 => $request->customer_name,
+                'date_of_birth'                 => $request->date_of_birth,
+                'description'                   => $request->description,
+                'address'                       => $request->address,
+                'email'                         => $request->email,
+                'customer_category_id'          => $request->customer_category_id,
+                'store_id'                      => $store_id,
+                'is_active'                     => 1,
+                'created_user'                  => Auth::User()->employee->employee_name,
+            ]);
+
+            return response()->json(['status' => 'Success', 'message' => 'Add customer success.', 'data' => $customer], 200);
+
+        } catch (ModelNotFoundException  $e) {
+            return response()->json(['status' => 'Error', 'message' => $e ], 202);
+        }
+
     }
 
     public function loadSO($start_date, $end_date){
@@ -554,6 +597,29 @@ class SalesOrderController extends Controller
             $pdf = App::make('dompdf.wrapper');
             $pdf->loadView('mazuprocess.print.salesOrder', $data);
             $pdf->setPaper('A4', 'potrait');
+            return $pdf->stream('INVOICE_'.$SO->so_number.'.pdf');
+        } else {
+            return "Data not found";
+        }
+
+    }
+    public function printSalesOrderStruk($so_id){
+
+        if(!isAccess('read', $this->MenuID)){
+            return "You do not have access for this action";
+        }
+        $height = 250;
+        $item_height = 35;
+        $SO = SalesOrder::with('customer', 'items', 'items.product', 'items.product.unit')
+                            ->where('so_id', $so_id)->first();
+
+        $haveItem = count($SO->items);
+        $height += ($item_height * $haveItem);
+        if($SO){
+            $data = ['data'  => $SO];
+            $pdf = App::make('dompdf.wrapper');
+            $pdf->loadView('mazuprocess.print.salesOrderStruk', $data);
+            $pdf->setPaper([0, 0, 200, $height], 'potrait');
             return $pdf->stream('INVOICE_'.$SO->so_number.'.pdf');
         } else {
             return "Data not found";
