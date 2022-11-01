@@ -26,7 +26,7 @@
         } */
 
         .tbl_item{
-            margin-top: 50px;
+            margin-top: 10px;
         }
 
         .border_item{
