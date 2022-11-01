@@ -605,9 +605,9 @@ class SalesOrderController extends Controller
     }
     public function printSalesOrderStruk($so_id){
 
-        if(!isAccess('read', $this->MenuID)){
-            return "You do not have access for this action";
-        }
+        // if(!isAccess('read', $this->MenuID)){
+        //     return "You do not have access for this action";
+        // }
         $height = 250;
         $item_height = 35;
         $SO = SalesOrder::with('customer', 'items', 'items.product', 'items.product.unit')

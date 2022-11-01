@@ -578,9 +578,10 @@
                             button += "<button class='btn waves-effect waves-light btn-info btn-icon' onClick='return_value(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-edit'></i></button>";
                             button += "<button class='btn waves-effect waves-light btn-info btn-icon' onClick='return_value_payment(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-table'></i></button>";
                         @endif
-                        button += "<button class='btn waves-effect waves-light btn-danger btn-icon' onClick='return_print(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-printer'></i></button>";
+                        button += "<button class='btn waves-effect waves-light btn-warning btn-icon' onClick='return_print(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-ui-note'></i></button>";
+                        button += "<button class='btn waves-effect waves-light btn-danger btn-icon' onClick='return_print_struk(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-printer'></i></button>";
                         @if(isAccess('delete', $MenuID))
-                            button += "<button class='btn waves-effect waves-light btn-warning btn-icon' data-confirm='Are you sure|want to delete "+ row.so_number +"("+ row.owner.owner_name+") sales order owner??' data-url='/process/sales-order-owner/delete/" + data + "' onClick='deleteInit(this)'>&nbsp;<i class='icofont icofont-trash'></i></button>";
+                            button += "<button class='btn waves-effect waves-light btn-warning btn-icon' data-confirm='Are you sure|want to delete "+ row.so_number +"("+ row.owner.owner_name+") sales order??' data-url='/process/sales-order/delete/" + data + "' onClick='deleteInit(this)'>&nbsp;<i class='icofont icofont-trash'></i></button>";
                         @endif
                         return button;
                     }
@@ -786,6 +787,10 @@
 
     function return_print(e, data){
         window.open('/process/sales-order-owner-print/'+data.so_id, '_blank');
+    }
+
+    function return_print_struk(e, data){
+        window.open('/process/sales-order-print-struk/'+data.so_id, '_blank');
     }
 
     function btnLoadDataClick(){
