@@ -117,6 +117,18 @@
                             </div>
                         </div>
                     </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Tampilkan Di Invoice</label>
+                        <div class="col-sm-10">
+                            <div class="checkbox-color checkbox-primary">
+                                <input name="is_invoice_bank"  id="is_invoice_bank" type="hidden" required>
+                                <input name="is_invoice_bankCHK" id="is_invoice_bankCHK" type="checkbox">
+                                <label for="is_invoice_bankCHK">
+                                    Tampilkan
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="modal-footer">
@@ -185,6 +197,7 @@
             $("#account_name").val(data.account_name);
             $("#account_number").val(data.account_number);
             $("#is_creditCHK").prop('checked', data.is_credit === 1 ? true : false);
+            $("#is_invoice_bankCHK").prop('checked', data.is_invoice_bank === 1 ? true : false);
             loadSelect2()
 
         } else {
@@ -198,6 +211,7 @@
 
     function saveInit(form, modalId){
         $("#is_credit").val($("#is_creditCHK").prop("checked") ? 1 : 0);
+        $("#is_invoice_bank").val($("#is_invoice_bankCHK").prop("checked") ? 1 : 0);
         saveDataModal(form, modalId, function() {
             loadData();
         });

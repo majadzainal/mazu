@@ -8,7 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\MazuProcess\CashOut;
 use App\Http\Controllers\Controller;
+use App\Models\MazuProcess\CashFlow;
 use Illuminate\Support\Facades\Auth;
+use App\Models\MazuMaster\EventSchedule;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Http\Controllers\MazuProcess\GeneralLedgerController;
 
@@ -16,6 +18,7 @@ class CashOutController extends Controller
 {
     public $MenuID = '014';
     public $objGl;
+
 
     public function __construct()
     {
@@ -29,8 +32,14 @@ class CashOutController extends Controller
                 'MenuID' => $this->MenuID,
             ]);
         }
+
+        $isEvent = isEvent();
+        $eventList = EventSchedule::where('is_active', 1)->where('is_closed', 0)->get();
+
         return view('mazuprocess.cashOutTable', [
             'MenuID' => $this->MenuID,
+            'isEvent' => $isEvent,
+            'eventList' => $eventList,
         ]);
 
     }
@@ -39,8 +48,9 @@ class CashOutController extends Controller
         if(!isAccess('read', $this->MenuID)){
             return['data'=> ''];
         }
-        $cashOutList = CashOut::where('store_id', getStoreId())
-                    ->whereBetween('cash_out_date', [$start_date, $end_date])
+        $cashOutList = CashFlow::where('store_id', getStoreId())
+                    ->whereBetween('cash_flow_date', [$start_date, $end_date])
+                    ->where('cash_flow_type', "OUT")
                     ->where('is_active', 1)->orderBy('created_at', 'DESC')->get();
         return['data'=> $cashOutList];
     }
@@ -55,20 +65,21 @@ class CashOutController extends Controller
         // }
 
         try {
-            $cash_out_id = Uuid::uuid4()->toString();
-            $cashOut = CashOut::create([
-                'cash_out_id'                   => $cash_out_id,
-                'cash_out_code'                 => $request->cash_out_code,
-                'cash_out_name'                 => $request->cash_out_name,
+            $cash_flow_id = Uuid::uuid4()->toString();
+            $cashOut = CashFlow::create([
+                'cash_flow_id'                  => $cash_flow_id,
+                'cash_flow_code'                => $request->cash_flow_code,
+                'cash_flow_name'                => $request->cash_flow_name,
                 'description'                   => $request->description,
-                'cash_out_date'                 => $request->cash_out_date,
-                'dec_cash_out'                  => $request->dec_cash_out,
+                'cash_flow_date'                => $request->cash_flow_date,
+                'dec_cash_flow'                 => $request->dec_cash_flow,
                 'store_id'                      => getStoreId(),
+                'cash_flow_type'                => "OUT",
                 'is_active'                     => 1,
                 'created_user'                  => Auth::User()->employee->employee_name,
             ]);
 
-            $this->objGl->debitCashOut($cashOut);
+            $this->objGl->debitCashFlow($cashOut);
 
             return response()->json(['status' => 'Success', 'message' => 'Add cash out success.'], 200);
 
@@ -89,17 +100,18 @@ class CashOutController extends Controller
 
         try {
 
-            $cashOut = CashOut::find($request->cash_out_id);
+            $cashOut = CashFlow::find($request->cash_flow_id);
             if($cashOut){
                 $cashOut->update([
-                    'cash_out_code'                 => $request->cash_out_code,
-                    'cash_out_name'                 => $request->cash_out_name,
+                    'cash_flow_code'                => $request->cash_flow_code,
+                    'cash_flow_name'                => $request->cash_flow_name,
                     'description'                   => $request->description,
-                    'cash_out_date'                 => $request->cash_out_date,
-                    'dec_cash_out'                  => $request->dec_cash_out,
+                    'cash_flow_date'                => $request->cash_flow_date,
+                    'dec_cash_flow'                 => $request->dec_cash_flow,
+                    'is_active'                     => 1,
                     'updated_user'                  => Auth::User()->employee->employee_name,
                 ]);
-                $this->objGl->debitCashOut($cashOut);
+                $this->objGl->debitCashFlow($cashOut);
 
                 return response()->json(['status' => 'Success', 'message' => 'Edit cash out success.'], 200);
             } else {
@@ -122,12 +134,12 @@ class CashOutController extends Controller
 
         try {
 
-            $cashOut = CashOut::find($id);
+            $cashOut = CashFlow::find($id);
             if ($cashOut){
                 $cashOut->is_active = 0;
                 $cashOut->created_user = Auth::User()->employee->employee_name;
                 $cashOut->update();
-                $this->objGl->debitCashOutDelete($cashOut);
+                $this->objGl->debitCashFlowDelete($cashOut);
                 return response()->json(['status' => 'Success', 'message' => 'Delete cash out success.'], 200);
             } else {
                 return response()->json(['status' => 'info', 'message' => 'Delete cash out failed.'], 202);

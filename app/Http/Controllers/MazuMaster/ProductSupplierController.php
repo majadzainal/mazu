@@ -68,9 +68,9 @@ class ProductSupplierController extends Controller
         if(!isAccess('create', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        // if(isOpname()){
-        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        // }
+        if(isOpname()){
+            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        }
 
         DB::beginTransaction();
         try {
@@ -123,9 +123,9 @@ class ProductSupplierController extends Controller
         if(!isAccess('update', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        // if(isOpname()){
-        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        // }
+        if(isOpname()){
+            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        }
         // dd($request);
         DB::beginTransaction();
         try {
@@ -182,9 +182,9 @@ class ProductSupplierController extends Controller
         if(!isAccess('delete', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        // if(isOpname()){
-        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        // }
+        if(isOpname()){
+            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        }
 
         try {
 

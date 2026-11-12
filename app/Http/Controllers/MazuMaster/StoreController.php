@@ -60,6 +60,7 @@ class StoreController extends Controller
                 'store_address'                 => $request->store_address,
                 'npwp'                          => $request->npwp,
                 'logo'                          => "mazulabel.jpg",
+                'is_event'                      => $request->is_event,
                 'is_active'                     => 1,
             ]);
 
@@ -92,6 +93,7 @@ class StoreController extends Controller
                     'store_email'                   => $request->store_email,
                     'store_address'                 => $request->store_address,
                     'npwp'                          => $request->npwp,
+                    'is_event'                      => $request->is_event,
                 ]);
 
                 return response()->json(['status' => 'Success', 'message' => 'Edit store success.'], 200);

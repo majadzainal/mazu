@@ -1,6 +1,15 @@
 @extends('layouts.headerIn')
 @section('content')
 <link rel="stylesheet" type="text/css" href="{{ asset ('/assets/files/bower_components/morris.js/css/morris.css') }}">
+<style>
+    .box-birthday{
+        height: 300px !important;
+    }
+    .incoming-birthday-wrap{
+        overflow: auto;
+        height: 100%;
+    }
+</style>
 <div class="pcoded-content">
     <!-- Page-header start -->
     <div class="page-header">
@@ -88,11 +97,11 @@
                             </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-4">
-                            <div class="card">
+                            <div class="card box-birthday">
                                 <div class="card-header">
                                     <h5>Incoming Birtdays</h5>
                                 </div>
-                                <div class="card-block">
+                                <div class="card-block incoming-birthday-wrap">
                                     @php
                                         $is_first = true;
                                     @endphp

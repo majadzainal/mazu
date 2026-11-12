@@ -6,6 +6,7 @@ use Exception;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
 use App\Models\MazuMaster\Stock;
+use App\Models\MazuMaster\Store;
 use App\Models\MazuMaster\Product;
 use Illuminate\Support\Facades\DB;
 use App\Models\MazuMaster\Customer;
@@ -15,11 +16,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\MazuProcess\SalesOrder;
 use App\Models\MazuMaster\LabelProduct;
+use App\Models\MazuMaster\EventSchedule;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Models\MazuProcess\SalesOrderItem;
 use App\Models\MazuProcess\SalesOrderPaid;
+use App\Models\MazuMaster\CustomerCategory;
 use App\Models\MazuMaster\ProductComposition;
 use App\Http\Controllers\MazuMaster\StockController;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Setting\NumberingFormController;
 use App\Http\Controllers\MazuProcess\GeneralLedgerController;
 
@@ -49,17 +53,72 @@ class SalesOrderController extends Controller
         }
 
         $store_id = getStoreId();
-        $customerList = Customer::where('store_id', $store_id)->where('is_active', 1)->get();
-        $productList = Product::where('store_id', $store_id)->where('is_active', 1)
-                    ->with('unit', 'stockWarehouse', 'stockWarehouse.warehouse', 'composition', 'composition.productSupplier')->get();
-        $paidTypeList = PaidType::where('store_id', $store_id)->where('is_active', 1)->get();
+        $isEvent = isEvent();
+        $eventList = [];
+        if($isEvent){
+            $eventList = EventSchedule::where('is_active', 1)->where('is_closed', 0)->get();
+            $customerList = Customer::where('is_active', 1)->with('store')->get();
+            $custCategoryList = CustomerCategory::where('is_active', 1)->with('store')->get();
+            $productList = Product::where('is_active', 1)
+                        ->with('unit', 'stockWarehouse', 'stockWarehouse.warehouse', 'composition', 'composition.productSupplier')->get();
+
+            $paidTypeList = PaidType::where('is_active', 1)->get();
+        }else{
+            $customerList = Customer::where('store_id', $store_id)->where('is_active', 1)->get();
+            $custCategoryList = CustomerCategory::where('store_id', $store_id)->where('is_active', 1)->get();
+            $productList = Product::where('store_id', $store_id)->where('is_active', 1)
+                        ->with('unit', 'stockWarehouse', 'stockWarehouse.warehouse', 'composition', 'composition.productSupplier')->get();
+
+            $paidTypeList = PaidType::where('store_id', $store_id)->where('is_active', 1)->get();
+        }
 
         return view('mazuprocess.salesOrderTable', [
             'MenuID'            => $this->MenuID,
+            'isEvent'           => $isEvent,
+            'eventList'         => $eventList,
             'customerList'      => $customerList,
+            'custCategoryList'  => $custCategoryList,
             'productList'       => $productList,
             'paidTypeList'      => $paidTypeList,
         ]);
+    }
+
+    public function justAddCustomer(Request $request){
+        // if(!isAccess('create', $this->MenuID)){
+        //     return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
+        // }
+        // if(isOpname()){
+        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        // }
+
+        try {
+            $isEvent = isEvent();
+            $store_id = "";
+            if($isEvent){
+                $store_id = CustomerCategory::where('customer_category_id', $request->customer_category_id)->pluck('store_id')->first();
+            }else{
+                $store_id = getStoreId();
+            }
+            $customer_id = Uuid::uuid4()->toString();
+            $customer = Customer::create([
+                'customer_id'                   => $customer_id,
+                'customer_name'                 => $request->customer_name,
+                'date_of_birth'                 => $request->date_of_birth,
+                'description'                   => $request->description,
+                'address'                       => $request->address,
+                'email'                         => $request->email,
+                'customer_category_id'          => $request->customer_category_id,
+                'store_id'                      => $store_id,
+                'is_active'                     => 1,
+                'created_user'                  => Auth::User()->employee->employee_name,
+            ]);
+
+            return response()->json(['status' => 'Success', 'message' => 'Add customer success.', 'data' => $customer], 200);
+
+        } catch (ModelNotFoundException  $e) {
+            return response()->json(['status' => 'Error', 'message' => $e ], 202);
+        }
+
     }
 
     public function loadSO($start_date, $end_date){
@@ -84,18 +143,36 @@ class SalesOrderController extends Controller
             return['data'=> ''];
         }
 
-        $productList = Product::where('store_id', getStoreId())->where('is_active', 1)
-                    ->with('category', 'unit', 'stockWarehouse', 'stockWarehouse.warehouse')
-                    ->orderBy('created_at', 'DESC')->get();
+        $isEvent = isEvent();
+        if($isEvent){
+            $productList = Product::where('is_active', 1)
+                ->with('category', 'unit', 'stockWarehouse', 'stockWarehouse.warehouse')
+                ->orderBy('created_at', 'DESC')->get();
+        }else{
+            $productList = Product::where('store_id', getStoreId())->where('is_active', 1)
+                ->with('category', 'unit', 'stockWarehouse', 'stockWarehouse.warehouse')
+                ->orderBy('created_at', 'DESC')->get();
+        }
+
 
         return['data'=> $productList];
     }
 
     function getProductLabel($product_label){
-        $data = LabelProduct::where('no_label', strtoupper($product_label))
-                        ->where('is_print', 1)
-                        ->where('is_checked_in', 0)
-                        ->get()->first();
+        $store_id = getStoreId();
+        $isEvent = isEvent();
+        if($isEvent){
+            $data = LabelProduct::where('no_label', strtoupper($product_label))
+                            ->where('is_print', 1)
+                            ->where('is_checked_in', 0)
+                            ->get()->first();
+        }else{
+            $data = LabelProduct::where('no_label', strtoupper($product_label))
+                            ->where('is_print', 1)
+                            ->where('is_checked_in', 0)
+                            ->where('store_id', $store_id)
+                            ->get()->first();
+        }
 
         return['data'=> $data];
     }
@@ -105,9 +182,9 @@ class SalesOrderController extends Controller
         if(!isAccess('create', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        // if(isOpname()){
-        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        // }
+        if(isOpname()){
+            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        }
 
         DB::beginTransaction();
         try {
@@ -129,7 +206,7 @@ class SalesOrderController extends Controller
                 $compositionList = ProductComposition::where('product_id', $request->product_id[$i])
                                         ->with('productSupplier')->get();
 
-                $totalHpp += floatval($productHpp);
+                $totalHpp += (floatval($productHpp) * floatval($request->qty_order_item[$i]));
                 foreach ($compositionList as $ls) {
                     $amount_usage = ((floatval($ls->amount_usage) * floatval($request->qty_order_item[$i])));
                     $totalHpp += floatval($amount_usage) * floatval($ls->productSupplier->price);
@@ -164,6 +241,24 @@ class SalesOrderController extends Controller
             ]);
 
             if($so){
+                // if($so->is_process){
+                //     $storeList = Store::where('is_active', 1)->where('is_event', 0)->get();
+                //     foreach($storeList as $store){
+                //         $so_id_store = Uuid::uuid4()->toString();
+                //         $hpp_store = floatval(0);
+                //         $total_price_store = floatval(0);
+                //         $total_price_after_discount_store = floatval(0);
+                //         for ($i=0; $i<count($request->product_id); $i++ ){
+                //             $product_store = Product::where('product_id', $request->product_id[$i])->get()->first();
+                //             if($product_store->store_id === $store->store_id){
+                //                 $hpp_store += $product_store->hpp;
+                //                 $total_price_store += $request->total_price_item[$i];
+                //                 $total_price_after_discount_store += $request->total_price_after_discount_item[$i];
+                //             }
+
+                //         }
+                //     }
+                // }
                 for ($i=0; $i<count($request->product_id); $i++ ){
                     $hpp = floatval(0);
                     $productHppItem = Product::where('product_id', $request->product_id[$i])->pluck('hpp')->first();
@@ -244,9 +339,9 @@ class SalesOrderController extends Controller
         if(!isAccess('create', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        // if(isOpname()){
-        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        // }
+        if(isOpname()){
+            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        }
         // dd($request);
         DB::beginTransaction();
         try {
@@ -266,7 +361,7 @@ class SalesOrderController extends Controller
                 $compositionList = ProductComposition::where('product_id', $request->product_id[$i])
                                         ->with('productSupplier')->get();
 
-                $totalHpp += floatval($productHpp);
+                $totalHpp += (floatval($productHpp) * floatval($request->qty_order_item[$i]));
                 foreach ($compositionList as $ls) {
                     $amount_usage = ((floatval($ls->amount_usage) * floatval($request->qty_order_item[$i])));
                     $totalHpp += floatval($amount_usage) * floatval($ls->productSupplier->price);
@@ -380,9 +475,9 @@ class SalesOrderController extends Controller
         if(!isAccess('delete', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        // if(isOpname()){
-        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        // }
+        if(isOpname()){
+            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        }
 
         try {
 
@@ -440,9 +535,9 @@ class SalesOrderController extends Controller
         if(!isAccess('create', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        // if(isOpname()){
-        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        // }
+        if(isOpname()){
+            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        }
         // dd($request);
         DB::beginTransaction();
         try {
@@ -502,6 +597,29 @@ class SalesOrderController extends Controller
             $pdf = App::make('dompdf.wrapper');
             $pdf->loadView('mazuprocess.print.salesOrder', $data);
             $pdf->setPaper('A4', 'potrait');
+            return $pdf->stream('INVOICE_'.$SO->so_number.'.pdf');
+        } else {
+            return "Data not found";
+        }
+
+    }
+    public function printSalesOrderStruk($so_id){
+
+        if(!isAccess('read', $this->MenuID)){
+            return "You do not have access for this action";
+        }
+        $height = 250;
+        $item_height = 35;
+        $SO = SalesOrder::with('customer', 'items', 'items.product', 'items.product.unit')
+                            ->where('so_id', $so_id)->first();
+
+        $haveItem = count($SO->items);
+        $height += ($item_height * $haveItem);
+        if($SO){
+            $data = ['data'  => $SO];
+            $pdf = App::make('dompdf.wrapper');
+            $pdf->loadView('mazuprocess.print.salesOrderStruk', $data);
+            $pdf->setPaper([0, 0, 200, $height], 'potrait');
             return $pdf->stream('INVOICE_'.$SO->so_number.'.pdf');
         } else {
             return "Data not found";

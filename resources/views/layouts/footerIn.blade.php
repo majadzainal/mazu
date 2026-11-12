@@ -30,6 +30,11 @@
 <script type="text/javascript" src="{{  asset ('/assets/files/bower_components/fullcalendar/js/fullcalendar.min.js') }}"></script>
 <!-- Select 2 js -->
 <script type="text/javascript" src="{{ asset ('/assets/files/bower_components/select2/js/select2.full.min.js') }}"></script>
+<!-- Multiselect js -->
+<script type="text/javascript" src="{{ asset ('/assets/files/bower_components/bootstrap-multiselect/js/bootstrap-multiselect.js') }}">
+</script>
+<script type="text/javascript" src="{{ asset ('/assets/files/bower_components/multiselect/js/jquery.multi-select.js') }}"></script>
+<script type="text/javascript" src="{{ asset ('/assets/files/assets/js/jquery.quicksearch.js') }}"></script>
 <!-- sweet alert js -->
 <script type="text/javascript" src="{{ asset ('/assets/files/bower_components/sweetalert/js/sweetalert.min.js') }}"></script>
 <!-- Switch component js -->

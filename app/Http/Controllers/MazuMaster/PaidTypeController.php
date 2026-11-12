@@ -56,6 +56,7 @@ class PaidTypeController extends Controller
                 'account_name'                  => $request->account_name,
                 'account_number'                => $request->account_number,
                 'is_credit'                     => $request->is_credit,
+                'is_invoice_bank'               => $request->is_invoice_bank,
                 'store_id'                      => getStoreId(),
                 'is_active'                     => 1,
                 'created_user'                  => Auth::User()->employee->employee_name,
@@ -87,6 +88,7 @@ class PaidTypeController extends Controller
                     'account_name'                  => $request->account_name,
                     'account_number'                => $request->account_number,
                     'is_credit'                     => $request->is_credit,
+                    'is_invoice_bank'               => $request->is_invoice_bank,
                     'updated_user'                  => Auth::User()->employee->employee_name,
                 ]);
 

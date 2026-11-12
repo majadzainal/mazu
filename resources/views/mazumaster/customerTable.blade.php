@@ -95,7 +95,7 @@
                             <select name="customer_category_id" id="customer_category_id" class="js-example-placeholder col-sm-12" required>
                                 <option value="">--Select--</option>
                                 @foreach($custCategoryList as $ls)
-                                    <option value="{{ $ls->customer_category_id }}">{{ $ls->cust_category_code."-".$ls->cust_category_name }}</option>
+                                    <option value="{{ $ls->customer_category_id }}">{{ $ls->cust_category_code." - ".$ls->cust_category_name }}</option>
                                 @endforeach
                             </select>
                         </div>

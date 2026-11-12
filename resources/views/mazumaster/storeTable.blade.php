@@ -139,6 +139,18 @@
                             <input type="text" name="npwp" id="npwp" class="form-control" required>
                         </div>
                     </div>
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Store Event</label>
+                        <div class="col-sm-8">
+                            <div class="checkbox-color checkbox-primary">
+                                <input name="is_event"  id="is_event" type="hidden" required>
+                                <input name="is_eventCHK" id="is_eventCHK" type="checkbox">
+                                <label for="is_eventCHK">
+                                    Store Event
+                                </label>
+                            </div>
+                        </div>
+                    </div>
 
                 <div class="modal-footer">
                     <button type="button" id="closeModal" class="btn btn-default waves-effect" data-dismiss="modal">Close</button>
@@ -207,6 +219,9 @@
             $("#store_address").val(data.store_address);
             $("#npwp").val(data.npwp);
 
+            $("#is_eventCHK").prop('checked', data.is_event === 1 ? true : false);
+            loadSelect2()
+
         } else {
             $("#storeForm").trigger("reset");
             $("#storeForm").attr("action", "/master/store/add");
@@ -216,6 +231,7 @@
 
 
     function saveInit(form, modalId){
+        $("#is_event").val($("#is_eventCHK").prop("checked") ? 1 : 0);
         saveDataModal(form, modalId, function() {
             loadData();
         });

@@ -19,7 +19,7 @@ use RealRashid\SweetAlert\Facades\Alert;
 use App\Models\MazuProcess\SalesOrderItem;
 use App\Models\MazuProcess\SalesOrderPaid;
 use App\Models\MazuMaster\ProductComposition;
-use App\Http\Controllers\MazuMaster\StockController;
+use App\Http\Controllers\MazuMaster\StockOutletController;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Setting\NumberingFormController;
 use App\Http\Controllers\MazuProcess\GeneralLedgerController;
@@ -35,7 +35,7 @@ class SalesOrderOutletController extends Controller
 
     public function __construct()
     {
-        $this->objStock = new StockController();
+        $this->objStock = new StockOutletController();
         $this->objGl = new GeneralLedgerController();
         $this->objNumberingForm = new NumberingFormController();
     }
@@ -96,6 +96,7 @@ class SalesOrderOutletController extends Controller
         $data = LabelProduct::where('no_label', strtoupper($product_label))
                         ->where('is_print', 1)
                         ->where('is_checked_in', 0)
+                        ->where('store_id', getStoreId())
                         ->get()->first();
 
         return['data'=> $data];
@@ -106,9 +107,9 @@ class SalesOrderOutletController extends Controller
         if(!isAccess('create', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        // if(isOpname()){
-        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        // }
+        if(isOpname()){
+            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        }
 
         DB::beginTransaction();
         try {
@@ -129,7 +130,7 @@ class SalesOrderOutletController extends Controller
                 $compositionList = ProductComposition::where('product_id', $request->product_id[$i])
                                         ->with('productSupplier')->get();
 
-                $totalHpp += floatval($productHpp);
+                $totalHpp += (floatval($productHpp) * floatval($request->qty_order_item[$i]));
                 foreach ($compositionList as $ls) {
                     $amount_usage = ((floatval($ls->amount_usage) * floatval($request->qty_order_item[$i])));
                     $totalHpp += floatval($amount_usage) * floatval($ls->productSupplier->price);
@@ -192,8 +193,9 @@ class SalesOrderOutletController extends Controller
 
                     if($item){
                         if($request->is_process){
-                            $warehouseProduct = Stock::where('product_id', $item->product_id)->pluck('warehouse_id')->first();
-                            $this->objStock->minStock($item->product_id, $warehouseProduct, $item->qty_order, "Sales Order  outlet ".$so_number);
+                            $outletData = Outlet::where('outlet_id', $request->outlet_id)->get()->first();
+                            // $warehouseProduct = Stock::where('product_id', $item->product_id)->pluck('warehouse_id')->first();
+                            $this->objStock->minStock($outletData->outlet_id, $item->product_id, $outletData->warehouse_id, $item->qty_order, "Sales Order  outlet ".$so_number, "#".$so_id);
 
                             $compositionList = ProductComposition::where('product_id', $item->product_id)
                                             ->with('productSupplier.stockWarehouse')->get();
@@ -201,7 +203,7 @@ class SalesOrderOutletController extends Controller
                             foreach ($compositionList as $ls) {
                                 if(!$ls->productSupplier->is_service){
                                     $amount_usage = (floatval($ls->amount_usage) * floatval($item->qty_order));
-                                    $this->objStock->minStockSupplier($ls->product_supplier_id, $ls->productSupplier->stockWarehouse->warehouse_id, $amount_usage, "Sales Order  outlet ".$so_number);
+                                    $this->objStock->minStockSupplier($outletData->outlet_id, $ls->product_supplier_id, $outletData->warehouse_id, $amount_usage, "Sales Order  outlet ".$so_number, "#".$so_id);
                                 }
                             }
                         }
@@ -243,9 +245,10 @@ class SalesOrderOutletController extends Controller
         if(!isAccess('create', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        // if(isOpname()){
-        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        // }
+        if(isOpname()){
+            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        }
+
         // dd($request);
         DB::beginTransaction();
         try {
@@ -265,7 +268,7 @@ class SalesOrderOutletController extends Controller
                 $compositionList = ProductComposition::where('product_id', $request->product_id[$i])
                                         ->with('productSupplier')->get();
 
-                $totalHpp += floatval($productHpp);
+                $totalHpp += (floatval($productHpp) * floatval($request->qty_order_item[$i]));
                 foreach ($compositionList as $ls) {
                     $amount_usage = ((floatval($ls->amount_usage) * floatval($request->qty_order_item[$i])));
                     $totalHpp += floatval($amount_usage) * floatval($ls->productSupplier->price);
@@ -327,16 +330,18 @@ class SalesOrderOutletController extends Controller
 
                     if($item){
                         if($request->is_process){
-                            $warehouseProduct = Stock::where('product_id', $item->product_id)->pluck('warehouse_id')->first();
-                            $this->objStock->minStock($item->product_id, $warehouseProduct, $item->qty_order, "Sales Order  outlet ".$so_number);
-
+                            // $warehouseProduct = Stock::where('product_id', $item->product_id)->pluck('warehouse_id')->first();
+                            $outletData = Outlet::where('outlet_id', $request->outlet_id)->get()->first();
+                            // $this->objStock->minStock($item->product_id, $outletData->warehouse_id, $item->qty_order, "Sales Order  outlet ".$so_number);
+                            $this->objStock->minStock($outletData->outlet_id, $item->product_id, $outletData->warehouse_id, $item->qty_order, "Sales Order  outlet ".$so_number, "#".$so->so_id);
                             $compositionList = ProductComposition::where('product_id', $item->product_id)
                                             ->with('productSupplier.stockWarehouse')->get();
 
                             foreach ($compositionList as $ls) {
                                 if(!$ls->productSupplier->is_service){
                                     $amount_usage = (floatval($ls->amount_usage) * floatval($item->qty_order));
-                                    $this->objStock->minStockSupplier($ls->product_supplier_id, $ls->productSupplier->stockWarehouse->warehouse_id, $amount_usage, "Sales Order  outlet  ".$so_number);
+                                    // $this->objStock->minStockSupplier($ls->product_supplier_id, $ls->productSupplier->stockWarehouse->warehouse_id, $amount_usage, "Sales Order  outlet  ".$so_number);
+                                    $this->objStock->minStockSupplier($outletData->outlet_id, $ls->product_supplier_id, $outletData->warehouse_id, $amount_usage, "Sales Order  outlet ".$so_number, "#".$so->so_id);
                                 }
                             }
                         }
@@ -378,9 +383,9 @@ class SalesOrderOutletController extends Controller
         if(!isAccess('delete', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        // if(isOpname()){
-        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        // }
+        if(isOpname()){
+            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        }
 
         try {
 
@@ -388,12 +393,13 @@ class SalesOrderOutletController extends Controller
                 ->with('paid', 'items', 'items.product', 'items.product.stockWarehouse', 'items.product.composition', 'items.product.composition.productSupplier', 'items.product.composition.productSupplier.stockWarehouse')->get()->first();
             if ($so){
                 if($so->is_process){
+                    $outletData = Outlet::where('outlet_id', $so->outlet_id)->get()->first();
                     foreach ($so->items as $ls) {
-                        $this->objStock->plusStock($ls->product_id, $ls->product->stockWarehouse->warehouse_id, $ls->qty_order, "Cancel sales order outlet ".$so->so_number);
+                        $this->objStock->plusStock($outletData->outlet_id, $ls->product_id, $outletData->warehouse_id, $ls->qty_order, "Cancel sales order outlet ".$so->so_number, "#".$so->so_id);
                         foreach ($ls->product->composition as $item) {
                             if(!$item->productSupplier->is_service){
                                 $amount_usage = (floatval($item->amount_usage) * floatval($ls->qty_order));
-                                $this->objStock->plusStockSupplier($item->product_supplier_id, $item->productSupplier->stockWarehouse->warehouse_id, $amount_usage, "Cancel sales order outlet ".$so->so_number);
+                                $this->objStock->plusStockSupplier($outletData->outlet_id, $item->product_supplier_id, $outletData->warehouse_id, $amount_usage, "Cancel sales order outlet ".$so->so_number, "#".$so->so_id);
                             }
                         }
                     }
@@ -439,9 +445,10 @@ class SalesOrderOutletController extends Controller
         if(!isAccess('create', $this->MenuID)){
             return response()->json(['status' => errorMessage('status'), 'message' => errorMessage('message')], errorMessage('status_number'));
         }
-        // if(isOpname()){
-        //     return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
-        // }
+        if(isOpname()){
+            return response()->json(['status' => errorMessageOpname('status'), 'message' => errorMessageOpname('message')], errorMessageOpname('status_number'));
+        }
+
         DB::beginTransaction();
         try {
             $decPaid = $request->dec_paid_fin_payment;

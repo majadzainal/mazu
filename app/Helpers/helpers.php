@@ -4,6 +4,9 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Setting\Menu_Role;
 use App\Models\MazuMaster\Company;
+use App\Models\MazuMaster\PaidType;
+use App\Models\MazuMaster\StockOpnameSchedule;
+use App\Models\MazuMaster\Store;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Process\OpnameSchedule;
@@ -33,7 +36,7 @@ function getLogo(){
 }
 function getBanner(){
 
-    $store_id =  $store_id = User::where('user_id', Auth::user()->user_id)
+    $store_id = User::where('user_id', Auth::user()->user_id)
                 ->pluck('store_id')->first();
     $banner = Company::where('store_id', $store_id)->pluck('banner_invoice')->first();
 
@@ -45,6 +48,12 @@ function getBanner(){
     }
 }
 
+function getPPN(){
+    $ppn = floatval(11/100);
+
+    return $ppn;
+}
+
 function getCompany(){
 
     $store_id =  $store_id = User::where('user_id', Auth::user()->user_id)
@@ -54,11 +63,33 @@ function getCompany(){
     return $company;
 }
 
+function getInvoiceBank(){
+
+    $store_id = User::where('user_id', Auth::user()->user_id)
+                ->pluck('store_id')->first();
+    $invBank = PaidType::where('store_id', $store_id)
+                ->where('is_invoice_bank', 1)
+                ->where('is_active', 1)
+                ->take(2)
+                ->get();
+
+    return $invBank;
+}
+
 function getStoreId(){
     $store_id = User::where('user_id', Auth::user()->user_id)
     ->pluck('store_id')->first();
 
     return $store_id;
+}
+
+function isEvent(){
+    $store_id = User::where('user_id', Auth::user()->user_id)
+    ->pluck('store_id')->first();
+    $is_event = Store::where('store_id', $store_id)
+    ->pluck('is_event')->first();
+
+    return $is_event;
 }
 
 function isAccess($crud, $menuId){
@@ -71,8 +102,9 @@ function isAccess($crud, $menuId){
 }
 
 function isOpname(){
-    $opnameScheduleIsOpen = OpnameSchedule::where('is_closed', 0)
+    $opnameScheduleIsOpen = StockOpnameSchedule::where('is_closed', 0)
             ->where('is_active', 1)
+            ->where('store_id', getStoreId())
             ->get()->first();
 
     $result = $opnameScheduleIsOpen ? true : false;
@@ -342,9 +374,9 @@ function getNumberingFormType(){
                 [
                     "numbering_form_type" => "F_PURCHASE_ORDER_CUSTOMER"
                 ],
-                [
-                    "numbering_form_type" => "F_PURCHASE_ORDER_SUPPLIER"
-                ],
+                // [
+                //     "numbering_form_type" => "F_PURCHASE_ORDER_SUPPLIER"
+                // ],
                 [
                     "numbering_form_type" => "F_PURCHASE_ORDER_SUPPLIER"
                 ],
@@ -368,6 +400,9 @@ function getNumberingFormType(){
                 ],
                 [
                     "numbering_form_type" => "F_SALES_ORDER"
+                ],
+                [
+                    "numbering_form_type" => "F_STOCK_OPNAME"
                 ],
             ];
 

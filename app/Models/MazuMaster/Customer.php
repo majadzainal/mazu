@@ -19,4 +19,9 @@ class Customer extends Model
     {
         return $this->hasOne(CustomerCategory::class, 'customer_category_id', 'customer_category_id');
     }
+
+    public function store()
+    {
+        return $this->hasOne(Store::class, 'store_id', 'store_id');
+    }
 }

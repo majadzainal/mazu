@@ -24,7 +24,13 @@ class CustomerController extends Controller
             ]);
         }
         $store_id = getStoreId();
-        $custCategoryList = CustomerCategory::where('store_id', $store_id)->where('is_active', 1)->get();
+        $isEvent = isEvent();
+        if($isEvent){
+            $custCategoryList = CustomerCategory::where('is_active', 1)->get();
+        }else{
+            $custCategoryList = CustomerCategory::where('store_id', $store_id)->where('is_active', 1)->get();
+        }
+
         return view('mazumaster.customerTable', [
             'MenuID' => $this->MenuID,
             'custCategoryList' => $custCategoryList,
@@ -37,9 +43,17 @@ class CustomerController extends Controller
             return['data'=> ''];
         }
 
-        $customerList = Customer::where('store_id', getStoreId())
+        $isEvent = isEvent();
+        if($isEvent){
+            $customerList = Customer::where('is_active', 1)
+                    ->with('category')
+                    ->orderBy('created_at', 'DESC')->get();
+        }else{
+            $customerList = Customer::where('store_id', getStoreId())
                     ->with('category')
                     ->where('is_active', 1)->orderBy('created_at', 'DESC')->get();
+        }
+
         return['data'=> $customerList];
     }
 
@@ -53,7 +67,13 @@ class CustomerController extends Controller
         // }
 
         try {
-
+            $isEvent = isEvent();
+            $store_id = "";
+            if($isEvent){
+                $store_id = CustomerCategory::where('customer_category_id', $request->customer_category_id)->pluck('store_id')->first();
+            }else{
+                $store_id = getStoreId();
+            }
             $customer_id = Uuid::uuid4()->toString();
             Customer::create([
                 'customer_id'                   => $customer_id,
@@ -63,7 +83,7 @@ class CustomerController extends Controller
                 'address'                       => $request->address,
                 'email'                         => $request->email,
                 'customer_category_id'          => $request->customer_category_id,
-                'store_id'                      => getStoreId(),
+                'store_id'                      => $store_id,
                 'is_active'                     => 1,
                 'created_user'                  => Auth::User()->employee->employee_name,
             ]);

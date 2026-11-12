@@ -6,6 +6,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use PhpParser\Node\Stmt\Foreach_;
 use App\Http\Controllers\Controller;
+use App\Models\MazuMaster\EventSchedule;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Models\MazuProcess\GeneralLedger;
 
@@ -23,8 +24,13 @@ class ReportGeneralLedgerController extends Controller
             ]);
         }
 
+        $isEvent = isEvent();
+        $eventList = EventSchedule::where('is_active', 1)->where('is_closed', 0)->get();
+
         return view('mazuprocess.reportGeneralLedgerTable', [
             'MenuID' => $this->MenuID,
+            'isEvent' => $isEvent,
+            'eventList' => $eventList,
         ]);
 
     }
@@ -34,14 +40,22 @@ class ReportGeneralLedgerController extends Controller
             return['data'=> ''];
         }
 
+        $isEvent = isEvent();
+
         $store_id = getStoreId();
+        $credit = GeneralLedger::whereDate('gl_date', '<', $start_date)
+                    ->where('store_id', $store_id)
+                    ->sum('credit');
+        $debit = GeneralLedger::whereDate('gl_date', '<', $start_date)
+                    ->where('store_id', $store_id)
+                    ->sum('debit');
         $glList = GeneralLedger::whereBetween('gl_date', [$start_date, $end_date])
                             ->where('store_id', $store_id)
-                            ->with('poCustomer', 'poSupplier', 'production', 'poMaterial', 'soPaid', 'soPaid.salesOrder', 'cashOut')
+                            ->with('poCustomer', 'poSupplier', 'production', 'poMaterial', 'soPaid', 'soPaid.salesOrder', 'cashFlow')
                             ->orderBy('created_at', 'asc')
                             ->get();
         // dd($glList);
-        $saldo = floatVal(0);
+        $saldo = $isEvent ? 0 : floatVal($credit) - floatVal($debit);
         $dataList = [];
         foreach($glList as $item){
             $data['gl_date'] = $item->gl_date;
@@ -64,7 +78,7 @@ class ReportGeneralLedgerController extends Controller
             $transNumber = $item->production !== null ? $item->production->po_number : $transNumber;
             $transNumber = $item->poMaterial !== null ? $item->poMaterial->po_number : $transNumber;
             $transNumber = $item->soPaid !== null ? $item->soPaid->salesOrder->so_number : $transNumber;
-            $transNumber = $item->cashOut !== null ? $item->cashOut->cash_out_code."-".$item->cashOut->cash_out_name : $transNumber;
+            $transNumber = $item->cashFlow !== null ? $item->cashFlow->cash_flow_code."-".$item->cashFlow->cash_flow_name : $transNumber;
             $data['transaction_number'] = $transNumber;
 
             array_push($dataList, $data);

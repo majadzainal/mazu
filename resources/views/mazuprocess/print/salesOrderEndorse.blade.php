@@ -143,9 +143,12 @@ table {
   </head>
   <body>
       <table style="width:100%;border:0">
+        @php
+            $banner = "https://mazurejeki88-system.com/uploads/".getBanner();
+          @endphp
         <tr>
             <td colspan="12" style="text-align:center;vertical-align:middle;">
-                <img src="uploads/{{ getBanner() }}" style="width:100%" />
+                <img src="{{ $banner }}" style="width:100%" />
             </td>
         </tr>
         <tr>
@@ -176,9 +179,9 @@ table {
             <tr>
                 <td rowspan="3" colspan="3" style="text-align:center;vertical-align:middle;padding:0px !important;">
                     @php
-                        $prodImg = $ls->product->images !== "" ? $ls->product->images : getLogo();
+                        $prodImgURL = $ls->product->images !== "" ? "https://mazurejeki88-system.com/uploads/".$ls->product->images : "https://mazurejeki88-system.com/uploads/".getLogo();
                     @endphp
-                    <img src="uploads/{{ $prodImg }}" style="width:11%; border-radius:50px;" />
+                    <img src="{{ $prodImgURL }}" style="width:11%; border-radius:50px;" />
                 </td>
 
                 <td colspan="5">
@@ -270,11 +273,21 @@ table {
                 {{ "Rp. ".number_format($data->total_price_after_discount) }}
             </td>
         </tr>
+        @php
+            $invBank = getInvoiceBank();
+            $haveBank = count($invBank);
+            $invBank1 = $haveBank > 0 ? $invBank[0] : null;
+            $invBank2 = $haveBank > 1 ? $invBank[1] : null;
+        @endphp
         <tr>
-            <td colspan="8"  class="f_arial" style="text-align:left;vertical-align:top;">
+            <td colspan="7"  class="f_arial" style="text-align:left;vertical-align:top;">
+                @if ($invBank1 !== null)
+                {{ $invBank1->type_name." An. ".$invBank1->account_name." | ".$invBank1->account_number }}
+                @endif
+            </td>
+            <td colspan="1"  class="f_arial" style="text-align:left;vertical-align:top;">
 
             </td>
-
             <td colspan="2" class="f_arial" style="text-align:left;vertical-align:top;">
                 Tax
             </td>
@@ -287,7 +300,12 @@ table {
             </td>
         </tr>
         <tr>
-            <td colspan="8"  class="f_arial" style="text-align:left;vertical-align:top;">
+            <td colspan="7"  class="f_arial" style="text-align:left;vertical-align:top;">
+                @if ($invBank2 !== null)
+                {{ $invBank2->type_name." An. ".$invBank2->account_name." | ".$invBank2->account_number }}
+                @endif
+            </td>
+            <td colspan="1"  class="f_arial" style="text-align:left;vertical-align:top;">
 
             </td>
 

@@ -221,7 +221,7 @@
                                                     <input name="is_ppn"  id="is_ppn" type="hidden">
                                                     <input name="is_ppnCHK" id="is_ppnCHK" oninput="oninputPPN()" type="checkbox" >
                                                     <label for="is_ppnCHK">
-                                                        <strong>PPN 10%</strong>
+                                                        <strong>PPN 11%</strong>
                                                     </label>
                                                 </div>
                                             </div>
@@ -578,9 +578,10 @@
                             button += "<button class='btn waves-effect waves-light btn-info btn-icon' onClick='return_value(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-edit'></i></button>";
                             button += "<button class='btn waves-effect waves-light btn-info btn-icon' onClick='return_value_payment(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-table'></i></button>";
                         @endif
-                        button += "<button class='btn waves-effect waves-light btn-danger btn-icon' onClick='return_print(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-printer'></i></button>";
+                        button += "<button class='btn waves-effect waves-light btn-warning btn-icon' onClick='return_print(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-ui-note'></i></button>";
+                        button += "<button class='btn waves-effect waves-light btn-danger btn-icon' onClick='return_print_struk(this, "+ JSON.stringify(row) +")' btn='edit'>&nbsp;<i class='icofont icofont-printer'></i></button>";
                         @if(isAccess('delete', $MenuID))
-                            button += "<button class='btn waves-effect waves-light btn-warning btn-icon' data-confirm='Are you sure|want to delete "+ row.so_number +"("+ row.owner.owner_name+") sales order owner??' data-url='/process/sales-order-owner/delete/" + data + "' onClick='deleteInit(this)'>&nbsp;<i class='icofont icofont-trash'></i></button>";
+                            button += "<button class='btn waves-effect waves-light btn-warning btn-icon' data-confirm='Are you sure|want to delete "+ row.so_number +"("+ row.owner.owner_name+") sales order??' data-url='/process/sales-order/delete/" + data + "' onClick='deleteInit(this)'>&nbsp;<i class='icofont icofont-trash'></i></button>";
                         @endif
                         return button;
                     }
@@ -603,23 +604,23 @@
                 },
                 { "data": "so_date" },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.total_price.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        return "Rp. " + formatRupiah(parseInt(row.total_price));
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.total_price_after_discount.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        return "Rp. " + formatRupiah(parseInt(row.total_price_after_discount));
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.grand_total.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        return "Rp. " + formatRupiah(parseInt(row.grand_total));
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.dec_paid.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        return "Rp. " + formatRupiah(parseInt(row.dec_paid));
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
-                        return "Rp. " + row.dec_remain.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                        return "Rp. " + formatRupiah(parseInt(row.dec_remain));
                     }
                 },
                 { "data": "description" },
@@ -634,7 +635,7 @@
             $("#soForm").attr("action", "/process/sales-order-owner/update");
             $("#so_id").val(data.so_id);
             $("#so_number").val(data.so_number);
-            $("#so_date").val(data.so_date);
+            $("#so_date").val(moment(data.so_date).format('YYYY-MM-DD'));
             $("#owner_id").val(data.owner_id);
             $("#description").val(data.description);
 
@@ -657,8 +658,8 @@
 
             $("#ppn").val(data.ppn);
 
-            $("#grand_total-form").val(data.grand_total);
-            $("#grand_total").val(data.grand_total);
+            $("#grand_total-form").val(data.grand_total_wshipping);
+            $("#grand_total").val(data.grand_total_wshipping);
 
             $("#total_paid-form").val(data.dec_paid);
             $("#total_paid").val(data.dec_paid);
@@ -689,6 +690,7 @@
             $("#owner_id").trigger('change');
             $("#btnCancelPO").hide();
             $("#soForm").attr("action", "/process/sales-order-owner/add");
+            $("#so_date").val(moment(new Date()).format('YYYY-MM-DD'));
 
             $("#saveInitProccess").show();
             $("#saveAsDraft").show();
@@ -785,6 +787,10 @@
 
     function return_print(e, data){
         window.open('/process/sales-order-owner-print/'+data.so_id, '_blank');
+    }
+
+    function return_print_struk(e, data){
+        window.open('/process/sales-order-print-struk/'+data.so_id, '_blank');
     }
 
     function btnLoadDataClick(){
@@ -962,7 +968,7 @@ function calculateTotal(){
     $("#total_price_after_discount").val(totalPriceAfterDiscount);
 
     if(is_ppn){
-        ppnPrice = (parseFloat(totalPriceAfterDiscount) * (10 / 100 ));
+        ppnPrice = (parseFloat(totalPriceAfterDiscount) * {{ getPPN() }});
     }
 
     var shippingCostForm = $("#shipping_cost-form").val();
@@ -1191,8 +1197,8 @@ function return_value_payment(e, data){
         $("#payment_form_close").hide();
     }
     $("#so_id_payment").val(data.so_id);
-    $("#grand_total_payment-form").val(data.grand_total);
-    $("#grand_total_payment").val(data.grand_total);
+    $("#grand_total_payment-form").val(data.grand_total_wshipping);
+        $("#grand_total_payment").val(data.grand_total_wshipping);
     $("#total_paid_payment-form").val(data.dec_paid);
     $("#total_paid_payment").val(data.dec_paid);
     $("#dec_paid_payment-form").val(0);
@@ -1231,11 +1237,11 @@ function loadDataPayment(so_id){
             { "data": "paid_type.account_name" },
             { "data": "paid_type.account_number" },
             {  "mRender": function (data, type, row, num) {
-                    return "Rp. " + row.dec_paid.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                    return "Rp. " + formatRupiah(parseInt(row.dec_paid));
                 }
             },
             {  "mRender": function (data, type, row, num) {
-                    return "Rp. " + row.dec_remain.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+                    return "Rp. " + formatRupiah(parseInt(row.dec_remain));
                 }
             },
             {  "mRender": function (data, type, row, num) {

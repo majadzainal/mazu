@@ -157,9 +157,11 @@
                                             <table id="searchTable1" class="table table-striped table-bordered nowrap">
                                                 <thead>
                                                     <tr>
+                                                        <th>No.</th>
                                                         <th>Product ID</th>
                                                         <th>Warehouse ID</th>
                                                         <th>Unit ID</th>
+                                                        <th>Product Code</th>
                                                         <th>Product</th>
                                                         <th>Warehouse</th>
                                                         <th width="40%">&emsp;&emsp;&emsp;&emsp;Stock&emsp;&emsp;&emsp;&emsp;</th>
@@ -259,15 +261,16 @@
 
         $('#searchTable1').DataTable().destroy();
         $('#searchTable1').DataTable({
-            "bPaginate": true,
-            "bLengthChange": true,
-            "bFilter": true,
+            "bPaginate": false,
+            "bLengthChange": false,
+            "bFilter": false,
             "bInfo": true,
             "autoWidth": false,
             "columnDefs": [
-                { "targets": 0, "visible": false },
                 { "targets": 1, "visible": false },
                 { "targets": 2, "visible": false },
+                { "targets": 3, "visible": false },
+                { "targets": 4, "visible": false },
             ],
             "dom": 'Bfrtip',
             "buttons": [
@@ -278,7 +281,7 @@
                                 return $(data).is("input") ? $(data).val() : data;
                             }
                         },
-                        columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                        columns: [ 0, 1, 2, 3, 4, 6, 7, 8, 9]
                     },
                     className: 'btn btn-block',
                     text: 'Export To Excel',
@@ -287,9 +290,18 @@
             ],
             "ajax": '/process/stock-opname-product/load',
             "aoColumns": [
+                { "mRender": function (data, type, row, num) {
+                        return num.row+1;
+                    }
+                },
                 { "data": "product_id" },
                 { "data": "warehouse_id" },
                 { "data": "unit_id" },
+                {  "mRender": function (data, type, row, num) {
+                        var name_code = '<input type="text" value="'+row.product_code+' - '+ row.product_name+'" readonly name="product_name_and_code[]" class="form-control product_name_and_code">';
+                        return name_code;
+                    }
+                },
                 {  "mRender": function (data, type, row, num) {
                         var product = row.product_code+' - '+ row.product_name;
                         return product;
@@ -316,7 +328,7 @@
                 },
                 { "data": "unit_name" },
                 {  "mRender": function (data, type, row, num) {
-                        var note = '<input type="input" name="note[]" class="form-control note"><input type="hidden" name="warehouse_id[]"  value="'+row.warehouse_id+'" class="form-control warehouse_id"> <input type="hidden" name="product_id[]"  value="'+row.product_id+'" class="form-control part_customer_id"><input type="hidden" name="unit_id[]"  value="'+row.unit_id+'" class="form-control unit_id">';
+                        var note = '<input type="input" name="note[]" class="form-control note"><input type="hidden" name="warehouse_id[]"  value="'+row.warehouse_id+'" class="form-control warehouse_id"> <input type="hidden" name="product_id[]"  value="'+row.product_id+'" class="form-control product_id"><input type="hidden" name="unit_id[]"  value="'+row.unit_id+'" class="form-control unit_id">';
                         return note;
                     }
                 },
@@ -330,19 +342,21 @@
         var scheduleList = {!! json_encode($scheduleList) !!};
         var opname_schedule_id = $('#opname_schedule_id_edit').val();
         var schedule = scheduleList.find(a => a.opname_schedule_id === opname_schedule_id);
-        export_name = "Stok Opname Product "+schedule.opname_date;
+        var opname_date = schedule !== undefined ? schedule.opname_date : "";
+        export_name = "Stok Opname Product "+opname_date;
 
         $('#searchTable1').DataTable().destroy();
         $('#searchTable1').DataTable({
-            "bPaginate": true,
-            "bLengthChange": true,
-            "bFilter": true,
+            "bPaginate": false,
+            "bLengthChange": false,
+            "bFilter": false,
             "bInfo": true,
             "autoWidth": false,
             "columnDefs": [
-                { "targets": 0, "visible": false },
                 { "targets": 1, "visible": false },
                 { "targets": 2, "visible": false },
+                { "targets": 3, "visible": false },
+                { "targets": 4, "visible": false },
             ],
             "dom": 'Bfrtip',
             "buttons": [
@@ -362,12 +376,21 @@
             ],
             "ajax": '/process/stock-opname-product/load-opname-item/'+stokOpnameId,
             "aoColumns": [
+                { "mRender": function (data, type, row, num) {
+                        return num.row+1;
+                    }
+                },
                 { "data": "product.product_id" },
                 { "data": "warehouse.warehouse_id" },
                 { "data": "unit_id" },
                 {  "mRender": function (data, type, row, num) {
                         var part = row.product.product_code+' - '+ row.product.product_name;
                         return part;
+                    }
+                },
+                {  "mRender": function (data, type, row, num) {
+                        var product = row.product.product_code+' - '+ row.product.product_name;
+                        return product;
                     }
                 },
                 {  "mRender": function (data, type, row, num) {
@@ -465,6 +488,7 @@
         var tr = $(e).parent().parent();
         var stock = tr.find(".stock").val();
         var stock_adjustment = tr.find(".stock_adjustment").val();
+        console.log(stock_adjustment);
         var stock_after_adjustment = parseInt(stock) + parseInt(stock_adjustment);
         tr.find(".stock_after_adjustment").val(stock_after_adjustment);
     }
@@ -490,13 +514,16 @@
     }
 
     function trigerForm(schedule){
-        var startTime = moment(schedule.start_datetime, 'YYYY-MM-DD HH:mm:ss').toDate();
-        var now = new Date();
+        if(schedule !== undefined){
+            var startTime = moment(schedule.start_datetime, 'YYYY-MM-DD HH:mm:ss').toDate();
+            var now = new Date();
 
-        if (now < startTime)
-        {
-            swal("Info!", "Time is not starting stock opname!");
+            if (now < startTime)
+            {
+                swal("Info!", "Time is not starting stock opname!");
+            }
         }
+
     }
 
     function importExcelClick(inputFileId){
@@ -518,23 +545,26 @@
     function mappingData(dataList){
         var itemList = [];
         dataList.forEach(function(data) {
+            // console.log(data);
             item = {
-                product_id: data['Part ID'],
+                product_id: data['Product ID'],
                 warehouse_id: parseInt(data['Warehouse ID']),
                 stock: parseInt(data['Stock']) ? parseInt(data['Stock']) : 0,
                 stock_adjustment: parseInt(data['Adjustment Stock']) ? parseInt(data['Adjustment Stock']) : 0,
                 note: data['Note'] ? data['Note'] : '',
             };
-
+            // console.log(item);
             itemList.push(item);
         })
-
+        // console.log(itemList);
         $('.stock_adjustment').each(function(i) {
             var tr = $(this).parent().parent();
             var product_id = tr.find(".product_id").val();
             var warehouse_id = parseInt(tr.find(".warehouse_id").val());
             var items = itemList.filter(a => a.product_id === product_id && a.warehouse_id === warehouse_id);
+            // console.log(itemList);
             if (items){
+                // console.log(items);
                 tr.find(".stock_adjustment").val(items[0].stock_adjustment);
                 tr.find(".note").val(items[0].note);
                 countAdjustment(this);

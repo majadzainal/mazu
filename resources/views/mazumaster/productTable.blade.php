@@ -295,6 +295,7 @@
             "ajax": '/master/product/load',
             "aoColumns": [
                 {  "mRender": function (data, type, row, num) {
+                    
                         return num.row+1;
                     }
                 },
@@ -409,8 +410,12 @@
     function changeProductCategory(){
         var categoryArr = {!! json_encode($productCategoryList) !!};
         var product_category_id = $("#product_category_id").val();
-        var product_category = categoryArr.find(e => e.product_category_id === parseInt(product_category_id));
-        $("#category_code").val(product_category.category_code);
+        var product_category = categoryArr.find(e => parseInt(e.product_category_id) === parseInt(product_category_id));
+        // console.log("OKE");
+        // console.log(categoryArr);
+        // console.log(product_category);
+        var category_code = product_category != undefined ? product_category.category_code : "";
+        $("#category_code").val(category_code);
     }
 
     function loadImage(){
