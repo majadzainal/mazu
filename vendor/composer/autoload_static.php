@@ -665,6 +665,7 @@ class ComposerStaticInitc360a417a05f7a27e3da6ae7641772da
         'App\\Http\\Controllers\\MazuMaster\\CustomerCategoryController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuMaster/CustomerCategoryController.php',
         'App\\Http\\Controllers\\MazuMaster\\CustomerController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuMaster/CustomerController.php',
         'App\\Http\\Controllers\\MazuMaster\\EndorseController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuMaster/EndorseController.php',
+        'App\\Http\\Controllers\\MazuMaster\\EventScheduleController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuMaster/EventScheduleController.php',
         'App\\Http\\Controllers\\MazuMaster\\ExclusiveResellerController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuMaster/ExclusiveResellerController.php',
         'App\\Http\\Controllers\\MazuMaster\\InventoryExclusiveResellerController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuMaster/InventoryExclusiveResellerController.php',
         'App\\Http\\Controllers\\MazuMaster\\InventoryOutletController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuMaster/InventoryOutletController.php',
@@ -685,6 +686,7 @@ class ComposerStaticInitc360a417a05f7a27e3da6ae7641772da
         'App\\Http\\Controllers\\MazuMaster\\SupplierController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuMaster/SupplierController.php',
         'App\\Http\\Controllers\\MazuMaster\\UnitController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuMaster/UnitController.php',
         'App\\Http\\Controllers\\MazuMaster\\WarehouseController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuMaster/WarehouseController.php',
+        'App\\Http\\Controllers\\MazuProcess\\CashInController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuProcess/CashInController.php',
         'App\\Http\\Controllers\\MazuProcess\\CashOutController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuProcess/CashOutController.php',
         'App\\Http\\Controllers\\MazuProcess\\DeliveryOrderExcResellerController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuProcess/DeliveryOrderExcResellerController.php',
         'App\\Http\\Controllers\\MazuProcess\\DeliveryOrderOutletController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuProcess/DeliveryOrderOutletController.php',
@@ -703,6 +705,10 @@ class ComposerStaticInitc360a417a05f7a27e3da6ae7641772da
         'App\\Http\\Controllers\\MazuProcess\\ReportSalesOrderMedsosController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuProcess/ReportSalesOrderMedsosController.php',
         'App\\Http\\Controllers\\MazuProcess\\ReportSalesOrderOutletController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuProcess/ReportSalesOrderOutletController.php',
         'App\\Http\\Controllers\\MazuProcess\\ReportSalesOrderOwnerController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuProcess/ReportSalesOrderOwnerController.php',
+<<<<<<< HEAD
+=======
+        'App\\Http\\Controllers\\MazuProcess\\ReportSalesOrderSpesialGiftController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuProcess/ReportSalesOrderSpesialGiftController.php',
+>>>>>>> 80702ac3ab9c01d3dd4952cd8ed23dc819d53783
         'App\\Http\\Controllers\\MazuProcess\\SalesOrderController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuProcess/SalesOrderController.php',
         'App\\Http\\Controllers\\MazuProcess\\SalesOrderEndorseController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuProcess/SalesOrderEndorseController.php',
         'App\\Http\\Controllers\\MazuProcess\\SalesOrderExcResellerController' => __DIR__ . '/../..' . '/app/Http/Controllers/MazuProcess/SalesOrderExcResellerController.php',
@@ -784,6 +790,7 @@ class ComposerStaticInitc360a417a05f7a27e3da6ae7641772da
         'App\\Models\\MazuMaster\\Customer' => __DIR__ . '/../..' . '/app/Models/MazuMaster/Customer.php',
         'App\\Models\\MazuMaster\\CustomerCategory' => __DIR__ . '/../..' . '/app/Models/MazuMaster/CustomerCategory.php',
         'App\\Models\\MazuMaster\\Endorse' => __DIR__ . '/../..' . '/app/Models/MazuMaster/Endorse.php',
+        'App\\Models\\MazuMaster\\EventSchedule' => __DIR__ . '/../..' . '/app/Models/MazuMaster/EventSchedule.php',
         'App\\Models\\MazuMaster\\ExclusiveReseller' => __DIR__ . '/../..' . '/app/Models/MazuMaster/ExclusiveReseller.php',
         'App\\Models\\MazuMaster\\LabelProduct' => __DIR__ . '/../..' . '/app/Models/MazuMaster/LabelProduct.php',
         'App\\Models\\MazuMaster\\Outlet' => __DIR__ . '/../..' . '/app/Models/MazuMaster/Outlet.php',
@@ -801,6 +808,7 @@ class ComposerStaticInitc360a417a05f7a27e3da6ae7641772da
         'App\\Models\\MazuMaster\\Supplier' => __DIR__ . '/../..' . '/app/Models/MazuMaster/Supplier.php',
         'App\\Models\\MazuMaster\\Unit' => __DIR__ . '/../..' . '/app/Models/MazuMaster/Unit.php',
         'App\\Models\\MazuMaster\\Warehouse' => __DIR__ . '/../..' . '/app/Models/MazuMaster/Warehouse.php',
+        'App\\Models\\MazuProcess\\CashFlow' => __DIR__ . '/../..' . '/app/Models/MazuProcess/CashFlow.php',
         'App\\Models\\MazuProcess\\CashOut' => __DIR__ . '/../..' . '/app/Models/MazuProcess/CashOut.php',
         'App\\Models\\MazuProcess\\DeliveryOrderExcReseller' => __DIR__ . '/../..' . '/app/Models/MazuProcess/DeliveryOrderExcReseller.php',
         'App\\Models\\MazuProcess\\DeliveryOrderExcResellerItem' => __DIR__ . '/../..' . '/app/Models/MazuProcess/DeliveryOrderExcResellerItem.php',
